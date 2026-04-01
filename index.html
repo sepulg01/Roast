@@ -1,432 +1,1426 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Maillard Roasters · Tostado B2B · Chile</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roast — Tu primer café real. Deja el instantáneo.</title>
+  <meta name="description" content="Café en grano tostado y molido a pedido según tu método. Más sabor y más cafeína que el instantáneo. Despacho rápido en Santiago." />
+  <meta property="og:title" content="Roast — Tu primer café real." />
+  <meta property="og:description" content="Más sabor. Más cafeína. Igual de simple de hacer. Tu primer paso para dejar el café instantáneo." />
+  <meta property="og:image" content="./assets/og-image.jpg" />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"Roast","url":"https://roast.cl","description":"Tu primer café real."}
+  </script>
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
-    :root{
-      --bg:#faf9f7;
-      --ink:#0f0e0c;
-      --ink-m:#4a4843;
-      --ink-l:#9a9790;
-      --accent:#bf4a1f;
-      --accent-l:#f5e8e2;
-      --cream:#f0ece4;
-      --border:rgba(15,14,12,0.1);
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #0D0D0D;
+      --bg-surface: #1A1A1A;
+      --bg-surface-hover: #222222;
+      --accent: #FF6B35;
+      --accent-hover: #E85A25;
+      --accent-secondary: #FFD166;
+      --text-primary: #F5F0E8;
+      --text-secondary: #9A9A9A;
+      --text-muted: #555555;
+      --success: #4CAF50;
+      --wa-green: #25D366;
+      --wa-green-hover: #1DA851;
+      --border: #2A2A2A;
     }
-
-    html{scroll-behavior:smooth}
-    body{background:var(--bg);color:var(--ink);font-family:'Syne',sans-serif;font-weight:400;overflow-x:hidden}
-
-    /* TOP BAR */
-    .topbar{
-      position:fixed;top:0;left:0;right:0;z-index:200;
-      display:flex;justify-content:space-between;align-items:center;
-      padding:0 clamp(1.5rem,4vw,4rem);height:60px;
-      background:rgba(250,249,247,0.9);backdrop-filter:blur(12px);
-      border-bottom:0.5px solid var(--border);
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 1rem;
+      line-height: 1.6;
+      overflow-x: hidden;
     }
-    .logo{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;letter-spacing:0.04em;color:var(--ink);text-decoration:none}
-    .logo b{color:var(--accent);font-weight:700}
-    .topbar-right{display:flex;align-items:center;gap:1.25rem}
-    .nav-link{font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-m);text-decoration:none;transition:color .2s}
-    .nav-link:hover{color:var(--accent)}
-    .topbar-social{display:flex;gap:0.75rem;align-items:center}
-    .topbar-social a{color:var(--ink-l);transition:color .2s;display:flex}
-    .topbar-social a:hover{color:var(--accent)}
-    .pill-status{font-size:0.6rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);background:var(--accent-l);border:0.5px solid rgba(191,74,31,0.25);padding:4px 12px;border-radius:100px}
-
-    /* HERO */
-    .hero{min-height:100svh;display:grid;grid-template-columns:1fr 1fr;padding-top:60px}
-    .hero-left{display:flex;flex-direction:column;justify-content:center;padding:clamp(4rem,8vh,7rem) clamp(1.5rem,4vw,4rem) clamp(3rem,6vh,5rem);border-right:0.5px solid var(--border)}
-    .eyebrow{font-size:0.68rem;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-l);margin-bottom:1.5rem}
-    h1{font-family:'Playfair Display',serif;font-size:clamp(3rem,6vw,5.5rem);font-weight:400;line-height:1.0;color:var(--ink);margin-bottom:1.75rem}
-    h1 em{font-style:italic;color:var(--accent)}
-    .tagline{font-size:clamp(0.9rem,1.4vw,1.05rem);font-weight:400;color:var(--ink-m);max-width:40ch;line-height:1.8;margin-bottom:2.5rem}
-    .hero-cta{display:flex;flex-direction:column;gap:0.85rem;align-items:flex-start}
-
-    .btn-primary{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:#fff;text-decoration:none;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:500;letter-spacing:0.08em;padding:13px 24px;border-radius:2px;transition:background .2s,transform .2s}
-    .btn-primary:hover{background:var(--accent);transform:translateY(-1px)}
-    .btn-primary svg{flex-shrink:0}
-    .btn-ghost{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--ink);text-decoration:none;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:500;letter-spacing:0.08em;padding:12px 24px;border-radius:2px;border:0.5px solid var(--border);transition:border-color .2s,color .2s}
-    .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-    .cta-note{font-size:0.72rem;color:var(--ink-l)}
-
-    /* HERO RIGHT */
-    .hero-right{display:flex;flex-direction:column;justify-content:flex-end;padding:clamp(3rem,6vh,5rem) clamp(1.5rem,4vw,4rem);background:var(--cream)}
-    .counter-block{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
-    .counter-label{font-size:0.65rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-l);margin-bottom:0.5rem}
-    .counter-number{font-family:'Playfair Display',serif;font-size:clamp(5rem,10vw,9rem);font-weight:700;line-height:0.9;color:var(--ink);letter-spacing:-0.02em}
-    .counter-unit{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3vw,2.5rem);font-weight:400;font-style:italic;color:var(--accent);margin-top:0.5rem}
-    .counter-sub{font-size:0.75rem;font-weight:400;color:var(--ink-l);margin-top:1rem;line-height:1.6;max-width:26ch}
-
-    .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:0.5px solid var(--border);margin-top:3rem}
-    .hero-stat{padding:1.25rem 1rem 0 0;border-right:0.5px solid var(--border)}
-    .hero-stat:last-child{border-right:none}
-    .hero-stat-label{font-size:0.62rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-l);margin-bottom:0.35rem}
-    .hero-stat-val{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:400;color:var(--ink)}
-
-    /* SECTIONS */
-    .section{padding:clamp(5rem,10vh,8rem) clamp(1.5rem,4vw,4rem);max-width:1200px;margin:0 auto}
-    .section-header{margin-bottom:clamp(2.5rem,5vh,4rem)}
-    .section-kicker{font-size:0.65rem;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-l);margin-bottom:0.75rem}
-    h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:400;line-height:1.05;color:var(--ink)}
-    h2 em{font-style:italic;color:var(--accent)}
-    .section-desc{font-size:1rem;font-weight:400;color:var(--ink-m);max-width:50ch;line-height:1.8;margin-top:1rem}
-    .divider{border:none;border-top:0.5px solid var(--border);margin:0 clamp(1.5rem,4vw,4rem)}
-
-    /* PLANS */
-    .plans-wrap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:0.5px solid var(--border);border-radius:4px;overflow:hidden;background:var(--border);gap:0.5px}
-    .plan{background:var(--bg);padding:2.25rem 2rem 2.5rem;display:flex;flex-direction:column}
-    .plan.featured{background:var(--ink)}
-    .plan-badge{display:inline-block;font-size:0.6rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;background:var(--accent-l);color:var(--accent);padding:4px 12px;border-radius:100px;margin-bottom:1.5rem;align-self:flex-start}
-    .plan-name{font-size:0.68rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-l);margin-bottom:1rem}
-    .plan.featured .plan-name{color:rgba(255,255,255,0.4)}
-    .plan-vol{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,4vw,3.5rem);font-weight:400;line-height:1;color:var(--ink);margin-bottom:0.2rem}
-    .plan.featured .plan-vol{color:#fff}
-    .plan-vol-note{font-size:0.75rem;color:var(--ink-l);margin-bottom:2rem}
-    .plan.featured .plan-vol-note{color:rgba(255,255,255,0.4)}
-    .plan-list{list-style:none;display:flex;flex-direction:column;gap:0.65rem;flex:1}
-    .plan-list li{font-size:0.83rem;font-weight:400;color:var(--ink-m);display:flex;align-items:flex-start;gap:10px;line-height:1.5}
-    .plan.featured .plan-list li{color:rgba(255,255,255,0.7)}
-    .plan-list li::before{content:'';display:block;width:4px;height:4px;border-radius:50%;background:var(--accent);margin-top:7px;flex-shrink:0}
-
-    /* MONTHLY */
-    .monthly-intro{margin-top:4rem;margin-bottom:2rem}
-    .monthly-wrap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:0.5px solid var(--border);border-radius:4px;overflow:hidden;background:var(--border);gap:0.5px}
-    .mplan{background:var(--cream);padding:2rem 1.75rem 2.25rem;display:flex;flex-direction:column}
-    .mplan.featured{background:var(--accent)}
-    .mplan-kicker{font-size:0.62rem;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-l);margin-bottom:0.75rem}
-    .mplan.featured .mplan-kicker{color:rgba(255,255,255,0.6)}
-    .mplan-name{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:400;color:var(--ink);margin-bottom:0.3rem}
-    .mplan.featured .mplan-name{color:#fff}
-    .mplan-vol{font-size:0.78rem;color:var(--ink-l);margin-bottom:1.5rem}
-    .mplan.featured .mplan-vol{color:rgba(255,255,255,0.6)}
-    .mplan-list{list-style:none;display:flex;flex-direction:column;gap:0.55rem;flex:1}
-    .mplan-list li{font-size:0.82rem;font-weight:400;color:var(--ink-m);display:flex;align-items:flex-start;gap:9px;line-height:1.5}
-    .mplan.featured .mplan-list li{color:rgba(255,255,255,0.85)}
-    .mplan-list li::before{content:'';display:block;width:3px;height:3px;border-radius:50%;background:var(--ink-l);margin-top:8px;flex-shrink:0}
-    .mplan.featured .mplan-list li::before{background:rgba(255,255,255,0.5)}
-
-    /* PACKAGING */
-    .pkg-grid{display:grid;grid-template-columns:1fr 1fr;border:0.5px solid var(--border);border-radius:4px;overflow:hidden;background:var(--border);gap:0.5px;margin-top:3.5rem}
-    .pkg-block{background:var(--bg);padding:2rem 1.75rem}
-    .pkg-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:400;color:var(--ink);margin-bottom:0.5rem}
-    .pkg-desc{font-size:0.82rem;font-weight:400;color:var(--ink-m);line-height:1.7;margin-bottom:1.25rem}
-    .pkg-list{list-style:none;display:flex;flex-direction:column;gap:0.5rem}
-    .pkg-list li{font-size:0.82rem;font-weight:400;color:var(--ink-m);display:flex;align-items:flex-start;gap:9px;line-height:1.5}
-    .pkg-list li::before{content:'';display:block;width:3px;height:3px;border-radius:50%;background:var(--accent);margin-top:8px;flex-shrink:0}
-
-    /* CONTACT BAND */
-    .contact-band{background:var(--ink);padding:clamp(3rem,6vh,5rem) clamp(1.5rem,4vw,4rem)}
-    .contact-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:2rem}
-    .contact-heading{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:400;color:#fff;line-height:1.1}
-    .contact-heading em{font-style:italic;color:var(--accent)}
-    .contact-links{display:flex;flex-direction:column;gap:1rem;align-items:flex-end}
-    .contact-item{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:0.85rem;font-weight:400;letter-spacing:0.04em;color:rgba(255,255,255,0.6);transition:color .2s}
-    .contact-item:hover{color:#fff}
-    .contact-item svg{flex-shrink:0;opacity:0.6;transition:opacity .2s}
-    .contact-item:hover svg{opacity:1}
-
-    /* FOOTER */
-    footer{padding:1.5rem clamp(1.5rem,4vw,4rem);border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem}
-    .footer-copy{font-size:0.7rem;color:var(--ink-l);letter-spacing:0.05em}
-    .footer-right{font-size:0.7rem;color:var(--ink-l);letter-spacing:0.08em;text-transform:uppercase}
-
-    /* ANIMATIONS */
-    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-    .anim{opacity:0;animation:fadeUp 0.8s ease forwards}
-    .anim:nth-child(1){animation-delay:.1s}
-    .anim:nth-child(2){animation-delay:.25s}
-    .anim:nth-child(3){animation-delay:.4s}
-    .anim:nth-child(4){animation-delay:.55s}
-    .anim:nth-child(5){animation-delay:.7s}
-
-    /* RESPONSIVE */
-    @media(max-width:900px){
-      .hero{grid-template-columns:1fr;min-height:auto}
-      .hero-left{border-right:none;border-bottom:0.5px solid var(--border)}
-      .hero-right{padding-top:3rem}
-      .plans-wrap,.monthly-wrap{grid-template-columns:1fr}
-      .pkg-grid{grid-template-columns:1fr}
-      .contact-links{align-items:flex-start}
-      .topbar .nav-link{display:none}
+    h1, h2, h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
     }
-    @media(max-width:600px){
-      .hero-stats{grid-template-columns:1fr 1fr}
-      .hero-stat:last-child{display:none}
+    h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); }
+    h2 { font-size: clamp(1.8rem, 4vw, 3rem); }
+    h3 { font-size: clamp(1.3rem, 2.5vw, 1.8rem); }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 clamp(1.25rem, 5vw, 2rem);
     }
+    section { padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 5vw, 2rem); }
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      transition: background 200ms ease, transform 150ms ease, border-color 200ms ease, color 200ms ease;
+      text-decoration: none;
+    }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-whatsapp { background: var(--wa-green); color: #fff; }
+    .btn-whatsapp:hover { background: var(--wa-green-hover); transform: translateY(-2px); }
+    .btn-whatsapp:active { transform: translateY(0); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-full { width: 100%; }
+    /* BADGES */
+    .badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .badge-soon {
+      background: var(--accent-secondary);
+      color: var(--bg-primary);
+    }
+    /* CARDS */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      transition: border-color 250ms ease, transform 200ms ease;
+    }
+    .card:hover { border-color: var(--accent); transform: translateY(-4px); }
+    .card-featured { border: 2px solid var(--accent); }
+    /* FADE IN SCROLL */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 500ms ease, transform 500ms ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      .fade-in { opacity: 1; transform: none; transition: none; }
+      * { transition: none !important; animation: none !important; }
+    }
+    /* ===== NAV ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 900;
+      background: rgba(13,13,13,0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem clamp(1.25rem, 5vw, 2rem);
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-cta { display: none; }
+    @media (min-width: 768px) {
+      .nav-cta { display: inline-flex; padding: 0.625rem 1.25rem; font-size: 0.875rem; }
+    }
+    /* ===== HERO ===== */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding-top: 5rem;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: url('https://picsum.photos/1400/800') center/cover no-repeat;
+      /* replace with: dark moody close-up of coffee being poured */
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(13,13,13,0.72);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 clamp(1.25rem, 5vw, 2rem);
+      animation: heroFadeIn 0.8s ease forwards;
+    }
+    @keyframes heroFadeIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      color: var(--accent);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .hero-headline {
+      max-width: 14ch;
+      margin-bottom: 1.25rem;
+    }
+    .hero-sub {
+      max-width: 50ch;
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      margin-bottom: 2rem;
+    }
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+    @media (min-width: 768px) {
+      .hero-content { text-align: left; }
+    }
+    /* ===== PAIN POINTS ===== */
+    #pain-points { background: var(--bg-primary); }
+    #pain-points .section-header { text-align: center; margin-bottom: 3rem; }
+    .pain-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 768px) { .pain-grid { grid-template-columns: repeat(3, 1fr); } }
+    .pain-card-icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 1.25rem;
+      color: var(--accent);
+    }
+    .pain-card h3 { margin-bottom: 0.5rem; }
+    .pain-card p { color: var(--text-secondary); }
+    /* ===== QUIZ ===== */
+    #quiz { background: var(--bg-surface); }
+    #quiz .section-header { text-align: center; margin-bottom: 2.5rem; }
+    .quiz-wrap {
+      background: var(--bg-surface);
+      border-radius: 16px;
+      padding: clamp(1.5rem, 4vw, 3rem);
+      max-width: 640px;
+      margin: 0 auto;
+      border: 1px solid var(--border);
+    }
+    .quiz-progress {
+      background: var(--border);
+      height: 4px;
+      border-radius: 2px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    .quiz-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 300ms ease;
+    }
+    .quiz-step { display: none; }
+    .quiz-step.active {
+      display: block;
+      animation: quizFade 250ms ease forwards;
+    }
+    @keyframes quizFade {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .quiz-question {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .quiz-option {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.875rem 1.25rem;
+      width: 100%;
+      text-align: left;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: border-color 200ms ease, background 200ms ease;
+    }
+    .quiz-option:hover { border-color: var(--accent); }
+    .quiz-option:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .quiz-option.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .quiz-nav { display: flex; gap: 1rem; margin-top: 1.5rem; align-items: center; }
+    .quiz-back {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 0.625rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      transition: border-color 200ms ease, color 200ms ease;
+    }
+    .quiz-back:hover { border-color: var(--accent); color: var(--accent); }
+    .quiz-result-card {
+      background: var(--bg-primary);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+    }
+    .quiz-result-tag {
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .quiz-result-rec {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .quiz-result-price {
+      color: var(--accent-secondary);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .quiz-restart {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.875rem;
+      margin-top: 1rem;
+      text-decoration: underline;
+      font-family: 'Inter', sans-serif;
+    }
+    .quiz-restart:hover { color: var(--text-secondary); }
+    /* ===== HOW IT WORKS ===== */
+    #how-it-works { background: var(--bg-primary); }
+    #how-it-works .section-header { text-align: center; margin-bottom: 3rem; }
+    .steps-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 768px) { .steps-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1280px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+    .step-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 3.5rem;
+      color: var(--accent);
+      opacity: 0.25;
+      line-height: 1;
+      margin-bottom: 0.75rem;
+    }
+    .step-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+    }
+    .step-body { color: var(--text-secondary); font-size: 0.9375rem; }
+    /* ===== PRODUCTS ===== */
+    #products { background: var(--bg-surface); }
+    #products .section-header { text-align: center; margin-bottom: 0.75rem; }
+    #products .section-sub { text-align: center; color: var(--text-secondary); margin-bottom: 3rem; }
+    .products-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
+    .product-card { position: relative; display: flex; flex-direction: column; }
+    .product-badge-wrap {
+      position: absolute;
+      top: -0.75rem;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+    .product-img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 1.25rem;
+    }
+    .product-label {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+    .product-size {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      margin-bottom: 0.25rem;
+    }
+    .product-desc { color: var(--text-secondary); font-size: 0.9375rem; margin-bottom: 1rem; }
+    .product-selectors { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .product-selectors select {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      padding: 0.625rem 0.875rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9375rem;
+      cursor: pointer;
+      width: 100%;
+      transition: border-color 200ms ease;
+    }
+    .product-selectors select:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+    .product-selectors select:hover { border-color: var(--accent); }
+    .product-price {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 2rem;
+      color: var(--text-primary);
+      margin-bottom: 1.25rem;
+    }
+    .product-price span { font-size: 1rem; font-weight: 400; color: var(--text-secondary); }
+    .free-shipping-note {
+      text-align: center;
+      margin-top: 2rem;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .free-shipping-note svg { color: var(--success); }
+    /* ===== COUNTER ===== */
+    #counter { background: var(--bg-primary); position: relative; overflow: hidden; }
+    .counter-noise {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .counter-inner { position: relative; z-index: 1; text-align: center; }
+    .counter-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(4rem, 10vw, 8rem);
+      color: var(--accent);
+      line-height: 1;
+      display: block;
+    }
+    .counter-unit {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .counter-headline {
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      color: var(--text-secondary);
+      margin-top: 1rem;
+    }
+    /* ===== REVIEWS ===== */
+    #reviews { background: var(--bg-surface); }
+    #reviews .section-header { text-align: center; margin-bottom: 2.5rem; }
+    .carousel-wrap { position: relative; overflow: hidden; }
+    .carousel-track {
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 0.5rem;
+    }
+    .carousel-track::-webkit-scrollbar { display: none; }
+    .review-card {
+      flex: 0 0 300px;
+      scroll-snap-align: start;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+    }
+    .review-stars { color: var(--accent-secondary); font-size: 1.1rem; margin-bottom: 0.75rem; }
+    .review-text { color: var(--text-primary); font-size: 0.9375rem; margin-bottom: 1rem; }
+    .review-author { font-weight: 600; font-size: 0.875rem; }
+    .review-location { color: var(--text-secondary); font-size: 0.8125rem; }
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      border: none;
+      transition: background 200ms ease;
+      padding: 0;
+    }
+    .carousel-dot.active { background: var(--accent); }
+    /* ===== SUBSCRIPTION TEASER ===== */
+    #subscription { background: var(--bg-primary); }
+    .sub-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: clamp(2rem, 5vw, 3.5rem);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .sub-badge { margin-bottom: 1rem; }
+    .sub-headline { margin-bottom: 0.75rem; }
+    .sub-body { color: var(--text-secondary); margin-bottom: 1.75rem; max-width: 52ch; }
+    .sub-freqs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .sub-freq {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 1.25rem;
+      font-weight: 500;
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+    }
+    @media (min-width: 768px) {
+      .sub-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
+    }
+    /* ===== COVERAGE MAP ===== */
+    #coverage { background: var(--bg-surface); }
+    #coverage .section-header { text-align: center; margin-bottom: 2.5rem; }
+    .coverage-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .coverage-badge-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--bg-primary);
+      border-radius: 10px;
+      padding: 0.875rem 1.25rem;
+      font-weight: 500;
+    }
+    .coverage-badge-item.active { border: 2px solid var(--accent); color: var(--text-primary); }
+    .coverage-badge-item.soon { border: 1px solid var(--border); color: var(--text-secondary); }
+    .coverage-badge-item svg { flex-shrink: 0; }
+    /* ===== FAQ ===== */
+    #faq { background: var(--bg-primary); }
+    #faq .section-header { text-align: center; margin-bottom: 2.5rem; }
+    .faq-list { max-width: 720px; margin: 0 auto; }
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      overflow: hidden;
+      transition: border-color 200ms ease;
+    }
+    .faq-item.open { border-color: var(--accent); }
+    .faq-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+      gap: 1rem;
+    }
+    .faq-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+    .faq-chevron {
+      flex-shrink: 0;
+      transition: transform 250ms ease;
+    }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 300ms ease;
+    }
+    .faq-answer-inner {
+      padding: 0 1.5rem 1.25rem;
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+    }
+    /* ===== FINAL CTA ===== */
+    #final-cta {
+      background: var(--accent);
+      text-align: center;
+      padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 5vw, 2rem);
+    }
+    #final-cta h2 { color: #fff; margin-bottom: 0.75rem; }
+    .final-sub { color: rgba(255,255,255,0.85); font-size: 1.125rem; margin-bottom: 2rem; }
+    .btn-final {
+      background: #fff;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .btn-final:hover { background: #f0ede6; transform: translateY(-2px); }
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--bg-primary);
+      border-top: 1px solid var(--border);
+      padding: 3rem clamp(1.25rem, 5vw, 2rem);
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 768px) { .footer-inner { grid-template-columns: repeat(3, 1fr); } }
+    .footer-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .footer-logo span { color: var(--accent); }
+    .footer-tagline { color: var(--text-secondary); font-size: 0.9375rem; }
+    .footer-links { display: flex; flex-direction: column; gap: 0.5rem; }
+    .footer-links a { color: var(--text-secondary); font-size: 0.9375rem; transition: color 200ms ease; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-contact { display: flex; flex-direction: column; gap: 0.75rem; }
+    .footer-wa-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--wa-green);
+      font-weight: 500;
+    }
+    .footer-wa-link:hover { color: var(--wa-green-hover); }
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 2rem auto 0;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.8125rem;
+    }
+    /* ===== STICKY MOBILE CTA ===== */
+    #sticky-cta {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--bg-primary);
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+      z-index: 1000;
+      display: flex;
+    }
+    @media (min-width: 768px) { #sticky-cta { display: none; } }
+    #sticky-cta .btn { flex: 1; }
   </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
-<nav class="topbar">
-  <a href="#" class="logo">Maillard <b>Roasters</b></a>
-  <div class="topbar-right">
-    <a href="#servicios" class="nav-link">Servicios</a>
-    <a href="#contacto" class="nav-link">Contacto</a>
-    <div class="topbar-social">
-      <a href="https://instagram.com/maillardroasters" target="_blank" rel="noopener" aria-label="Instagram">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="2" width="20" height="20" rx="5"/>
-          <circle cx="12" cy="12" r="4"/>
-          <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
-        </svg>
-      </a>
-      <a href="mailto:contacto@maillardroasters.cl" aria-label="Email">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="4" width="20" height="16" rx="2"/>
-          <path d="M2 7l10 7 10-7"/>
-        </svg>
-      </a>
-    </div>
-    <span class="pill-status">En construcción</span>
+<!-- NAV -->
+<nav aria-label="Navegación principal">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" aria-label="Roast - ir al inicio">Roast<span>.</span></a>
+    <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
+       class="btn btn-whatsapp nav-cta"
+       target="_blank" rel="noopener noreferrer"
+       aria-label="Pedir por WhatsApp"
+       onclick="dataLayer.push({event:'whatsapp_click',label:'nav'})">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+      Pedir por WhatsApp
+    </a>
   </div>
 </nav>
 
 <!-- HERO -->
-<section class="hero">
-  <div class="hero-left">
-    <p class="eyebrow anim">Coffee roasting · B2B · Chile</p>
-    <h1 class="anim">Coffee roasting<br>para <em>emprendedores</em></h1>
-    <p class="tagline anim">Tostamos el café para que puedas construir la marca que siempre imaginaste. Consultoría de tueste, envasado y desarrollo de producto para cafeterías, restaurantes y marcas propias en Chile.</p>
-    <div class="hero-cta anim">
-      <a href="https://wa.me/56912345678?text=Hola%2C%20quiero%20cotizar%20tostado%20B2B" target="_blank" rel="noopener" class="btn-primary">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A11.93 11.93 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.17 1.6 5.97L0 24l6.22-1.57A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.2-1.25-6.22-3.48-8.52ZM12 22c-1.85 0-3.67-.5-5.25-1.44l-.38-.22-3.69.93.98-3.6-.24-.38A9.94 9.94 0 0 1 2 12C2 6.48 6.48 2 12 2c2.67 0 5.17 1.04 7.07 2.93A9.93 9.93 0 0 1 22 12c0 5.52-4.48 10-10 10Zm5.47-7.47c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.79-1.68-2.09-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.87 1.21 3.07.15.2 2.09 3.19 5.06 4.47.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.08 1.76-.72 2.01-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z"/></svg>
-        Cotiza tu pedido
+<section id="hero" aria-label="Sección principal">
+  <div class="hero-bg" role="img" aria-label="Café siendo vertido en taza oscura"></div>
+  <div class="hero-content">
+    <span class="hero-eyebrow">Deja el instantáneo atrás.</span>
+    <h1 class="hero-headline">Tu café del desayuno merece más que agua tibia con colorante.</h1>
+    <p class="hero-sub">Roast es tu primer paso hacia el café de verdad. Más sabor, más cafeína, igual de simple de hacer.</p>
+    <div class="hero-ctas">
+      <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
+         class="btn btn-whatsapp"
+         target="_blank" rel="noopener noreferrer"
+         aria-label="Pedir por WhatsApp"
+         onclick="dataLayer.push({event:'cta_click_hero'});dataLayer.push({event:'whatsapp_click',label:'hero'})">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+        Pedir por WhatsApp
       </a>
-      <a href="#servicios" class="btn-ghost">Ver servicios ↓</a>
-      <span class="cta-note">Sin compromisos · Respondemos en &lt;24 h · Desde 5 kg</span>
+      <a href="#quiz" class="btn btn-secondary" aria-label="Ir al quiz para elegir tu café">Elegir mi café →</a>
     </div>
   </div>
+</section>
 
-  <div class="hero-right">
-    <div class="counter-block">
-      <p class="counter-label">Café tostado y contando</p>
-      <div class="counter-number" id="counter">752</div>
-      <div class="counter-unit">kilogramos</div>
-      <p class="counter-sub">Cada lote suma a esta cifra. El tuyo también podría estar aquí.</p>
+<!-- PAIN POINTS -->
+<section id="pain-points" aria-labelledby="pain-heading">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 id="pain-heading">¿Tu café de las mañanas te está fallando?</h2>
     </div>
-    <div class="hero-stats">
-      <div class="hero-stat">
-        <p class="hero-stat-label">Mínimo</p>
-        <p class="hero-stat-val">5 kg</p>
+    <div class="pain-grid">
+      <div class="card pain-card fade-in" aria-label="Problema: Sabe a nada">
+        <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/><path d="M9 14s0-2 2-2 2 2 2 2" stroke-linecap="round"/><path d="M8 11h.01M16 11h.01" stroke-linecap="round"/></svg>
+        <h3>Sabe a nada</h3>
+        <p>El café instantáneo promete mucho y entrega poco. Sabor plano, aroma artificial, decepción garantizada.</p>
       </div>
-      <div class="hero-stat">
-        <p class="hero-stat-label">Modalidad</p>
-        <p class="hero-stat-val">White label</p>
+      <div class="card pain-card fade-in" aria-label="Problema: No despierta a nadie">
+        <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>No despierta a nadie</h3>
+        <p>Tan poco café real lleva que podrías tomar tres tazas y seguir con sueño.</p>
       </div>
-      <div class="hero-stat">
-        <p class="hero-stat-label">Cobertura</p>
-        <p class="hero-stat-val">Chile</p>
+      <div class="card pain-card fade-in" aria-label="Solución: Simple como siempre">
+        <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <h3>¿Y el café real es muy complicado?</h3>
+        <p>Para nada. Con Roast lo molemos según cómo tú preparas. Sin molinillo, sin YouTube, sin drama.</p>
       </div>
     </div>
   </div>
 </section>
 
-<hr class="divider"/>
-
-<!-- SERVICES -->
-<div id="servicios">
-  <div class="section">
-
-    <div class="section-header">
-      <p class="section-kicker">Pedidos puntuales</p>
-      <h2>Tostado a tu <em>medida</em></h2>
-      <p class="section-desc">Para cuando necesitas un lote específico sin compromiso de continuidad. Ideal para lanzamientos, eventos o pruebas de producto.</p>
+<!-- QUIZ -->
+<section id="quiz" aria-labelledby="quiz-heading">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 id="quiz-heading">¿Cuánto café necesitas? Te lo decimos en 2 preguntas.</h2>
     </div>
-
-    <div class="plans-wrap">
-      <div class="plan">
-        <p class="plan-name">Plan Inicio</p>
-        <p class="plan-vol">5 kg</p>
-        <p class="plan-vol-note">por lote mínimo</p>
-        <ul class="plan-list">
-          <li>Perfil estándar: claro, medio u oscuro</li>
-          <li>Muestra previa de 150 g para aprobación</li>
-          <li>Consultoría básica de tueste incluida</li>
-          <li>Granel o envasado simple disponible</li>
-          <li>Ideal para primeras marcas o pruebas</li>
-        </ul>
+    <div class="quiz-wrap fade-in">
+      <div class="quiz-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del quiz">
+        <div class="quiz-progress-fill" id="quizProgressFill" style="width: 50%"></div>
       </div>
-      <div class="plan featured">
-        <span class="plan-badge">Más solicitado</span>
-        <p class="plan-name">Plan Crecimiento</p>
-        <p class="plan-vol">10 kg</p>
-        <p class="plan-vol-note">por lote mínimo</p>
-        <ul class="plan-list">
-          <li>Todo lo del Plan Inicio</li>
-          <li>Perfil de tueste personalizado</li>
-          <li>Blend exclusivo hasta 2 orígenes</li>
-          <li>Elección de formato de envasado</li>
-          <li>Prioridad en agenda de producción</li>
-        </ul>
+      <!-- Step 1 -->
+      <div class="quiz-step active" id="quizStep1" role="group" aria-labelledby="quizQ1">
+        <p class="quiz-question" id="quizQ1">¿Cuántas tazas de café tomas al día?</p>
+        <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ1">
+          <button class="quiz-option" aria-pressed="false" data-cups="1_taza" onclick="selectCups(this)">1 taza</button>
+          <button class="quiz-option" aria-pressed="false" data-cups="2_tazas" onclick="selectCups(this)">2 tazas</button>
+          <button class="quiz-option" aria-pressed="false" data-cups="3_o_mas" onclick="selectCups(this)">3 o más</button>
+        </div>
       </div>
-      <div class="plan">
-        <p class="plan-name">Plan Escala</p>
-        <p class="plan-vol">20 kg</p>
-        <p class="plan-vol-note">por lote mínimo</p>
-        <ul class="plan-list">
-          <li>Todo lo del Plan Crecimiento</li>
-          <li>Blend hasta 3 orígenes con ficha técnica</li>
-          <li>Precio por kg preferencial</li>
-          <li>Despacho prioritario en Santiago</li>
-          <li>Soporte continuo en ajuste de perfiles</li>
-        </ul>
+      <!-- Step 2 -->
+      <div class="quiz-step" id="quizStep2" role="group" aria-labelledby="quizQ2">
+        <p class="quiz-question" id="quizQ2">¿Cómo preparas tu café?</p>
+        <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ2">
+          <button class="quiz-option" aria-pressed="false" data-grind="moka" onclick="selectGrind(this)">Cafetera italiana (moka)</button>
+          <button class="quiz-option" aria-pressed="false" data-grind="prensa_francesa" onclick="selectGrind(this)">Prensa francesa</button>
+          <button class="quiz-option" aria-pressed="false" data-grind="filtro" onclick="selectGrind(this)">Cafetera de filtro</button>
+          <button class="quiz-option" aria-pressed="false" data-grind="espresso" onclick="selectGrind(this)">Máquina de espresso</button>
+          <button class="quiz-option" aria-pressed="false" data-grind="hervidor" onclick="selectGrind(this)">Solo tengo hervidor</button>
+          <button class="quiz-option" aria-pressed="false" data-grind="no_se" onclick="selectGrind(this)">Aún no sé, sorpréndeme</button>
+        </div>
+        <div class="quiz-nav">
+          <button class="quiz-back" onclick="quizBack()" aria-label="Volver a la pregunta anterior">← Volver</button>
+        </div>
       </div>
-    </div>
-
-    <!-- Monthly plans -->
-    <div class="monthly-intro">
-      <p class="section-kicker">Planes mensuales</p>
-      <h2>Tu tostado, <em>todos los meses</em></h2>
-      <p class="section-desc">Para marcas con ritmo de venta definido. Precio fijo, fecha de despacho acordada y cero complicaciones logísticas.</p>
-    </div>
-
-    <div class="monthly-wrap">
-      <div class="mplan">
-        <p class="mplan-kicker">Regular</p>
-        <p class="mplan-name">10 kg / mes</p>
-        <p class="mplan-vol">Despacho mensual fijo</p>
-        <ul class="mplan-list">
-          <li>Perfil de tueste bloqueado para tu marca</li>
-          <li>Envasado en el formato que elijas</li>
-          <li>Fecha de despacho acordada el mes anterior</li>
-          <li>Soporte por WhatsApp incluido</li>
-        </ul>
+      <!-- Step 3: Result -->
+      <div class="quiz-step" id="quizStep3" aria-live="polite">
+        <div class="quiz-result-card">
+          <p class="quiz-result-tag">Tu recomendación</p>
+          <p class="quiz-result-rec" id="quizResultRec">—</p>
+          <p class="quiz-result-price" id="quizResultPrice">—</p>
+          <a id="quizResultCta"
+             href="#"
+             class="btn btn-whatsapp btn-full"
+             target="_blank" rel="noopener noreferrer"
+             aria-label="Pedir por WhatsApp según recomendación"
+             onclick="dataLayer.push({event:'quiz_completed'});dataLayer.push({event:'whatsapp_click',label:'quiz_result'})">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+            Pedir esto por WhatsApp →
+          </a>
+          <button class="quiz-restart" onclick="quizRestart()" aria-label="Reiniciar el quiz">Volver a empezar</button>
+        </div>
       </div>
-      <div class="mplan featured">
-        <p class="mplan-kicker">Crecimiento</p>
-        <p class="mplan-name">20 kg / mes</p>
-        <p class="mplan-vol">Despacho quincenal o mensual</p>
-        <ul class="mplan-list">
-          <li>Todo lo del plan Regular</li>
-          <li>Precio por kg fijo por 3 meses</li>
-          <li>Posibilidad de dividir en 2 despachos</li>
-          <li>Ajuste de perfil sin costo 1 vez/mes</li>
-          <li>Reporte de lote por cada producción</li>
-        </ul>
-      </div>
-      <div class="mplan">
-        <p class="mplan-kicker">Escala</p>
-        <p class="mplan-name">40 kg / mes</p>
-        <p class="mplan-vol">Despacho a convenir</p>
-        <ul class="mplan-list">
-          <li>Todo lo del plan Crecimiento</li>
-          <li>Precio bloqueado por 6 meses</li>
-          <li>Hasta 2 blends simultáneos</li>
-          <li>Consultoría trimestral de producto</li>
-          <li>Acceso anticipado a nuevos orígenes</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Packaging -->
-    <div class="pkg-grid">
-      <div class="pkg-block">
-        <p class="pkg-title">Envasado</p>
-        <p class="pkg-desc">Distintos formatos según tu canal de venta y el look que quieres para tu marca.</p>
-        <ul class="pkg-list">
-          <li>Bolsa kraft con ventana y válvula de desgasificación</li>
-          <li>Doypack termosellado (250 g, 500 g, 1 kg)</li>
-          <li>Lata metálica reutilizable</li>
-          <li>Granel en bolsa sin imprimir para redistribuidores</li>
-          <li>Molido o en grano, a elección</li>
-        </ul>
-      </div>
-      <div class="pkg-block">
-        <p class="pkg-title">Consultoría de tueste</p>
-        <p class="pkg-desc">Desarrollamos contigo el perfil de sabor que mejor represente a tu marca, desde la primera cata hasta la ficha técnica final.</p>
-        <ul class="pkg-list">
-          <li>Sesión de cata y definición de perfil sensorial</li>
-          <li>Iteración de curvas de tueste hasta aprobación</li>
-          <li>Ficha técnica del producto final</li>
-          <li>Recomendaciones de preparación para tus clientes</li>
-        </ul>
-      </div>
-    </div>
-
-    <div style="margin-top:2.5rem;display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
-      <a href="https://wa.me/56912345678?text=Hola%2C%20quiero%20info%20sobre%20planes%20mensuales" target="_blank" rel="noopener" class="btn-primary">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A11.93 11.93 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.17 1.6 5.97L0 24l6.22-1.57A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.2-1.25-6.22-3.48-8.52ZM12 22c-1.85 0-3.67-.5-5.25-1.44l-.38-.22-3.69.93.98-3.6-.24-.38A9.94 9.94 0 0 1 2 12C2 6.48 6.48 2 12 2c2.67 0 5.17 1.04 7.07 2.93A9.93 9.93 0 0 1 22 12c0 5.52-4.48 10-10 10Zm5.47-7.47c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.79-1.68-2.09-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.87 1.21 3.07.15.2 2.09 3.19 5.06 4.47.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.08 1.76-.72 2.01-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z"/></svg>
-        Quiero un plan mensual
-      </a>
-      <span style="font-size:0.75rem;color:var(--ink-l)">Sin permanencia mínima · Precio fijo por período</span>
-    </div>
-
-  </div>
-</div>
-
-<hr class="divider"/>
-
-<!-- CONTACT BAND -->
-<div id="contacto" class="contact-band">
-  <div class="contact-inner">
-    <div>
-      <h2 class="contact-heading">¿Listo para tostar<br><em>tu propia marca?</em></h2>
-    </div>
-    <div class="contact-links">
-      <a href="https://wa.me/56912345678" target="_blank" rel="noopener" class="contact-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A11.93 11.93 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.17 1.6 5.97L0 24l6.22-1.57A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.2-1.25-6.22-3.48-8.52ZM12 22c-1.85 0-3.67-.5-5.25-1.44l-.38-.22-3.69.93.98-3.6-.24-.38A9.94 9.94 0 0 1 2 12C2 6.48 6.48 2 12 2c2.67 0 5.17 1.04 7.07 2.93A9.93 9.93 0 0 1 22 12c0 5.52-4.48 10-10 10Zm5.47-7.47c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.79-1.68-2.09-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.87 1.21 3.07.15.2 2.09 3.19 5.06 4.47.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.08 1.76-.72 2.01-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z"/></svg>
-        +56 9 1234 5678
-      </a>
-      <a href="mailto:contacto@maillardroasters.cl" class="contact-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="4" width="20" height="16" rx="2"/>
-          <path d="M2 7l10 7 10-7"/>
-        </svg>
-        contacto@maillardroasters.cl
-      </a>
-      <a href="https://instagram.com/maillardroasters" target="_blank" rel="noopener" class="contact-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="2" width="20" height="20" rx="5"/>
-          <circle cx="12" cy="12" r="4"/>
-          <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
-        </svg>
-        @maillardroasters
-      </a>
     </div>
   </div>
-</div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" aria-labelledby="how-heading">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 id="how-heading">Más simple que preparar instantáneo. En serio.</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="card fade-in">
+        <div class="step-number" aria-hidden="true">01</div>
+        <p class="step-title">Elige tu café</p>
+        <p class="step-body">Selecciona origen, formato y molienda. O usa el quiz y te lo decimos nosotros.</p>
+      </div>
+      <div class="card fade-in">
+        <div class="step-number" aria-hidden="true">02</div>
+        <p class="step-title">Lo molemos para ti</p>
+        <p class="step-body">Según tu método de preparación. Sin molinillo, sin drama.</p>
+      </div>
+      <div class="card fade-in">
+        <div class="step-number" aria-hidden="true">03</div>
+        <p class="step-title">Lo recibes rápido</p>
+        <p class="step-body">Despacho en días hábiles en Santiago. Próximamente en más ciudades.</p>
+      </div>
+      <div class="card fade-in">
+        <div class="step-number" aria-hidden="true">04</div>
+        <p class="step-title">Lo preparas igual que siempre</p>
+        <p class="step-body">Misma rutina de siempre. Resultado completamente diferente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products" aria-labelledby="products-heading">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 id="products-heading">Elige tu café</h2>
+    </div>
+    <p class="section-sub fade-in">Todos disponibles en grano o molido a pedido según tu método.</p>
+    <div class="products-grid">
+      <!-- 250g -->
+      <div class="card product-card fade-in" aria-label="Producto 250g">
+        <!-- replace with: 250g Roast bag on dark surface -->
+        <img src="https://picsum.photos/600/600?random=1" alt="Bolsa Roast 250g" class="product-img" loading="lazy" />
+        <p class="product-label">Para empezar</p>
+        <p class="product-size">250g</p>
+        <p class="product-desc">Ideal si quieres probar Roast por primera vez.</p>
+        <div class="product-selectors">
+          <select id="origin250" aria-label="Selecciona origen del café 250g" onchange="updateProductLink('250')">
+            <option value="Perú">Origen: Perú</option>
+            <option value="Brasil">Origen: Brasil</option>
+            <option value="Colombia">Origen: Colombia</option>
+            <option value="Panamá">Origen: Panamá</option>
+          </select>
+          <select id="grind250" aria-label="Selecciona molienda para 250g" onchange="updateProductLink('250')">
+            <option value="espresso">Molido para espresso</option>
+            <option value="moka">Molido para moka</option>
+            <option value="prensa francesa">Molido para prensa francesa</option>
+            <option value="filtro / pour over">Molido para filtro / pour over</option>
+            <option value="chemex">Molido para chemex</option>
+            <option value="aeropress">Molido para aeropress</option>
+            <option value="grano entero">En grano entero</option>
+          </select>
+        </div>
+        <p class="product-price">$7.000 <span>CLP</span></p>
+        <a id="waLink250"
+           href="#"
+           class="btn btn-whatsapp"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Pedir 250g por WhatsApp"
+           onclick="dataLayer.push({event:'product_card_click',format:'250g'});dataLayer.push({event:'whatsapp_click',label:'product_250g'})">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+          Pedir por WhatsApp
+        </a>
+      </div>
+      <!-- 500g FEATURED -->
+      <div class="card product-card card-featured fade-in" aria-label="Producto 500g - el más popular" style="position:relative;">
+        <div class="product-badge-wrap">
+          <span class="badge" aria-label="Más popular">MÁS POPULAR</span>
+        </div>
+        <!-- replace with: 500g Roast bag on dark surface -->
+        <img src="https://picsum.photos/600/600?random=2" alt="Bolsa Roast 500g" class="product-img" loading="lazy" />
+        <p class="product-label">El más popular</p>
+        <p class="product-size">500g</p>
+        <p class="product-desc">El favorito. Rinde el mes completo si tomas 1–2 tazas al día.</p>
+        <div class="product-selectors">
+          <select id="origin500" aria-label="Selecciona origen del café 500g" onchange="updateProductLink('500')">
+            <option value="Colombia">Origen: Colombia</option>
+            <option value="Perú">Origen: Perú</option>
+            <option value="Brasil">Origen: Brasil</option>
+            <option value="Panamá">Origen: Panamá</option>
+          </select>
+          <select id="grind500" aria-label="Selecciona molienda para 500g" onchange="updateProductLink('500')">
+            <option value="moka">Molido para moka</option>
+            <option value="espresso">Molido para espresso</option>
+            <option value="prensa francesa">Molido para prensa francesa</option>
+            <option value="filtro / pour over">Molido para filtro / pour over</option>
+            <option value="chemex">Molido para chemex</option>
+            <option value="aeropress">Molido para aeropress</option>
+            <option value="grano entero">En grano entero</option>
+          </select>
+        </div>
+        <p class="product-price">$12.500 <span>CLP</span></p>
+        <a id="waLink500"
+           href="#"
+           class="btn btn-whatsapp"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Pedir 500g por WhatsApp"
+           onclick="dataLayer.push({event:'product_card_click',format:'500g'});dataLayer.push({event:'whatsapp_click',label:'product_500g'})">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+          Pedir por WhatsApp
+        </a>
+      </div>
+      <!-- 1kg -->
+      <div class="card product-card fade-in" aria-label="Producto 1kg - mejor precio">
+        <div class="product-badge-wrap">
+          <span class="badge" aria-label="Mejor precio por gramo">MEJOR PRECIO/GRAMO</span>
+        </div>
+        <!-- replace with: 1kg Roast bag on dark surface -->
+        <img src="https://picsum.photos/600/600?random=3" alt="Bolsa Roast 1kg" class="product-img" loading="lazy" />
+        <p class="product-label">El más conveniente</p>
+        <p class="product-size">1kg</p>
+        <p class="product-desc">El mejor precio por gramo. Para los que ya saben lo que quieren.</p>
+        <div class="product-selectors">
+          <select id="origin1kg" aria-label="Selecciona origen del café 1kg" onchange="updateProductLink('1kg')">
+            <option value="Brasil">Origen: Brasil</option>
+            <option value="Perú">Origen: Perú</option>
+            <option value="Colombia">Origen: Colombia</option>
+            <option value="Panamá">Origen: Panamá</option>
+          </select>
+          <select id="grind1kg" aria-label="Selecciona molienda para 1kg" onchange="updateProductLink('1kg')">
+            <option value="filtro / pour over">Molido para filtro / pour over</option>
+            <option value="espresso">Molido para espresso</option>
+            <option value="moka">Molido para moka</option>
+            <option value="prensa francesa">Molido para prensa francesa</option>
+            <option value="chemex">Molido para chemex</option>
+            <option value="aeropress">Molido para aeropress</option>
+            <option value="grano entero">En grano entero</option>
+          </select>
+        </div>
+        <p class="product-price">$22.000 <span>CLP</span></p>
+        <a id="waLink1kg"
+           href="#"
+           class="btn btn-whatsapp"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Pedir 1kg por WhatsApp"
+           onclick="dataLayer.push({event:'product_card_click',format:'1kg'});dataLayer.push({event:'whatsapp_click',label:'product_1kg'})">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+          Pedir por WhatsApp
+        </a>
+      </div>
+    </div>
+    <p class="free-shipping-note fade-in">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      Envío gratis en Santiago en compras desde $22.000 CLP
+    </p>
+  </div>
+</section>
+
+<!-- COUNTER -->
+<section id="counter" aria-labelledby="counter-heading">
+  <div class="counter-noise" aria-hidden="true"></div>
+  <div class="container counter-inner">
+    <span class="counter-number" id="counterNumber" aria-live="polite" aria-label="Kilos tostados">0</span>
+    <span class="counter-unit" aria-hidden="true">kg</span>
+    <p class="counter-headline" id="counter-heading">Kilos tostados y contando</p>
+    <p style="color:var(--text-muted);margin-top:0.5rem;font-size:0.9375rem;">Cada lote tostado para que llegue fresco a tu taza.</p>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews" aria-labelledby="reviews-heading">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 id="reviews-heading">Lo que dicen quienes ya dejaron el instantáneo</h2>
+    </div>
+    <div class="carousel-wrap fade-in">
+      <div class="carousel-track" id="carouselTrack" aria-label="Reseñas de clientes">
+        <div class="review-card" role="article" aria-label="Reseña de Catalina R.">
+          <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
+          <p class="review-text">"No puedo creer que tomé café instantáneo tanto tiempo. Roast es otro nivel y lo preparo igual que antes."</p>
+          <p class="review-author">Catalina R.</p>
+          <p class="review-location">Santiago</p>
+        </div>
+        <div class="review-card" role="article" aria-label="Reseña de Matías F.">
+          <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
+          <p class="review-text">"Le pedí el molido para moka y quedó perfecto desde el primer día. Súper fácil todo."</p>
+          <p class="review-author">Matías F.</p>
+          <p class="review-location">Las Condes</p>
+        </div>
+        <div class="review-card" role="article" aria-label="Reseña de Valentina G.">
+          <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
+          <p class="review-text">"El de Colombia es increíble. Y llegó rapidísimo. Ya pedí el kilo."</p>
+          <p class="review-author">Valentina G.</p>
+          <p class="review-location">Ñuñoa</p>
+        </div>
+        <div class="review-card" role="article" aria-label="Reseña de Diego P.">
+          <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
+          <p class="review-text">"Pensé que el café real iba a ser complicado. Para nada. Me explicaron todo por WhatsApp en 2 minutos."</p>
+          <p class="review-author">Diego P.</p>
+          <p class="review-location">Providencia</p>
+        </div>
+        <div class="review-card" role="article" aria-label="Reseña de Isidora M.">
+          <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
+          <p class="review-text">"El quiz fue genial, me recomendaron el tamaño justo. Justo lo que necesitaba."</p>
+          <p class="review-author">Isidora M.</p>
+          <p class="review-location">Santiago Centro</p>
+        </div>
+      </div>
+      <div class="carousel-dots" id="carouselDots" role="tablist" aria-label="Navegación de reseñas"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SUBSCRIPTION TEASER -->
+<section id="subscription" aria-labelledby="sub-heading">
+  <div class="container">
+    <div class="sub-card fade-in">
+      <div class="sub-inner">
+        <div>
+          <div class="sub-badge"><span class="badge badge-soon">PRÓXIMAMENTE</span></div>
+          <h2 class="sub-headline" id="sub-heading">Nunca más te quedes sin café.</h2>
+          <p class="sub-body">Pronto podrás suscribirte y recibir tu Roast automáticamente. Elige tu frecuencia: semanal, quincenal o mensual. Sin complicaciones, sin olvidarte.</p>
+        </div>
+        <div>
+          <div class="sub-freqs" aria-label="Opciones de frecuencia">
+            <span class="sub-freq">Semanal</span>
+            <span class="sub-freq">Quincenal</span>
+            <span class="sub-freq">Mensual</span>
+          </div>
+          <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20que%20me%20avisen%20cuando%20lancen%20las%20suscripciones%20%F0%9F%99%8C"
+             class="btn btn-secondary"
+             target="_blank" rel="noopener noreferrer"
+             aria-label="Avisarme cuando esté disponible la suscripción"
+             onclick="dataLayer.push({event:'subscription_interest'});dataLayer.push({event:'whatsapp_click',label:'subscription_teaser'})">
+            Avisarme cuando esté disponible
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COVERAGE -->
+<section id="coverage" aria-labelledby="coverage-heading">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 id="coverage-heading">Hoy en Santiago. Pronto en todo Chile.</h2>
+    </div>
+    <div class="coverage-grid fade-in" role="list" aria-label="Ciudades de cobertura">
+      <div class="coverage-badge-item active" role="listitem" aria-label="Santiago - activo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div>
+          <p style="font-weight:600;color:var(--text-primary)">Santiago</p>
+          <p style="font-size:0.8125rem;color:var(--accent)">Región Metropolitana</p>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="coverage-badge-item soon" role="listitem" aria-label="Talca - próximamente">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div>
+          <p style="font-weight:600;">Talca</p>
+          <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
+        </div>
+      </div>
+      <div class="coverage-badge-item soon" role="listitem" aria-label="Chillán - próximamente">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div>
+          <p style="font-weight:600;">Chillán</p>
+          <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
+        </div>
+      </div>
+      <div class="coverage-badge-item soon" role="listitem" aria-label="Puerto Varas - próximamente">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div>
+          <p style="font-weight:600;">Puerto Varas</p>
+          <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" aria-labelledby="faq-heading">
+  <div class="container">
+    <div class="section-header fade-in">
+      <h2 id="faq-heading">Preguntas frecuentes</h2>
+    </div>
+    <div class="faq-list fade-in" id="faqList">
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a1">
+          ¿Necesito un molinillo?
+          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-a1" role="region"><div class="faq-answer-inner">No. Nosotros molemos el café según tu método de preparación. Solo dinos cómo lo preparas y listo.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a2">
+          ¿Cómo sé qué café elegir?
+          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-a2" role="region"><div class="faq-answer-inner">Haz el quiz en esta misma página y te recomendamos el formato y molienda exactos. O escríbenos por WhatsApp y te ayudamos en 2 minutos.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a3">
+          ¿Cuánto dura una bolsa?
+          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-a3" role="region"><div class="faq-answer-inner">Depende de cuántas tazas tomas. Una bolsa de 500g dura entre 2 y 4 semanas para 1–2 tazas diarias.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a4">
+          ¿Hacen envíos fuera de Santiago?
+          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-a4" role="region"><div class="faq-answer-inner">Hoy despachamos en la Región Metropolitana. Muy pronto llegaremos a Talca, Chillán y Puerto Varas.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a5">
+          ¿Cuándo llega mi pedido?
+          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-a5" role="region"><div class="faq-answer-inner">Despachamos rápido. Recibirás tu café en días hábiles en Santiago.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a6">
+          ¿El envío es gratis?
+          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-a6" role="region"><div class="faq-answer-inner">Sí, el envío es gratis en Santiago en compras desde $22.000 CLP.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a7">
+          ¿Puedo pedir en grano sin moler?
+          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-a7" role="region"><div class="faq-answer-inner">Claro, también vendemos el café en grano entero si ya tienes tu propio molinillo.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a8">
+          ¿Venden cápsulas Nespresso?
+          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="faq-a8" role="region"><div class="faq-answer-inner">Por ahora no. Nos especializamos en café en grano y molido fresco.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section id="final-cta" aria-labelledby="final-heading">
+  <h2 id="final-heading">¿Listo para dejar el instantáneo?</h2>
+  <p class="final-sub">Tu primer café Roast está a un mensaje de distancia.</p>
+  <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
+     class="btn btn-final"
+     target="_blank" rel="noopener noreferrer"
+     aria-label="Pedir por WhatsApp ahora"
+     onclick="dataLayer.push({event:'whatsapp_click',label:'final_cta'})">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="#FF6B35" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+    Pedir por WhatsApp ahora
+  </a>
+</section>
 
 <!-- FOOTER -->
 <footer>
-  <span class="footer-copy">© 2025 Maillard Roasters · Todos los derechos reservados</span>
-  <span class="footer-right">Próximamente · Coming soon</span>
+  <div class="footer-inner">
+    <div>
+      <p class="footer-logo">Roast<span>.</span></p>
+      <p class="footer-tagline">Tu primer café real.</p>
+    </div>
+    <nav class="footer-links" aria-label="Links legales">
+      <a href="#">Términos y condiciones</a>
+      <a href="#">Política de privacidad</a>
+    </nav>
+    <div class="footer-contact">
+      <a href="https://wa.me/56951172813" class="footer-wa-link" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+        +56 9 5117 2813
+      </a>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2025 Roast. Todos los derechos reservados.</div>
 </footer>
 
+<!-- STICKY MOBILE CTA -->
+<div id="sticky-cta" role="complementary" aria-label="Llamado a la acción móvil">
+  <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
+     class="btn btn-whatsapp"
+     target="_blank" rel="noopener noreferrer"
+     aria-label="Pedir por WhatsApp"
+     onclick="dataLayer.push({event:'whatsapp_click',label:'sticky_mobile'})">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+    Pedir por WhatsApp
+  </a>
+</div>
+
 <script>
-  const BASE_KG = 752;
-  const BASE_DATE = new Date('2025-01-01T00:00:00');
-  const KG_PER_MS = 1 / (8 * 60 * 60 * 1000);
+  // ===== dataLayer init =====
+  window.dataLayer = window.dataLayer || [];
 
-  function getKg() {
-    return Math.floor(BASE_KG + (Date.now() - BASE_DATE.getTime()) * KG_PER_MS);
+  // ===== QUIZ STATE =====
+  var quizCups = null;
+  var quizGrind = null;
+  var PRICE_MAP = { '1_taza': { format: '250g', price: '$7.000' }, '2_tazas': { format: '500g', price: '$12.500' }, '3_o_mas': { format: '1kg', price: '$22.000' } };
+  var GRIND_MAP = {
+    'moka': 'molido para moka',
+    'prensa_francesa': 'molido grueso para prensa francesa',
+    'filtro': 'molido medio para filtro',
+    'espresso': 'molido fino para espresso',
+    'hervidor': 'molido grueso (ideal para hervidor)',
+    'no_se': 'molido versátil para filtro — el más fácil de empezar'
+  };
+
+  function showQuizStep(step) {
+    document.querySelectorAll('.quiz-step').forEach(function(s) { s.classList.remove('active'); });
+    var el = document.getElementById('quizStep' + step);
+    if (el) el.classList.add('active');
+    var fills = { 1: 33, 2: 66, 3: 100 };
+    var fill = document.getElementById('quizProgressFill');
+    if (fill) { fill.style.width = fills[step] + '%'; fill.setAttribute('aria-valuenow', fills[step]); }
   }
 
-  function fmt(n) { return n.toLocaleString('es-CL'); }
-
-  const el = document.getElementById('counter');
-  const target = getKg();
-  const start = Math.max(BASE_KG, target - 90);
-  let cur = start;
-  const step = Math.max(1, Math.ceil((target - start) / 55));
-
-  function tick() {
-    cur = Math.min(cur + step, target);
-    el.textContent = fmt(cur);
-    if (cur < target) requestAnimationFrame(tick);
+  function selectCups(btn) {
+    document.querySelectorAll('#quizStep1 .quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed', 'false'); });
+    btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', 'true');
+    quizCups = btn.getAttribute('data-cups');
+    dataLayer.push({ event: 'quiz_started' });
+    setTimeout(function() { showQuizStep(2); }, 200);
   }
 
-  setTimeout(() => requestAnimationFrame(tick), 500);
-  setInterval(() => { el.textContent = fmt(getKg()); }, 60000);
+  function selectGrind(btn) {
+    document.querySelectorAll('#quizStep2 .quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed', 'false'); });
+    btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', 'true');
+    quizGrind = btn.getAttribute('data-grind');
+    setTimeout(function() { showQuizResult(); }, 200);
+  }
+
+  function showQuizResult() {
+    if (!quizCups || !quizGrind) return;
+    var rec = PRICE_MAP[quizCups];
+    var grindLabel = GRIND_MAP[quizGrind] || 'molido versátil';
+    var recText = rec.format + ' de café ' + grindLabel;
+    document.getElementById('quizResultRec').textContent = recText;
+    document.getElementById('quizResultPrice').textContent = rec.price + ' CLP';
+    var msg = 'Hola Roast! 👋 El quiz me recomendó:\n• ' + recText + '\n¿Tienen disponibilidad?';
+    document.getElementById('quizResultCta').href = 'https://wa.me/56951172813?text=' + encodeURIComponent(msg);
+    showQuizStep(3);
+  }
+
+  function quizBack() { showQuizStep(1); }
+
+  function quizRestart() {
+    quizCups = null; quizGrind = null;
+    document.querySelectorAll('.quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed', 'false'); });
+    showQuizStep(1);
+  }
+
+  // ===== PRODUCT WHATSAPP LINKS =====
+  function buildProductLink(format, originId, grindId) {
+    var origin = document.getElementById(originId) ? document.getElementById(originId).value : '';
+    var grind = document.getElementById(grindId) ? document.getElementById(grindId).value : '';
+    var msg = 'Hola Roast! 👋 Quiero pedir:\n• ' + format + ' de café ' + grind + '\n• Origen: ' + origin + '\n¿Tienen disponibilidad?';
+    return 'https://wa.me/56951172813?text=' + encodeURIComponent(msg);
+  }
+
+  function updateProductLink(size) {
+    if (size === '250') {
+      var el = document.getElementById('waLink250');
+      if (el) el.href = buildProductLink('250g', 'origin250', 'grind250');
+    } else if (size === '500') {
+      var el = document.getElementById('waLink500');
+      if (el) el.href = buildProductLink('500g', 'origin500', 'grind500');
+    } else if (size === '1kg') {
+      var el = document.getElementById('waLink1kg');
+      if (el) el.href = buildProductLink('1kg', 'origin1kg', 'grind1kg');
+    }
+  }
+
+  function initProductLinks() {
+    updateProductLink('250');
+    updateProductLink('500');
+    updateProductLink('1kg');
+  }
+
+  // ===== COUNTER ANIMATION =====
+  var counterDone = false;
+  var counterTarget = Math.floor(Math.random() * 501) + 500;
+
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function animateCounter() {
+    if (counterDone) return;
+    counterDone = true;
+    var start = null;
+    var duration = 2000;
+    var el = document.getElementById('counterNumber');
+    function step(timestamp) {
+      if (!start) start = timestamp;
+      var progress = Math.min((timestamp - start) / duration, 1);
+      var eased = easeOutCubic(progress);
+      el.textContent = Math.floor(eased * counterTarget);
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = counterTarget;
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  var counterObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) animateCounter();
+    });
+  }, { threshold: 0.4 });
+  var counterEl = document.getElementById('counter');
+  if (counterEl) counterObserver.observe(counterEl);
+
+  // ===== CAROUSEL =====
+  var carouselTrack = document.getElementById('carouselTrack');
+  var carouselDotsContainer = document.getElementById('carouselDots');
+  var carouselInterval = null;
+  var currentDot = 0;
+  var isHovered = false;
+
+  function buildDots() {
+    if (!carouselTrack || !carouselDotsContainer) return;
+    var cards = carouselTrack.querySelectorAll('.review-card');
+    cards.forEach(function(_, i) {
+      var dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Ir a reseña ' + (i + 1));
+      dot.setAttribute('role', 'tab');
+      dot.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+      dot.addEventListener('click', function() { scrollToCard(i); });
+      carouselDotsContainer.appendChild(dot);
+    });
+  }
+
+  function scrollToCard(index) {
+    if (!carouselTrack) return;
+    var cards = carouselTrack.querySelectorAll('.review-card');
+    if (!cards[index]) return;
+    carouselTrack.scrollTo({ left: cards[index].offsetLeft, behavior: 'smooth' });
+    updateDot(index);
+  }
+
+  function updateDot(index) {
+    currentDot = index;
+    var dots = carouselDotsContainer ? carouselDotsContainer.querySelectorAll('.carousel-dot') : [];
+    dots.forEach(function(d, i) {
+      d.classList.toggle('active', i === index);
+      d.setAttribute('aria-selected', i === index ? 'true' : 'false');
+    });
+  }
+
+  function autoScroll() {
+    if (!carouselTrack || isHovered) return;
+    var cards = carouselTrack.querySelectorAll('.review-card');
+    var next = (currentDot + 1) % cards.length;
+    scrollToCard(next);
+  }
+
+  function startCarousel() {
+    carouselInterval = setInterval(autoScroll, 4000);
+  }
+
+  if (carouselTrack) {
+    buildDots();
+    startCarousel();
+    carouselTrack.addEventListener('mouseenter', function() { isHovered = true; });
+    carouselTrack.addEventListener('mouseleave', function() { isHovered = false; });
+    carouselTrack.addEventListener('scroll', function() {
+      var cards = carouselTrack.querySelectorAll('.review-card');
+      var scrollLeft = carouselTrack.scrollLeft;
+      var closest = 0;
+      var minDist = Infinity;
+      cards.forEach(function(card, i) {
+        var dist = Math.abs(card.offsetLeft - scrollLeft);
+        if (dist < minDist) { minDist = dist; closest = i; }
+      });
+      updateDot(closest);
+    });
+  }
+
+  // ===== ACCORDION (one open at a time) =====
+  var faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(function(item) {
+    var btn = item.querySelector('.faq-btn');
+    var answer = item.querySelector('.faq-answer');
+    if (!btn || !answer) return;
+    btn.addEventListener('click', function() {
+      var isOpen = item.classList.contains('open');
+      faqItems.forEach(function(i) {
+        i.classList.remove('open');
+        var b = i.querySelector('.faq-btn');
+        var a = i.querySelector('.faq-answer');
+        if (b) b.setAttribute('aria-expanded', 'false');
+        if (a) a.style.maxHeight = null;
+      });
+      if (!isOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // ===== FADE IN ON SCROLL =====
+  var fadeEls = document.querySelectorAll('.fade-in');
+  var fadeObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        fadeObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  fadeEls.forEach(function(el) { fadeObserver.observe(el); });
+
+  // ===== INIT =====
+  initProductLinks();
 </script>
 </body>
 </html>
