@@ -340,32 +340,6 @@
       font-family: 'Inter', sans-serif;
     }
     .quiz-restart:hover { color: var(--text-secondary); }
-    /* ===== HOW IT WORKS ===== */
-    #how-it-works { background: var(--bg-primary); }
-    #how-it-works .section-header { text-align: center; margin-bottom: 3rem; }
-    .steps-grid {
-      display: grid;
-      gap: 1.5rem;
-      grid-template-columns: 1fr;
-    }
-    @media (min-width: 768px) { .steps-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 1280px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
-    .step-number {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 3.5rem;
-      color: var(--accent);
-      opacity: 0.25;
-      line-height: 1;
-      margin-bottom: 0.75rem;
-    }
-    .step-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 600;
-      font-size: 1.125rem;
-      margin-bottom: 0.5rem;
-    }
-    .step-body { color: var(--text-secondary); font-size: 0.9375rem; }
     /* ===== PRODUCTS ===== */
     #products { background: var(--bg-surface); }
     #products .section-header { text-align: center; margin-bottom: 0.75rem; }
@@ -547,8 +521,11 @@
       flex-wrap: wrap;
       gap: 1rem;
       justify-content: center;
-      max-width: 700px;
+      max-width: 100%;
       margin: 0 auto;
+    }
+    @media (min-width: 768px) {
+      .coverage-grid { flex-wrap: nowrap; }
     }
     .coverage-badge-item {
       display: flex;
@@ -699,7 +676,7 @@
   <div class="hero-bg" role="img" aria-label="Café siendo vertido en taza oscura"></div>
   <div class="hero-content">
     <span class="hero-eyebrow">Deja el instantáneo atrás.</span>
-    <h1 class="hero-headline">Tu café del desayuno merece más que agua tibia con colorante.</h1>
+    <h1 class="hero-headline">Tu desayuno merece más que agua tibia con colorante.</h1>
     <p class="hero-sub">Roast es tu primer paso hacia el café de verdad. Más sabor, más cafeína, igual de simple de hacer.</p>
     <div class="hero-ctas">
       <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
@@ -792,37 +769,6 @@
           </a>
           <button class="quiz-restart" onclick="quizRestart()" aria-label="Reiniciar el quiz">Volver a empezar</button>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section id="how-it-works" aria-labelledby="how-heading">
-  <div class="container">
-    <div class="section-header fade-in">
-      <h2 id="how-heading">Más simple que preparar instantáneo. En serio.</h2>
-    </div>
-    <div class="steps-grid">
-      <div class="card fade-in">
-        <div class="step-number" aria-hidden="true">01</div>
-        <p class="step-title">Elige tu café</p>
-        <p class="step-body">Selecciona origen, formato y molienda. O usa el quiz y te lo decimos nosotros.</p>
-      </div>
-      <div class="card fade-in">
-        <div class="step-number" aria-hidden="true">02</div>
-        <p class="step-title">Lo molemos para ti</p>
-        <p class="step-body">Según tu método de preparación. Sin molinillo, sin drama.</p>
-      </div>
-      <div class="card fade-in">
-        <div class="step-number" aria-hidden="true">03</div>
-        <p class="step-title">Lo recibes rápido</p>
-        <p class="step-body">Despacho en días hábiles en Santiago. Próximamente en más ciudades.</p>
-      </div>
-      <div class="card fade-in">
-        <div class="step-number" aria-hidden="true">04</div>
-        <p class="step-title">Lo preparas igual que siempre</p>
-        <p class="step-body">Misma rutina de siempre. Resultado completamente diferente.</p>
       </div>
     </div>
   </div>
