@@ -55,3 +55,11 @@
 - Se refresco el repo con `git pull --rebase origin main`; `main` siguio alineado con `origin/main` antes de editar.
 - Se elimino el CTA de WhatsApp del header y se limpio el CSS asociado a `nav-cta` para no dejar estilos muertos.
 - Validacion realizada con parseo HTML via `python3`, `git diff --check` y revision por busqueda de referencias para confirmar que el CTA solo se removio del header y no de otros bloques donde sigue en uso.
+
+## 2026-04-07 - Altura fija del quiz y nuevo logo textual en header
+
+- Se refresco el repo con `git pull --rebase origin main`; `main` ya estaba alineado con `origin/main` antes de editar.
+- Se reemplazo el logo del header por un wordmark textual `Roast.` con punto en acento naranja, manteniendo el enlace al inicio y una alineacion limpia con el boton hamburguesa.
+- Se envolvieron los pasos del quiz en un contenedor persistente y se agrego `syncQuizPanelHeight()` para fijar la altura del panel derecho en escritorio usando como referencia visual el paso de recomendacion.
+- La altura minima del quiz se recalcula al cargar, al cambiar de paso, al redimensionar la ventana y al terminar de cargar las fuentes; bajo `900px` vuelve a altura automatica.
+- Validacion realizada con parseo HTML via `python3`, `git diff --check` y verificacion por HTTP con `python3 -m http.server` de la presencia del nuevo wordmark, del contenedor `quizStepStack` y de la logica `syncQuizPanelHeight`; no se ejecuto prueba visual automatizada en navegador.
