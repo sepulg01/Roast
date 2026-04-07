@@ -835,6 +835,32 @@
       font-weight: 500;
     }
     .footer-wa-link:hover { color: var(--wa-green-hover); }
+    .footer-socials {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .footer-social-link {
+      width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      transition: color 200ms ease, border-color 200ms ease, background-color 200ms ease;
+    }
+    .footer-social-link:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(255, 107, 53, 0.08);
+    }
+    .footer-social-link:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+    .footer-social-link svg { flex-shrink: 0; }
     .footer-bottom {
       max-width: 1200px;
       margin: 2rem auto 0;
@@ -1240,7 +1266,7 @@
           ¿Necesito un molinillo?
           <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="faq-answer" id="faq-a1" role="region"><div class="faq-answer-inner">No. Nosotros molemos el café según tu método de preparación. Solo dinos cómo lo preparas y listo.</div></div>
+        <div class="faq-answer" id="faq-a1" role="region"><div class="faq-answer-inner">No. Nosotros molemos el café según tu método de preparación. Sólo dinos cómo quieres prepararlo y listo.</div></div>
       </div>
       <div class="faq-item">
         <button class="faq-btn" aria-expanded="false" aria-controls="faq-a2">
@@ -1261,14 +1287,14 @@
           ¿Hacen envíos fuera de Santiago?
           <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="faq-answer" id="faq-a4" role="region"><div class="faq-answer-inner">Hoy despachamos en la Región Metropolitana. Muy pronto llegaremos a Talca, Chillán y Puerto Varas.</div></div>
+        <div class="faq-answer" id="faq-a4" role="region"><div class="faq-answer-inner">Por ahora despachamos en la Región Metropolitana. Muy pronto llegaremos a Talca, Chillán y Puerto Varas. Consúltanos por whatsapp a ver si llegamos a tu ciudad.</div></div>
       </div>
       <div class="faq-item">
         <button class="faq-btn" aria-expanded="false" aria-controls="faq-a5">
           ¿Cuándo llega mi pedido?
           <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="faq-answer" id="faq-a5" role="region"><div class="faq-answer-inner">Despachamos rápido. Recibirás tu café en días hábiles en Santiago.</div></div>
+        <div class="faq-answer" id="faq-a5" role="region"><div class="faq-answer-inner">Despachamos rápido. Podrías recibir tu café entre cero a dos días hábiles en Santiago.</div></div>
       </div>
       <div class="faq-item">
         <button class="faq-btn" aria-expanded="false" aria-controls="faq-a6">
@@ -1286,7 +1312,7 @@
       </div>
       <div class="faq-item">
         <button class="faq-btn" aria-expanded="false" aria-controls="faq-a8">
-          ¿Venden cápsulas Nespresso?
+          ¿Venden cápsulas Nespresso o Dolce Gusto?
           <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="faq-answer" id="faq-a8" role="region"><div class="faq-answer-inner">Por ahora no. Nos especializamos en café en grano y molido fresco.</div></div>
@@ -1327,6 +1353,18 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
         +56 9 5117 2813
       </a>
+      <div class="footer-socials" aria-label="Redes sociales">
+        <a href="https://www.instagram.com/caferoast.cl"
+           class="footer-social-link"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Visitar Instagram de Cafe Roast">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+            <circle cx="12" cy="12" r="4"></circle>
+            <circle cx="17.5" cy="6.5" r="1"></circle>
+          </svg>
+        </a>
+      </div>
       <div class="footer-policies" aria-label="Links legales">
         <a href="./policies/terminos-y-condiciones.html">Términos y condiciones</a>
         <a href="./policies/politica-de-privacidad.html">Política de privacidad</a>
