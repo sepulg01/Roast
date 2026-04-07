@@ -91,6 +91,38 @@
       border: 1px solid var(--border);
     }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .icon-link {
+      width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--text-secondary);
+      transition: color 200ms ease, border-color 200ms ease, background-color 200ms ease, transform 150ms ease;
+      text-decoration: none;
+    }
+    .icon-link:hover { transform: translateY(-2px); }
+    .icon-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .icon-link svg { flex-shrink: 0; }
+    .icon-link-accent:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(255, 107, 53, 0.08);
+    }
+    .icon-link-whatsapp {
+      color: var(--wa-green);
+      border-color: rgba(37, 211, 102, 0.28);
+      background: rgba(37, 211, 102, 0.08);
+    }
+    .icon-link-whatsapp:hover {
+      color: #fff;
+      border-color: var(--wa-green-hover);
+      background: var(--wa-green-hover);
+    }
+    .icon-link-whatsapp:focus-visible { outline-color: var(--wa-green); }
     .hero-cta-secondary {
       background: rgba(245, 240, 232, 0.12);
       color: var(--text-primary);
@@ -145,7 +177,7 @@
     .nav-logo-img {
       display: block;
       width: auto;
-      height: clamp(1.7rem, 4vw, 2rem);
+      height: clamp(1.95rem, 4.6vw, 2.35rem);
       filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.24));
     }
     .nav-logo-placeholder {
@@ -319,11 +351,6 @@
       color: var(--text-muted);
       padding: 1rem 0 0.5rem;
     }
-    .nav-drawer .drawer-wa {
-      margin-top: auto;
-      padding-top: 1.25rem;
-      border-top: 1px solid rgba(245, 240, 232, 0.08);
-    }
     /* ===== HERO ===== */
     #hero {
       min-height: 100vh;
@@ -406,12 +433,35 @@
     #quiz { background: var(--bg-surface); }
     #quiz .section-header { text-align: center; margin-bottom: 2.5rem; }
     .quiz-wrap {
-      background: var(--bg-surface);
-      border-radius: 16px;
-      padding: clamp(1.5rem, 4vw, 3rem);
-      max-width: 640px;
+      background: rgba(13, 13, 13, 0.74);
+      border-radius: 20px;
+      max-width: 980px;
       margin: 0 auto;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(245, 240, 232, 0.12);
+      overflow: hidden;
+      box-shadow: 0 28px 64px rgba(0, 0, 0, 0.24);
+    }
+    @media (min-width: 900px) {
+      .quiz-wrap {
+        display: grid;
+        grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.1fr);
+      }
+    }
+    .quiz-visual {
+      min-height: 220px;
+      background:
+        linear-gradient(180deg, rgba(13, 13, 13, 0.14), rgba(13, 13, 13, 0.42)),
+        url("https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1200&q=80");
+      background-size: cover;
+      background-position: center;
+    }
+    @media (min-width: 900px) {
+      .quiz-visual { min-height: 100%; }
+    }
+    .quiz-panel {
+      padding: clamp(1.5rem, 4vw, 3rem);
+      background: rgba(26, 26, 26, 0.92);
+      backdrop-filter: blur(8px);
     }
     .quiz-progress {
       background: var(--border);
@@ -569,6 +619,19 @@
       margin-bottom: 1.25rem;
     }
     .product-price span { font-size: 1rem; font-weight: 400; color: var(--text-secondary); }
+    .product-purchase-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: auto;
+    }
+    .product-purchase-row .product-price { margin-bottom: 0; }
+    .product-cta-icon {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
     .free-shipping-note {
       text-align: center;
       margin-top: 2rem;
@@ -652,18 +715,19 @@
     }
     .carousel-dot.active { background: var(--accent); }
     /* ===== SUBSCRIPTION TEASER ===== */
-    #subscription { background: var(--bg-primary); }
+    #subscription { background: var(--accent); }
     .sub-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
+      background: rgba(13, 13, 13, 0.88);
+      border: 1px solid rgba(245, 240, 232, 0.16);
       border-radius: 16px;
       padding: clamp(2rem, 5vw, 3.5rem);
       max-width: 900px;
       margin: 0 auto;
+      box-shadow: 0 28px 56px rgba(0, 0, 0, 0.22);
     }
     .sub-badge { margin-bottom: 1rem; }
     .sub-headline { margin-bottom: 0.75rem; }
-    .sub-body { color: var(--text-secondary); margin-bottom: 1.75rem; max-width: 52ch; }
+    .sub-body { color: rgba(245, 240, 232, 0.78); margin-bottom: 1.75rem; max-width: 52ch; }
     .sub-freqs {
       display: flex;
       flex-wrap: wrap;
@@ -671,8 +735,8 @@
       margin-bottom: 2rem;
     }
     .sub-freq {
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
+      background: rgba(245, 240, 232, 0.08);
+      border: 1px solid rgba(245, 240, 232, 0.14);
       border-radius: 8px;
       padding: 0.5rem 1.25rem;
       font-weight: 500;
@@ -827,40 +891,12 @@
     }
     .footer-policies a:hover { color: var(--accent); }
     .footer-contact { display: flex; flex-direction: column; gap: 0.75rem; }
-    .footer-wa-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--wa-green);
-      font-weight: 500;
-    }
-    .footer-wa-link:hover { color: var(--wa-green-hover); }
     .footer-socials {
       display: flex;
       align-items: center;
       gap: 0.75rem;
+      flex-wrap: wrap;
     }
-    .footer-social-link {
-      width: 44px;
-      height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      transition: color 200ms ease, border-color 200ms ease, background-color 200ms ease;
-    }
-    .footer-social-link:hover {
-      color: var(--accent);
-      border-color: var(--accent);
-      background: rgba(255, 107, 53, 0.08);
-    }
-    .footer-social-link:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 3px;
-    }
-    .footer-social-link svg { flex-shrink: 0; }
     .footer-bottom {
       max-width: 1200px;
       margin: 2rem auto 0;
@@ -913,23 +949,11 @@
 <!-- DRAWER -->
 <nav class="nav-drawer" id="navDrawer" aria-label="Menú de navegación" aria-hidden="true">
   <div class="drawer-section">Navegar</div>
-  <a href="#pain-points" onclick="closeDrawer()">¿Por qué Cafe Roast?</a>
+  <a href="#pain-points" onclick="closeDrawer()">¿Por qué Café Roast?</a>
   <a href="#products" onclick="closeDrawer()">Elegir mi café</a>
   <a href="#products" onclick="closeDrawer()">Productos y precios</a>
   <a href="#reviews" onclick="closeDrawer()">Reseñas</a>
   <a href="#faq" onclick="closeDrawer()">Preguntas frecuentes</a>
-  <div class="drawer-section">Legal</div>
-  <a href="./policies/terminos-y-condiciones.html" onclick="closeDrawer()">Términos y condiciones</a>
-  <a href="./policies/politica-de-privacidad.html" onclick="closeDrawer()">Política de privacidad</a>
-  <a href="./policies/politica-de-reembolso.html" onclick="closeDrawer()">Política de reembolso</a>
-  <div class="drawer-wa">
-    <a href="https://wa.me/56951172813?text=Hola%20Cafe%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
-       class="btn btn-whatsapp btn-full" target="_blank" rel="noopener noreferrer"
-       onclick="closeDrawer();dataLayer.push({event:'whatsapp_click',label:'drawer'})">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
-      Pedir por WhatsApp
-    </a>
-  </div>
 </nav>
 
 <!-- HERO -->
@@ -986,49 +1010,52 @@
       <h2 id="quiz-heading">¿Qué café te recomendamos? 2 preguntas y listo.</h2>
     </div>
     <div class="quiz-wrap fade-in">
-      <div class="quiz-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del quiz">
-        <div class="quiz-progress-fill" id="quizProgressFill" style="width: 50%"></div>
-      </div>
-      <!-- Step 1 -->
-      <div class="quiz-step active" id="quizStep1" role="group" aria-labelledby="quizQ1">
-        <p class="quiz-question" id="quizQ1">¿Cuántas tazas de café tomas al día?</p>
-        <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ1">
-          <button class="quiz-option" aria-pressed="false" data-cups="1_taza" onclick="selectCups(this)">1 taza</button>
-          <button class="quiz-option" aria-pressed="false" data-cups="2_tazas" onclick="selectCups(this)">2 tazas</button>
-          <button class="quiz-option" aria-pressed="false" data-cups="3_o_mas" onclick="selectCups(this)">3 o más</button>
+      <div class="quiz-visual" role="img" aria-label="Cafeteras y métodos de preparación de café sobre una mesa"></div>
+      <div class="quiz-panel">
+        <div class="quiz-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del quiz">
+          <div class="quiz-progress-fill" id="quizProgressFill" style="width: 50%"></div>
         </div>
-      </div>
-      <!-- Step 2 -->
-      <div class="quiz-step" id="quizStep2" role="group" aria-labelledby="quizQ2">
-        <p class="quiz-question" id="quizQ2">¿Cómo preparas tu café?</p>
-        <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ2">
-          <button class="quiz-option" aria-pressed="false" data-method="moka" onclick="selectMethod(this)">Cafetera italiana (moka)</button>
-          <button class="quiz-option" aria-pressed="false" data-method="prensa_francesa" onclick="selectMethod(this)">Prensa francesa</button>
-          <button class="quiz-option" aria-pressed="false" data-method="filtro" onclick="selectMethod(this)">Cafetera de filtro</button>
-          <button class="quiz-option" aria-pressed="false" data-method="espresso" onclick="selectMethod(this)">Máquina de espresso</button>
-          <button class="quiz-option" aria-pressed="false" data-method="hervidor" onclick="selectMethod(this)">Solo tengo hervidor</button>
-          <button class="quiz-option" aria-pressed="false" data-method="no_se" onclick="selectMethod(this)">Aún no sé, sorpréndeme</button>
+        <!-- Step 1 -->
+        <div class="quiz-step active" id="quizStep1" role="group" aria-labelledby="quizQ1">
+          <p class="quiz-question" id="quizQ1">¿Cuántas tazas de café tomas al día?</p>
+          <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ1">
+            <button class="quiz-option" aria-pressed="false" data-cups="1_taza" onclick="selectCups(this)">1 taza</button>
+            <button class="quiz-option" aria-pressed="false" data-cups="2_tazas" onclick="selectCups(this)">2 tazas</button>
+            <button class="quiz-option" aria-pressed="false" data-cups="3_o_mas" onclick="selectCups(this)">3 o más</button>
+          </div>
         </div>
-        <div class="quiz-nav">
-          <button class="quiz-back" onclick="quizBack(1)" aria-label="Volver a la pregunta anterior">← Volver</button>
+        <!-- Step 2 -->
+        <div class="quiz-step" id="quizStep2" role="group" aria-labelledby="quizQ2">
+          <p class="quiz-question" id="quizQ2">¿Cómo preparas tu café?</p>
+          <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ2">
+            <button class="quiz-option" aria-pressed="false" data-method="moka" onclick="selectMethod(this)">Cafetera italiana (moka)</button>
+            <button class="quiz-option" aria-pressed="false" data-method="prensa_francesa" onclick="selectMethod(this)">Prensa francesa</button>
+            <button class="quiz-option" aria-pressed="false" data-method="filtro" onclick="selectMethod(this)">Cafetera de filtro</button>
+            <button class="quiz-option" aria-pressed="false" data-method="espresso" onclick="selectMethod(this)">Máquina de espresso</button>
+            <button class="quiz-option" aria-pressed="false" data-method="hervidor" onclick="selectMethod(this)">Solo tengo hervidor</button>
+            <button class="quiz-option" aria-pressed="false" data-method="no_se" onclick="selectMethod(this)">Aún no sé, sorpréndeme</button>
+          </div>
+          <div class="quiz-nav">
+            <button class="quiz-back" onclick="quizBack(1)" aria-label="Volver a la pregunta anterior">← Volver</button>
+          </div>
         </div>
-      </div>
-      <!-- Step 3: Result -->
-      <div class="quiz-step" id="quizStep3" aria-live="polite">
-        <div class="quiz-result-card">
-          <p class="quiz-result-tag">Tu recomendación</p>
-          <p class="quiz-result-rec" id="quizResultRec">—</p>
-          <p class="quiz-result-price" id="quizResultPrice">—</p>
-          <a id="quizResultCta"
-             href="#"
-             class="btn btn-whatsapp btn-full"
-             target="_blank" rel="noopener noreferrer"
-             aria-label="Pedir por WhatsApp según recomendación"
-             onclick="dataLayer.push({event:'quiz_completed'});dataLayer.push({event:'whatsapp_click',label:'quiz_result'})">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
-            Pedir esto por WhatsApp →
-          </a>
-          <button class="quiz-restart" onclick="quizRestart()" aria-label="Reiniciar el quiz">Volver a empezar</button>
+        <!-- Step 3: Result -->
+        <div class="quiz-step" id="quizStep3" aria-live="polite">
+          <div class="quiz-result-card">
+            <p class="quiz-result-tag">Tu recomendación</p>
+            <p class="quiz-result-rec" id="quizResultRec">—</p>
+            <p class="quiz-result-price" id="quizResultPrice">—</p>
+            <a id="quizResultCta"
+               href="#"
+               class="btn btn-whatsapp btn-full"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Pedir por WhatsApp según recomendación"
+               onclick="dataLayer.push({event:'quiz_completed'});dataLayer.push({event:'whatsapp_click',label:'quiz_result'})">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+              Pedir esto por WhatsApp →
+            </a>
+            <button class="quiz-restart" onclick="quizRestart()" aria-label="Reiniciar el quiz">Volver a empezar</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1060,16 +1087,17 @@
             <option value="grano entero">En grano entero</option>
           </select>
         </div>
-        <p class="product-price">$9.000 <span>CLP</span></p>
-        <a id="waLink250"
-           href="#"
-           class="btn btn-whatsapp"
-           target="_blank" rel="noopener noreferrer"
-           aria-label="Pedir 250g por WhatsApp"
-           onclick="dataLayer.push({event:'product_card_click',format:'250g'});dataLayer.push({event:'whatsapp_click',label:'product_250g'})">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
-          Pedir por WhatsApp
-        </a>
+        <div class="product-purchase-row">
+          <p class="product-price">$9.000 <span>CLP</span></p>
+          <a id="waLink250"
+             href="#"
+             class="icon-link icon-link-whatsapp product-cta-icon"
+             target="_blank" rel="noopener noreferrer"
+             aria-label="Pedir 250g por WhatsApp"
+             onclick="dataLayer.push({event:'product_card_click',format:'250g'});dataLayer.push({event:'whatsapp_click',label:'product_250g'})">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+          </a>
+        </div>
       </div>
       <!-- 500g FEATURED -->
       <div class="card product-card card-featured fade-in" aria-label="Producto 500g - el más popular" style="position:relative;">
@@ -1091,16 +1119,17 @@
             <option value="grano entero">En grano entero</option>
           </select>
         </div>
-        <p class="product-price">$16.500 <span>CLP</span></p>
-        <a id="waLink500"
-           href="#"
-           class="btn btn-whatsapp"
-           target="_blank" rel="noopener noreferrer"
-           aria-label="Pedir 500g por WhatsApp"
-           onclick="dataLayer.push({event:'product_card_click',format:'500g'});dataLayer.push({event:'whatsapp_click',label:'product_500g'})">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
-          Pedir por WhatsApp
-        </a>
+        <div class="product-purchase-row">
+          <p class="product-price">$16.500 <span>CLP</span></p>
+          <a id="waLink500"
+             href="#"
+             class="icon-link icon-link-whatsapp product-cta-icon"
+             target="_blank" rel="noopener noreferrer"
+             aria-label="Pedir 500g por WhatsApp"
+             onclick="dataLayer.push({event:'product_card_click',format:'500g'});dataLayer.push({event:'whatsapp_click',label:'product_500g'})">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+          </a>
+        </div>
       </div>
       <!-- 1kg -->
       <div class="card product-card fade-in" aria-label="Producto 1kg - mejor precio">
@@ -1122,16 +1151,17 @@
             <option value="grano entero">En grano entero</option>
           </select>
         </div>
-        <p class="product-price">$29.000 <span>CLP</span></p>
-        <a id="waLink1kg"
-           href="#"
-           class="btn btn-whatsapp"
-           target="_blank" rel="noopener noreferrer"
-           aria-label="Pedir 1kg por WhatsApp"
-           onclick="dataLayer.push({event:'product_card_click',format:'1kg'});dataLayer.push({event:'whatsapp_click',label:'product_1kg'})">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
-          Pedir por WhatsApp
-        </a>
+        <div class="product-purchase-row">
+          <p class="product-price">$29.000 <span>CLP</span></p>
+          <a id="waLink1kg"
+             href="#"
+             class="icon-link icon-link-whatsapp product-cta-icon"
+             target="_blank" rel="noopener noreferrer"
+             aria-label="Pedir 1kg por WhatsApp"
+             onclick="dataLayer.push({event:'product_card_click',format:'1kg'});dataLayer.push({event:'whatsapp_click',label:'product_1kg'})">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+          </a>
+        </div>
       </div>
     </div>
     <p class="free-shipping-note fade-in">
@@ -1343,19 +1373,21 @@
       <p style="color:var(--text-muted);font-size:0.8125rem;margin-top:0.25rem;">caferoast.cl · Santiago, Chile</p>
     </div>
     <nav class="footer-links" aria-label="Links de navegación">
-      <a href="#pain-points">¿Por qué Cafe Roast?</a>
+      <a href="#pain-points">¿Por qué Café Roast?</a>
       <a href="#products">Elegir mi café</a>
       <a href="#products">Productos</a>
       <a href="#faq">Preguntas frecuentes</a>
     </nav>
     <div class="footer-contact">
-      <a href="https://wa.me/56951172813" class="footer-wa-link" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
-        +56 9 5117 2813
-      </a>
       <div class="footer-socials" aria-label="Redes sociales">
+        <a href="https://wa.me/56951172813"
+           class="icon-link icon-link-whatsapp"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Abrir conversación por WhatsApp con Cafe Roast">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+        </a>
         <a href="https://www.instagram.com/caferoast.cl"
-           class="footer-social-link"
+           class="icon-link icon-link-accent"
            target="_blank" rel="noopener noreferrer"
            aria-label="Visitar Instagram de Cafe Roast">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

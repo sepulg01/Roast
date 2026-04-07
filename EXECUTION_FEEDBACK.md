@@ -41,3 +41,11 @@
 - Se actualizaron 3 respuestas del FAQ y 1 pregunta de capsulas en `index.html` con el copy solicitado.
 - Se agrego un acceso a Instagram en el footer como icono unico, con SVG inline, `aria-label`, apertura en nueva pestana, foco visible y area tactil de 44x44.
 - Validacion realizada sirviendo `index.html` con `python3 -m http.server` y verificando por HTTP la presencia del nuevo copy, del enlace a `https://www.instagram.com/caferoast.cl` y de los estilos del icono social; no se ejecuto prueba visual automatizada en navegador.
+
+## 2026-04-06 - Drawer, quiz, productos y footer
+
+- Se refresco el repo con `git pull --rebase origin main`; `main` siguio alineado con `origin/main` antes de editar.
+- Se limpio el drawer dejando solo navegacion primaria, se elimino el bloque legal, se elimino el CTA final y se corrigio `¿Por qué Café Roast?` tambien en el footer.
+- Se agrando ligeramente el logotipo del header, se convirtio el WhatsApp del footer a icono con el mismo lenguaje visual de Instagram y hover verde, y se dejo el link directo a `https://wa.me/56951172813`.
+- Se redujo el peso visual de los CTA de producto cambiandolos a iconos de WhatsApp, se agrego una imagen stock nueva al quiz y se llevo el fondo de `#subscription` al mismo naranja de `#final-cta`.
+- Validacion realizada con parseo HTML via `python3`, `git diff --check` y verificacion por HTTP con `python3 -m http.server` de los enlaces, el nuevo asset del quiz, la limpieza del drawer y los cambios de estilo; no se ejecuto prueba visual automatizada en navegador.
