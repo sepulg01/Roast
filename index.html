@@ -88,6 +88,19 @@
       border: 1px solid var(--border);
     }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .hero-cta-secondary {
+      background: rgba(245, 240, 232, 0.12);
+      color: var(--text-primary);
+      border: 1px solid rgba(245, 240, 232, 0.2);
+      backdrop-filter: blur(10px);
+    }
+    .hero-cta-secondary:hover {
+      background: rgba(245, 240, 232, 0.2);
+      border-color: rgba(245, 240, 232, 0.3);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .hero-cta-secondary:active { transform: translateY(0); }
     .btn-full { width: 100%; }
     /* BADGES */
     .badge {
@@ -743,6 +756,18 @@
     .footer-links { display: flex; flex-direction: column; gap: 0.5rem; }
     .footer-links a { color: var(--text-secondary); font-size: 0.9375rem; transition: color 200ms ease; }
     .footer-links a:hover { color: var(--accent); }
+    .footer-policies {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .footer-policies a {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      transition: color 200ms ease;
+    }
+    .footer-policies a:hover { color: var(--accent); }
     .footer-contact { display: flex; flex-direction: column; gap: 0.75rem; }
     .footer-wa-link {
       display: inline-flex;
@@ -808,8 +833,9 @@
   <a href="#reviews" onclick="closeDrawer()">Reseñas</a>
   <a href="#faq" onclick="closeDrawer()">Preguntas frecuentes</a>
   <div class="drawer-section">Legal</div>
-  <a href="#terminos" onclick="closeDrawer()">Términos y condiciones</a>
-  <a href="#privacidad" onclick="closeDrawer()">Política de privacidad</a>
+  <a href="./policies/terminos-y-condiciones.html" onclick="closeDrawer()">Términos y condiciones</a>
+  <a href="./policies/politica-de-privacidad.html" onclick="closeDrawer()">Política de privacidad</a>
+  <a href="./policies/politica-de-reembolso.html" onclick="closeDrawer()">Política de reembolso</a>
   <div class="drawer-wa">
     <a href="https://wa.me/56951172813?text=Hola%20Cafe%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
        class="btn btn-whatsapp btn-full" target="_blank" rel="noopener noreferrer"
@@ -825,8 +851,8 @@
   <div class="hero-bg" role="img" aria-label="Café siendo vertido en taza oscura"></div>
   <div class="hero-content">
     <span class="hero-eyebrow">Tu primer café real.</span>
-    <h1 class="hero-headline">Tu café del desayuno merece más que agua tibia con colorante.</h1>
-    <p class="hero-sub">Cafe Roast. Más sabor, más cafeína, igual de simple de hacer. Molido a pedido según cómo lo preparas.</p>
+    <h1 class="hero-headline">Tu desayuno merece más que agua tibia con colorante.</h1>
+    <p class="hero-sub">Café Roast. Más sabor y más cafeína, y tan simple de preparar como el de tarro.</p>
     <div class="hero-ctas">
       <a href="https://wa.me/56951172813?text=Hola%20Cafe%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
          class="btn btn-whatsapp"
@@ -836,7 +862,7 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
         Pedir por WhatsApp
       </a>
-      <a href="#products" class="btn btn-secondary" aria-label="Ir a productos para elegir tu café">Elegir mi café →</a>
+      <a href="#products" class="btn btn-secondary hero-cta-secondary" aria-label="Ir a productos para elegir tu café">Elegir mi café →</a>
     </div>
   </div>
 </section>
@@ -856,12 +882,12 @@
       <div class="card pain-card fade-in" aria-label="Problema: No despierta a nadie">
         <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <h3>No despierta a nadie</h3>
-        <p>Tan poco café real lleva que podrías tomar tres tazas y seguir con sueño.</p>
+        <p>Lleva tan poco café de verdad que podrías tomar tres tazas, seguir con sueño... y con acidez</p>
       </div>
       <div class="card pain-card fade-in" aria-label="Solución: Simple como siempre">
         <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         <h3>¿Y el café real es muy complicado?</h3>
-        <p>Para nada. Con Roast lo molemos según cómo tú preparas. Sin molinillo, sin YouTube, sin drama.</p>
+        <p>Para nada. En Roast te lo entregamos recién molido, preciso para tu cafetera.</p>
       </div>
     </div>
   </div>
@@ -871,11 +897,11 @@
 <section id="quiz" aria-labelledby="quiz-heading">
   <div class="container">
     <div class="section-header fade-in">
-      <h2 id="quiz-heading">¿Qué café te recomendamos? 3 preguntas y listo.</h2>
+      <h2 id="quiz-heading">¿Qué café te recomendamos? 2 preguntas y listo.</h2>
     </div>
     <div class="quiz-wrap fade-in">
-      <div class="quiz-progress" role="progressbar" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del quiz">
-        <div class="quiz-progress-fill" id="quizProgressFill" style="width: 33%"></div>
+      <div class="quiz-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del quiz">
+        <div class="quiz-progress-fill" id="quizProgressFill" style="width: 50%"></div>
       </div>
       <!-- Step 1 -->
       <div class="quiz-step active" id="quizStep1" role="group" aria-labelledby="quizQ1">
@@ -901,21 +927,8 @@
           <button class="quiz-back" onclick="quizBack(1)" aria-label="Volver a la pregunta anterior">← Volver</button>
         </div>
       </div>
-      <!-- Step 3: Molienda -->
-      <div class="quiz-step" id="quizStep3" role="group" aria-labelledby="quizQ3">
-        <p class="quiz-question" id="quizQ3">¿Qué origen prefieres?</p>
-        <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ3">
-          <button class="quiz-option" aria-pressed="false" data-origin="Colombia" onclick="selectOrigin(this)">🇨🇴 Colombia — suave, caramelo y cítrico</button>
-          <button class="quiz-option" aria-pressed="false" data-origin="Perú" onclick="selectOrigin(this)">🇵🇪 Perú — chocolate y nuez, equilibrado</button>
-          <button class="quiz-option" aria-pressed="false" data-origin="Brasil" onclick="selectOrigin(this)">🇧🇷 Brasil — intenso, bajo acidez</button>
-          <button class="quiz-option" aria-pressed="false" data-origin="sorpresa" onclick="selectOrigin(this)">Sorpréndeme — el del día</button>
-        </div>
-        <div class="quiz-nav">
-          <button class="quiz-back" onclick="quizBack(2)" aria-label="Volver a la pregunta anterior">← Volver</button>
-        </div>
-      </div>
-      <!-- Step 4: Result -->
-      <div class="quiz-step" id="quizStep4" aria-live="polite">
+      <!-- Step 3: Result -->
+      <div class="quiz-step" id="quizStep3" aria-live="polite">
         <div class="quiz-result-card">
           <p class="quiz-result-tag">Tu recomendación</p>
           <p class="quiz-result-rec" id="quizResultRec">—</p>
@@ -942,7 +955,7 @@
     <div class="section-header fade-in">
       <h2 id="products-heading">Elige tu café</h2>
     </div>
-    <p class="section-sub fade-in">Todos disponibles en grano o molido a pedido según tu método.</p>
+    <p class="section-sub fade-in">Todos disponibles en grano o molido a pedido según tu cafetera.</p>
     <div class="products-grid">
       <!-- 250g -->
       <div class="card product-card fade-in" aria-label="Producto 250g">
@@ -951,12 +964,6 @@
         <p class="product-size">250g</p>
         <p class="product-desc">Ideal si quieres probar Roast por primera vez.</p>
         <div class="product-selectors">
-          <select id="origin250" aria-label="Selecciona origen del café 250g" onchange="updateProductLink('250')">
-            <option value="Perú">Origen: Perú</option>
-            <option value="Brasil">Origen: Brasil</option>
-            <option value="Colombia">Origen: Colombia</option>
-            <option value="Panamá">Origen: Panamá</option>
-          </select>
           <select id="grind250" aria-label="Selecciona molienda para 250g" onchange="updateProductLink('250')">
             <option value="espresso">Molido para espresso</option>
             <option value="moka">Molido para moka</option>
@@ -988,12 +995,6 @@
         <p class="product-size">500g</p>
         <p class="product-desc">El favorito. Rinde el mes completo si tomas 1–2 tazas al día.</p>
         <div class="product-selectors">
-          <select id="origin500" aria-label="Selecciona origen del café 500g" onchange="updateProductLink('500')">
-            <option value="Colombia">Origen: Colombia</option>
-            <option value="Perú">Origen: Perú</option>
-            <option value="Brasil">Origen: Brasil</option>
-            <option value="Panamá">Origen: Panamá</option>
-          </select>
           <select id="grind500" aria-label="Selecciona molienda para 500g" onchange="updateProductLink('500')">
             <option value="moka">Molido para moka</option>
             <option value="espresso">Molido para espresso</option>
@@ -1025,12 +1026,6 @@
         <p class="product-size">1kg</p>
         <p class="product-desc">El mejor precio por gramo. Para los que ya saben lo que quieren.</p>
         <div class="product-selectors">
-          <select id="origin1kg" aria-label="Selecciona origen del café 1kg" onchange="updateProductLink('1kg')">
-            <option value="Brasil">Origen: Brasil</option>
-            <option value="Perú">Origen: Perú</option>
-            <option value="Colombia">Origen: Colombia</option>
-            <option value="Panamá">Origen: Panamá</option>
-          </select>
           <select id="grind1kg" aria-label="Selecciona molienda para 1kg" onchange="updateProductLink('1kg')">
             <option value="filtro / pour over">Molido para filtro / pour over</option>
             <option value="espresso">Molido para espresso</option>
@@ -1272,66 +1267,13 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
         +56 9 5117 2813
       </a>
+      <div class="footer-policies" aria-label="Links legales">
+        <a href="./policies/terminos-y-condiciones.html">Términos y condiciones</a>
+        <a href="./policies/politica-de-privacidad.html">Política de privacidad</a>
+        <a href="./policies/politica-de-reembolso.html">Política de reembolso</a>
+      </div>
       <div style="margin-top:1.25rem;">
         <span class="footer-logo-placeholder">Roast<span>.</span></span>
-      </div>
-    </div>
-  </div>
-
-  <!-- DOCUMENTOS LEGALES -->
-  <div style="max-width:1200px;margin:0 auto;padding:2.5rem clamp(1.25rem,5vw,2rem) 0;display:grid;gap:1.5rem;grid-template-columns:1fr;">
-    <!-- Términos -->
-    <div id="terminos" style="border-top:1px solid var(--border);padding-top:2rem;">
-      <div class="faq-item" style="border:none;border-radius:0;margin:0;">
-        <button class="faq-btn" aria-expanded="false" aria-controls="legal-terminos" style="padding:0.75rem 0;font-size:0.875rem;color:var(--text-muted);">
-          Términos y condiciones
-          <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer" id="legal-terminos">
-          <div class="faq-answer-inner" style="color:var(--text-muted);font-size:0.8125rem;line-height:1.8;">
-            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">1. Generalidades.</strong> Cafe Roast opera exclusivamente en Chile a través del canal de WhatsApp (+56 9 5117 2813) y el sitio web caferoast.cl. Al realizar un pedido aceptas estas condiciones.</p>
-            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">2. Productos.</strong> Café molido a pedido según método de preparación del cliente. Los productos se procesan tras confirmar el pedido y el pago. Las imágenes son referenciales.</p>
-            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">3. Precios.</strong> Los precios son en pesos chilenos (CLP) e incluyen IVA. Cafe Roast se reserva el derecho de modificar precios sin previo aviso, pero los pedidos ya confirmados respetan el precio acordado.</p>
-            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">4. Pago.</strong> Se acepta pago mediante transferencia bancaria o link de pago (Flow). El pedido se procesa una vez confirmado el pago.</p>
-            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">5. Despacho.</strong> Despacho en la Región Metropolitana en días hábiles. Envío gratis en compras mayores a $36.000 CLP. Los tiempos de entrega son estimados y pueden variar.</p>
-            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">6. Cancelaciones.</strong> Puedes cancelar tu pedido antes de que sea procesado. Una vez molido el café, no se aceptan cancelaciones por ser un producto perecible preparado a pedido.</p>
-            <p><strong style="color:var(--text-secondary);">7. Ley aplicable.</strong> Estos términos se rigen por la legislación chilena, incluyendo la Ley 19.496 de Protección al Consumidor.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Privacidad -->
-    <div id="privacidad" style="border-top:1px solid var(--border);padding-top:0.5rem;">
-      <div class="faq-item" style="border:none;border-radius:0;margin:0;">
-        <button class="faq-btn" aria-expanded="false" aria-controls="legal-privacidad" style="padding:0.75rem 0;font-size:0.875rem;color:var(--text-muted);">
-          Política de privacidad
-          <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer" id="legal-privacidad">
-          <div class="faq-answer-inner" style="color:var(--text-muted);font-size:0.8125rem;line-height:1.8;">
-            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">Datos que recopilamos.</strong> Al realizar un pedido por WhatsApp recopilamos tu nombre, número de teléfono, dirección de entrega y preferencias de café. Solo los datos necesarios para procesar tu pedido.</p>
-            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">Uso de los datos.</strong> Usamos tu información exclusivamente para procesar y despachar tu pedido, y para enviarte actualizaciones relacionadas con él. No usamos tus datos para publicidad de terceros.</p>
-            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">Almacenamiento.</strong> Tu información se almacena de forma segura y no se comparte con terceros salvo los servicios de pago (Flow) y despacho necesarios para completar tu pedido.</p>
-            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">Cookies.</strong> caferoast.cl utiliza cookies de análisis (Google Tag Manager) para entender el comportamiento de los visitantes y mejorar la experiencia. Puedes desactivarlas en la configuración de tu navegador.</p>
-            <p><strong style="color:var(--text-secondary);">Tus derechos.</strong> Tienes derecho a acceder, rectificar o eliminar tus datos personales. Para ejercerlos escríbenos a través de WhatsApp. Nos regimos por la Ley 19.628 sobre Protección de Datos Personales.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Reembolsos -->
-    <div style="border-top:1px solid var(--border);padding-top:0.5rem;padding-bottom:1rem;">
-      <div class="faq-item" style="border:none;border-radius:0;margin:0;">
-        <button class="faq-btn" aria-expanded="false" aria-controls="legal-reembolso" style="padding:0.75rem 0;font-size:0.875rem;color:var(--text-muted);">
-          Política de reembolso
-          <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer" id="legal-reembolso">
-          <div class="faq-answer-inner" style="color:var(--text-muted);font-size:0.8125rem;line-height:1.8;">
-            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">Productos alimenticios y derecho a retracto.</strong> El café molido a pedido es un producto alimenticio perecible confeccionado según las especificaciones del consumidor. Conforme al Reglamento del Ministerio de Economía (Decreto N°52, publicado el 27 de agosto de 2024, vigente desde el 28 de febrero de 2025), que regula las exclusiones al derecho a retracto bajo la Ley 19.496, este tipo de productos queda excluido del derecho a retracto por dos razones concurrentes: (1) es un bien perecible destinado a ser consumido en un plazo inferior a 10 días desde su recepción, y (2) es un bien confeccionado conforme a las especificaciones del consumidor (molienda, origen y gramaje elegidos). Esta exclusión es informada de forma previa y clara conforme exige el reglamento.</p>
-            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">Producto con defecto o error nuestro.</strong> Si recibes un producto en mal estado, diferente al pedido, o el proveedor no cumplió las especificaciones solicitadas, tienes derecho a reposición o reembolso sin costo. Contáctanos por WhatsApp dentro de 48 horas de recibido el pedido, con foto del producto.</p>
-            <p><strong style="color:var(--text-secondary);">Cancelación antes de procesado.</strong> Puedes cancelar tu pedido sin costo mientras no haya sido procesado (molido). Una vez procesado, no se aceptan cancelaciones salvo defecto comprobable imputable a Cafe Roast.</p>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -1341,7 +1283,7 @@
 
 <!-- STICKY MOBILE CTA -->
 <div id="sticky-cta" role="complementary" aria-label="Llamado a la acción móvil">
-  <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
+  <a href="https://wa.me/56951172813?text=Hola%20Cafe%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
      class="btn btn-whatsapp"
      target="_blank" rel="noopener noreferrer"
      aria-label="Pedir por WhatsApp"
@@ -1358,7 +1300,6 @@
   // ===== QUIZ STATE =====
   var quizCups = null;
   var quizMethod = null;
-  var quizOrigin = null;
 
   var PRICE_MAP = {
     '1_taza':  { format: '250g', price: '$9.000' },
@@ -1380,7 +1321,7 @@
     document.querySelectorAll('.quiz-step').forEach(function(s) { s.classList.remove('active'); });
     var el = document.getElementById('quizStep' + step);
     if (el) el.classList.add('active');
-    var fills = { 1: 25, 2: 50, 3: 75, 4: 100 };
+    var fills = { 1: 50, 2: 100, 3: 100 };
     var fill = document.getElementById('quizProgressFill');
     if (fill) { fill.style.width = fills[step] + '%'; fill.setAttribute('aria-valuenow', fills[step]); }
   }
@@ -1397,55 +1338,46 @@
     document.querySelectorAll('#quizStep2 .quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
     btn.classList.add('selected'); btn.setAttribute('aria-pressed','true');
     quizMethod = btn.getAttribute('data-method');
-    setTimeout(function() { showQuizStep(3); }, 200);
-  }
-
-  function selectOrigin(btn) {
-    document.querySelectorAll('#quizStep3 .quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
-    btn.classList.add('selected'); btn.setAttribute('aria-pressed','true');
-    quizOrigin = btn.getAttribute('data-origin');
     setTimeout(function() { showQuizResult(); }, 200);
   }
 
   function showQuizResult() {
-    if (!quizCups || !quizMethod || !quizOrigin) return;
+    if (!quizCups || !quizMethod) return;
     var rec = PRICE_MAP[quizCups];
     var grindLabel = METHOD_GRIND_MAP[quizMethod] || 'molido grueso para prensa francesa';
-    var originLabel = quizOrigin === 'sorpresa' ? 'origen del día' : quizOrigin;
-    var recText = rec.format + ' · ' + originLabel + ' · ' + grindLabel;
+    var recText = rec.format + ' de café ' + grindLabel;
     document.getElementById('quizResultRec').textContent = recText;
     document.getElementById('quizResultPrice').textContent = rec.price + ' CLP';
-    var msg = 'Hola Cafe Roast! 👋 El quiz me recomendó:\n• ' + rec.format + ' de café\n• Origen: ' + originLabel + '\n• Molienda: ' + grindLabel + '\n¿Tienen disponibilidad?';
+    var msg = 'Hola Café Roast! 👋 El quiz me recomendó:\n• ' + recText + '\n¿Tienen disponibilidad?';
     document.getElementById('quizResultCta').href = 'https://wa.me/56951172813?text=' + encodeURIComponent(msg);
-    showQuizStep(4);
+    showQuizStep(3);
   }
 
   function quizBack(step) { showQuizStep(step); }
 
   function quizRestart() {
-    quizCups = null; quizMethod = null; quizOrigin = null;
+    quizCups = null; quizMethod = null;
     document.querySelectorAll('.quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
     showQuizStep(1);
   }
 
   // ===== PRODUCT WHATSAPP LINKS =====
-  function buildProductLink(format, originId, grindId) {
-    var origin = document.getElementById(originId) ? document.getElementById(originId).value : '';
+  function buildProductLink(format, grindId) {
     var grind = document.getElementById(grindId) ? document.getElementById(grindId).value : '';
-    var msg = 'Hola Roast! 👋 Quiero pedir:\n• ' + format + ' de café ' + grind + '\n• Origen: ' + origin + '\n¿Tienen disponibilidad?';
+    var msg = 'Hola Café Roast! 👋 Quiero pedir:\n• ' + format + ' de café ' + grind + '\n¿Tienen disponibilidad?';
     return 'https://wa.me/56951172813?text=' + encodeURIComponent(msg);
   }
 
   function updateProductLink(size) {
     if (size === '250') {
       var el = document.getElementById('waLink250');
-      if (el) el.href = buildProductLink('250g', 'origin250', 'grind250');
+      if (el) el.href = buildProductLink('250g', 'grind250');
     } else if (size === '500') {
       var el = document.getElementById('waLink500');
-      if (el) el.href = buildProductLink('500g', 'origin500', 'grind500');
+      if (el) el.href = buildProductLink('500g', 'grind500');
     } else if (size === '1kg') {
       var el = document.getElementById('waLink1kg');
-      if (el) el.href = buildProductLink('1kg', 'origin1kg', 'grind1kg');
+      if (el) el.href = buildProductLink('1kg', 'grind1kg');
     }
   }
 
