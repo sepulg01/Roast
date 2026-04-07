@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Roast — Tu primer café real. Deja el instantáneo.</title>
-  <meta name="description" content="Café en grano tostado y molido a pedido según tu método. Más sabor y más cafeína que el instantáneo. Despacho rápido en Santiago." />
-  <meta property="og:title" content="Roast — Tu primer café real." />
-  <meta property="og:description" content="Más sabor. Más cafeína. Igual de simple de hacer. Tu primer paso para dejar el café instantáneo." />
-  <meta property="og:image" content="./assets/og-image.jpg" />
+  <title>Cafe Roast — Tu primer café real.</title>
+  <meta name="description" content="Café molido a pedido según tu método. Más sabor y más cafeína que el instantáneo. Despacho rápido en Santiago." />
+  <meta property="og:title" content="Cafe Roast — Tu primer café real." />
+  <meta property="og:description" content="Más sabor. Más cafeína. Igual de simple de hacer. Tu primer café real." />
+  <meta property="og:image" content="https://caferoast.cl/assets/og-image.jpg" />
+  <meta property="og:url" content="https://caferoast.cl" />
   <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Organization","name":"Roast","url":"https://roast.cl","description":"Tu primer café real."}
+  {"@context":"https://schema.org","@type":"Organization","name":"Cafe Roast","url":"https://caferoast.cl","description":"Tu primer café real."}
   </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -125,15 +126,49 @@
       .fade-in { opacity: 1; transform: none; transition: none; }
       * { transition: none !important; animation: none !important; }
     }
-    /* ===== NAV ===== */
+    .nav-logo-img {
+      height: 36px;
+      width: auto;
+      display: flex;
+      align-items: center;
+    }
+    .nav-logo-placeholder {
+      height: 36px;
+      width: 120px;
+      background: linear-gradient(135deg, #1A1A1A 0%, #222 100%);
+      border: 1px dashed #FF6B35;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #F5F0E8;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+    .nav-logo-placeholder span { color: #FF6B35; }
+    .footer-logo-placeholder {
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #F5F0E8;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .footer-logo-placeholder span { color: #FF6B35; }
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 900;
-      background: rgba(13,13,13,0.92);
+      background: rgba(13,13,13,0.95);
       backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--border);
-      padding: 1rem clamp(1.25rem, 5vw, 2rem);
+      padding: 0.875rem clamp(1.25rem, 5vw, 2rem);
     }
     .nav-inner {
       max-width: 1200px;
@@ -141,18 +176,104 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 1rem;
     }
     .nav-logo {
       font-family: 'Space Grotesk', sans-serif;
       font-weight: 700;
       font-size: 1.5rem;
       color: var(--text-primary);
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      text-decoration: none;
     }
-    .nav-logo span { color: var(--accent); }
+    .nav-logo .logo-dot { color: var(--accent); }
+    .nav-right { display: flex; align-items: center; gap: 0.75rem; }
     .nav-cta { display: none; }
     @media (min-width: 768px) {
       .nav-cta { display: inline-flex; padding: 0.625rem 1.25rem; font-size: 0.875rem; }
+    }
+    .nav-hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 0;
+      transition: border-color 200ms ease;
+      flex-shrink: 0;
+    }
+    .nav-hamburger:hover { border-color: var(--accent); }
+    .nav-hamburger span {
+      display: block;
+      width: 18px;
+      height: 1.5px;
+      background: var(--text-primary);
+      border-radius: 2px;
+      transition: transform 300ms ease, opacity 200ms ease;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+    .nav-drawer {
+      position: fixed;
+      top: 0; right: 0;
+      width: min(300px, 85vw);
+      height: 100vh;
+      background: #111;
+      border-left: 1px solid var(--border);
+      z-index: 950;
+      padding: 5rem 2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      transform: translateX(100%);
+      visibility: hidden;
+      transition: transform 300ms cubic-bezier(0.4,0,0.2,1), visibility 300ms;
+    }
+    .nav-drawer.open { transform: translateX(0); visibility: visible; }
+    .nav-drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 940;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+      transition: opacity 300ms ease, visibility 300ms;
+    }
+    .nav-drawer-overlay.open { opacity: 1; pointer-events: all; visibility: visible; }
+    .nav-drawer a {
+      display: block;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      transition: color 200ms ease, padding-left 200ms ease;
+      text-decoration: none;
+    }
+    .nav-drawer a:hover { color: var(--accent); padding-left: 0.5rem; }
+    .nav-drawer a.drawer-active { color: var(--text-primary); }
+    .nav-drawer .drawer-section {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 1.25rem 0 0.5rem;
+    }
+    .nav-drawer .drawer-wa {
+      margin-top: auto;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
     }
     /* ===== HERO ===== */
     #hero {
@@ -166,8 +287,7 @@
     .hero-bg {
       position: absolute;
       inset: 0;
-      background: url('https://picsum.photos/1400/800') center/cover no-repeat;
-      /* replace with: dark moody close-up of coffee being poured */
+      background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
     }
     .hero-bg::after {
       content: '';
@@ -341,7 +461,7 @@
     }
     .quiz-restart:hover { color: var(--text-secondary); }
     /* ===== PRODUCTS ===== */
-    #products { background: var(--bg-surface); }
+    #products { background: var(--bg-primary); }
     #products .section-header { text-align: center; margin-bottom: 0.75rem; }
     #products .section-sub { text-align: center; color: var(--text-secondary); margin-bottom: 3rem; }
     .products-grid {
@@ -521,10 +641,10 @@
       flex-wrap: wrap;
       gap: 1rem;
       justify-content: center;
-      max-width: 100%;
+      width: 100%;
       margin: 0 auto;
     }
-    @media (min-width: 768px) {
+    @media (min-width: 1024px) {
       .coverage-grid { flex-wrap: nowrap; }
     }
     .coverage-badge-item {
@@ -659,13 +779,42 @@
 <!-- NAV -->
 <nav aria-label="Navegación principal">
   <div class="nav-inner">
-    <a href="#" class="nav-logo" aria-label="Roast - ir al inicio">Roast<span>.</span></a>
-    <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
-       class="btn btn-whatsapp nav-cta"
-       target="_blank" rel="noopener noreferrer"
-       aria-label="Pedir por WhatsApp"
-       onclick="dataLayer.push({event:'whatsapp_click',label:'nav'})">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+    <a href="#" class="nav-logo" aria-label="Cafe Roast - ir al inicio">Roast<span class="logo-dot">.</span></a>
+    <div class="nav-right">
+      <a href="https://wa.me/56951172813?text=Hola%20Cafe%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
+         class="btn btn-whatsapp nav-cta"
+         target="_blank" rel="noopener noreferrer"
+         aria-label="Pedir por WhatsApp"
+         onclick="dataLayer.push({event:'whatsapp_click',label:'nav'})">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+        Pedir por WhatsApp
+      </a>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="navDrawer">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- DRAWER OVERLAY -->
+<div class="nav-drawer-overlay" id="navOverlay" aria-hidden="true"></div>
+
+<!-- DRAWER -->
+<nav class="nav-drawer" id="navDrawer" aria-label="Menú de navegación" aria-hidden="true">
+  <div class="drawer-section">Navegar</div>
+  <a href="#pain-points" onclick="closeDrawer()">¿Por qué Cafe Roast?</a>
+  <a href="#products" onclick="closeDrawer()">Elegir mi café</a>
+  <a href="#products" onclick="closeDrawer()">Productos y precios</a>
+  <a href="#reviews" onclick="closeDrawer()">Reseñas</a>
+  <a href="#faq" onclick="closeDrawer()">Preguntas frecuentes</a>
+  <div class="drawer-section">Legal</div>
+  <a href="#terminos" onclick="closeDrawer()">Términos y condiciones</a>
+  <a href="#privacidad" onclick="closeDrawer()">Política de privacidad</a>
+  <div class="drawer-wa">
+    <a href="https://wa.me/56951172813?text=Hola%20Cafe%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
+       class="btn btn-whatsapp btn-full" target="_blank" rel="noopener noreferrer"
+       onclick="closeDrawer();dataLayer.push({event:'whatsapp_click',label:'drawer'})">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
       Pedir por WhatsApp
     </a>
   </div>
@@ -675,11 +824,11 @@
 <section id="hero" aria-label="Sección principal">
   <div class="hero-bg" role="img" aria-label="Café siendo vertido en taza oscura"></div>
   <div class="hero-content">
-    <span class="hero-eyebrow">Deja el instantáneo atrás.</span>
-    <h1 class="hero-headline">Tu desayuno merece más que agua tibia con colorante.</h1>
-    <p class="hero-sub">Roast es tu primer paso hacia el café de verdad. Más sabor, más cafeína, igual de simple de hacer.</p>
+    <span class="hero-eyebrow">Tu primer café real.</span>
+    <h1 class="hero-headline">Tu café del desayuno merece más que agua tibia con colorante.</h1>
+    <p class="hero-sub">Cafe Roast. Más sabor, más cafeína, igual de simple de hacer. Molido a pedido según cómo lo preparas.</p>
     <div class="hero-ctas">
-      <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
+      <a href="https://wa.me/56951172813?text=Hola%20Cafe%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
          class="btn btn-whatsapp"
          target="_blank" rel="noopener noreferrer"
          aria-label="Pedir por WhatsApp"
@@ -687,7 +836,7 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
         Pedir por WhatsApp
       </a>
-      <a href="#quiz" class="btn btn-secondary" aria-label="Ir al quiz para elegir tu café">Elegir mi café →</a>
+      <a href="#products" class="btn btn-secondary" aria-label="Ir a productos para elegir tu café">Elegir mi café →</a>
     </div>
   </div>
 </section>
@@ -722,11 +871,11 @@
 <section id="quiz" aria-labelledby="quiz-heading">
   <div class="container">
     <div class="section-header fade-in">
-      <h2 id="quiz-heading">¿Cuánto café necesitas? Te lo decimos en 2 preguntas.</h2>
+      <h2 id="quiz-heading">¿Qué café te recomendamos? 3 preguntas y listo.</h2>
     </div>
     <div class="quiz-wrap fade-in">
-      <div class="quiz-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del quiz">
-        <div class="quiz-progress-fill" id="quizProgressFill" style="width: 50%"></div>
+      <div class="quiz-progress" role="progressbar" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del quiz">
+        <div class="quiz-progress-fill" id="quizProgressFill" style="width: 33%"></div>
       </div>
       <!-- Step 1 -->
       <div class="quiz-step active" id="quizStep1" role="group" aria-labelledby="quizQ1">
@@ -741,19 +890,32 @@
       <div class="quiz-step" id="quizStep2" role="group" aria-labelledby="quizQ2">
         <p class="quiz-question" id="quizQ2">¿Cómo preparas tu café?</p>
         <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ2">
-          <button class="quiz-option" aria-pressed="false" data-grind="moka" onclick="selectGrind(this)">Cafetera italiana (moka)</button>
-          <button class="quiz-option" aria-pressed="false" data-grind="prensa_francesa" onclick="selectGrind(this)">Prensa francesa</button>
-          <button class="quiz-option" aria-pressed="false" data-grind="filtro" onclick="selectGrind(this)">Cafetera de filtro</button>
-          <button class="quiz-option" aria-pressed="false" data-grind="espresso" onclick="selectGrind(this)">Máquina de espresso</button>
-          <button class="quiz-option" aria-pressed="false" data-grind="hervidor" onclick="selectGrind(this)">Solo tengo hervidor</button>
-          <button class="quiz-option" aria-pressed="false" data-grind="no_se" onclick="selectGrind(this)">Aún no sé, sorpréndeme</button>
+          <button class="quiz-option" aria-pressed="false" data-method="moka" onclick="selectMethod(this)">Cafetera italiana (moka)</button>
+          <button class="quiz-option" aria-pressed="false" data-method="prensa_francesa" onclick="selectMethod(this)">Prensa francesa</button>
+          <button class="quiz-option" aria-pressed="false" data-method="filtro" onclick="selectMethod(this)">Cafetera de filtro</button>
+          <button class="quiz-option" aria-pressed="false" data-method="espresso" onclick="selectMethod(this)">Máquina de espresso</button>
+          <button class="quiz-option" aria-pressed="false" data-method="hervidor" onclick="selectMethod(this)">Solo tengo hervidor</button>
+          <button class="quiz-option" aria-pressed="false" data-method="no_se" onclick="selectMethod(this)">Aún no sé, sorpréndeme</button>
         </div>
         <div class="quiz-nav">
-          <button class="quiz-back" onclick="quizBack()" aria-label="Volver a la pregunta anterior">← Volver</button>
+          <button class="quiz-back" onclick="quizBack(1)" aria-label="Volver a la pregunta anterior">← Volver</button>
         </div>
       </div>
-      <!-- Step 3: Result -->
-      <div class="quiz-step" id="quizStep3" aria-live="polite">
+      <!-- Step 3: Molienda -->
+      <div class="quiz-step" id="quizStep3" role="group" aria-labelledby="quizQ3">
+        <p class="quiz-question" id="quizQ3">¿Qué origen prefieres?</p>
+        <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ3">
+          <button class="quiz-option" aria-pressed="false" data-origin="Colombia" onclick="selectOrigin(this)">🇨🇴 Colombia — suave, caramelo y cítrico</button>
+          <button class="quiz-option" aria-pressed="false" data-origin="Perú" onclick="selectOrigin(this)">🇵🇪 Perú — chocolate y nuez, equilibrado</button>
+          <button class="quiz-option" aria-pressed="false" data-origin="Brasil" onclick="selectOrigin(this)">🇧🇷 Brasil — intenso, bajo acidez</button>
+          <button class="quiz-option" aria-pressed="false" data-origin="sorpresa" onclick="selectOrigin(this)">Sorpréndeme — el del día</button>
+        </div>
+        <div class="quiz-nav">
+          <button class="quiz-back" onclick="quizBack(2)" aria-label="Volver a la pregunta anterior">← Volver</button>
+        </div>
+      </div>
+      <!-- Step 4: Result -->
+      <div class="quiz-step" id="quizStep4" aria-live="polite">
         <div class="quiz-result-card">
           <p class="quiz-result-tag">Tu recomendación</p>
           <p class="quiz-result-rec" id="quizResultRec">—</p>
@@ -784,8 +946,7 @@
     <div class="products-grid">
       <!-- 250g -->
       <div class="card product-card fade-in" aria-label="Producto 250g">
-        <!-- replace with: 250g Roast bag on dark surface -->
-        <img src="https://picsum.photos/600/600?random=1" alt="Bolsa Roast 250g" class="product-img" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?auto=format&fit=crop&w=900&q=80" alt="Granos de cafe tostado servidos sobre una mesa de madera" class="product-img" loading="lazy" />
         <p class="product-label">Para empezar</p>
         <p class="product-size">250g</p>
         <p class="product-desc">Ideal si quieres probar Roast por primera vez.</p>
@@ -806,7 +967,7 @@
             <option value="grano entero">En grano entero</option>
           </select>
         </div>
-        <p class="product-price">$7.000 <span>CLP</span></p>
+        <p class="product-price">$9.000 <span>CLP</span></p>
         <a id="waLink250"
            href="#"
            class="btn btn-whatsapp"
@@ -822,8 +983,7 @@
         <div class="product-badge-wrap">
           <span class="badge" aria-label="Más popular">MÁS POPULAR</span>
         </div>
-        <!-- replace with: 500g Roast bag on dark surface -->
-        <img src="https://picsum.photos/600/600?random=2" alt="Bolsa Roast 500g" class="product-img" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=900&q=80" alt="Taza de cafe recien preparado junto a granos de cafe" class="product-img" loading="lazy" />
         <p class="product-label">El más popular</p>
         <p class="product-size">500g</p>
         <p class="product-desc">El favorito. Rinde el mes completo si tomas 1–2 tazas al día.</p>
@@ -844,7 +1004,7 @@
             <option value="grano entero">En grano entero</option>
           </select>
         </div>
-        <p class="product-price">$12.500 <span>CLP</span></p>
+        <p class="product-price">$16.500 <span>CLP</span></p>
         <a id="waLink500"
            href="#"
            class="btn btn-whatsapp"
@@ -860,8 +1020,7 @@
         <div class="product-badge-wrap">
           <span class="badge" aria-label="Mejor precio por gramo">MEJOR PRECIO/GRAMO</span>
         </div>
-        <!-- replace with: 1kg Roast bag on dark surface -->
-        <img src="https://picsum.photos/600/600?random=3" alt="Bolsa Roast 1kg" class="product-img" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=900&q=80" alt="Pala sirviendo granos de cafe tostado desde un saco" class="product-img" loading="lazy" />
         <p class="product-label">El más conveniente</p>
         <p class="product-size">1kg</p>
         <p class="product-desc">El mejor precio por gramo. Para los que ya saben lo que quieren.</p>
@@ -882,7 +1041,7 @@
             <option value="grano entero">En grano entero</option>
           </select>
         </div>
-        <p class="product-price">$22.000 <span>CLP</span></p>
+        <p class="product-price">$29.000 <span>CLP</span></p>
         <a id="waLink1kg"
            href="#"
            class="btn btn-whatsapp"
@@ -896,19 +1055,8 @@
     </div>
     <p class="free-shipping-note fade-in">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      Envío gratis en Santiago en compras desde $22.000 CLP
+      Envío gratis en Santiago en compras mayores a $36.000 CLP
     </p>
-  </div>
-</section>
-
-<!-- COUNTER -->
-<section id="counter" aria-labelledby="counter-heading">
-  <div class="counter-noise" aria-hidden="true"></div>
-  <div class="container counter-inner">
-    <span class="counter-number" id="counterNumber" aria-live="polite" aria-label="Kilos tostados">0</span>
-    <span class="counter-unit" aria-hidden="true">kg</span>
-    <p class="counter-headline" id="counter-heading">Kilos tostados y contando</p>
-    <p style="color:var(--text-muted);margin-top:0.5rem;font-size:0.9375rem;">Cada lote tostado para que llegue fresco a tu taza.</p>
   </div>
 </section>
 
@@ -1072,7 +1220,7 @@
           ¿El envío es gratis?
           <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="faq-answer" id="faq-a6" role="region"><div class="faq-answer-inner">Sí, el envío es gratis en Santiago en compras desde $22.000 CLP.</div></div>
+        <div class="faq-answer" id="faq-a6" role="region"><div class="faq-answer-inner">Sí, el envío es gratis en Santiago en compras mayores a $36.000 CLP.</div></div>
       </div>
       <div class="faq-item">
         <button class="faq-btn" aria-expanded="false" aria-controls="faq-a7">
@@ -1094,9 +1242,9 @@
 
 <!-- FINAL CTA -->
 <section id="final-cta" aria-labelledby="final-heading">
-  <h2 id="final-heading">¿Listo para dejar el instantáneo?</h2>
-  <p class="final-sub">Tu primer café Roast está a un mensaje de distancia.</p>
-  <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
+  <h2 id="final-heading">Tu primer café real está a un mensaje de distancia.</h2>
+  <p class="final-sub">Molido a pedido. Despacho rápido en Santiago.</p>
+  <a href="https://wa.me/56951172813?text=Hola%20Cafe%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
      class="btn btn-final"
      target="_blank" rel="noopener noreferrer"
      aria-label="Pedir por WhatsApp ahora"
@@ -1110,21 +1258,85 @@
 <footer>
   <div class="footer-inner">
     <div>
-      <p class="footer-logo">Roast<span>.</span></p>
       <p class="footer-tagline">Tu primer café real.</p>
+      <p style="color:var(--text-muted);font-size:0.8125rem;margin-top:0.25rem;">caferoast.cl · Santiago, Chile</p>
     </div>
-    <nav class="footer-links" aria-label="Links legales">
-      <a href="#">Términos y condiciones</a>
-      <a href="#">Política de privacidad</a>
+    <nav class="footer-links" aria-label="Links de navegación">
+      <a href="#pain-points">¿Por qué Cafe Roast?</a>
+      <a href="#products">Elegir mi café</a>
+      <a href="#products">Productos</a>
+      <a href="#faq">Preguntas frecuentes</a>
     </nav>
     <div class="footer-contact">
       <a href="https://wa.me/56951172813" class="footer-wa-link" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
         +56 9 5117 2813
       </a>
+      <div style="margin-top:1.25rem;">
+        <span class="footer-logo-placeholder">Roast<span>.</span></span>
+      </div>
     </div>
   </div>
-  <div class="footer-bottom">© 2025 Roast. Todos los derechos reservados.</div>
+
+  <!-- DOCUMENTOS LEGALES -->
+  <div style="max-width:1200px;margin:0 auto;padding:2.5rem clamp(1.25rem,5vw,2rem) 0;display:grid;gap:1.5rem;grid-template-columns:1fr;">
+    <!-- Términos -->
+    <div id="terminos" style="border-top:1px solid var(--border);padding-top:2rem;">
+      <div class="faq-item" style="border:none;border-radius:0;margin:0;">
+        <button class="faq-btn" aria-expanded="false" aria-controls="legal-terminos" style="padding:0.75rem 0;font-size:0.875rem;color:var(--text-muted);">
+          Términos y condiciones
+          <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="legal-terminos">
+          <div class="faq-answer-inner" style="color:var(--text-muted);font-size:0.8125rem;line-height:1.8;">
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">1. Generalidades.</strong> Cafe Roast opera exclusivamente en Chile a través del canal de WhatsApp (+56 9 5117 2813) y el sitio web caferoast.cl. Al realizar un pedido aceptas estas condiciones.</p>
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">2. Productos.</strong> Café molido a pedido según método de preparación del cliente. Los productos se procesan tras confirmar el pedido y el pago. Las imágenes son referenciales.</p>
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">3. Precios.</strong> Los precios son en pesos chilenos (CLP) e incluyen IVA. Cafe Roast se reserva el derecho de modificar precios sin previo aviso, pero los pedidos ya confirmados respetan el precio acordado.</p>
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">4. Pago.</strong> Se acepta pago mediante transferencia bancaria o link de pago (Flow). El pedido se procesa una vez confirmado el pago.</p>
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">5. Despacho.</strong> Despacho en la Región Metropolitana en días hábiles. Envío gratis en compras mayores a $36.000 CLP. Los tiempos de entrega son estimados y pueden variar.</p>
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">6. Cancelaciones.</strong> Puedes cancelar tu pedido antes de que sea procesado. Una vez molido el café, no se aceptan cancelaciones por ser un producto perecible preparado a pedido.</p>
+            <p><strong style="color:var(--text-secondary);">7. Ley aplicable.</strong> Estos términos se rigen por la legislación chilena, incluyendo la Ley 19.496 de Protección al Consumidor.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Privacidad -->
+    <div id="privacidad" style="border-top:1px solid var(--border);padding-top:0.5rem;">
+      <div class="faq-item" style="border:none;border-radius:0;margin:0;">
+        <button class="faq-btn" aria-expanded="false" aria-controls="legal-privacidad" style="padding:0.75rem 0;font-size:0.875rem;color:var(--text-muted);">
+          Política de privacidad
+          <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="legal-privacidad">
+          <div class="faq-answer-inner" style="color:var(--text-muted);font-size:0.8125rem;line-height:1.8;">
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">Datos que recopilamos.</strong> Al realizar un pedido por WhatsApp recopilamos tu nombre, número de teléfono, dirección de entrega y preferencias de café. Solo los datos necesarios para procesar tu pedido.</p>
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">Uso de los datos.</strong> Usamos tu información exclusivamente para procesar y despachar tu pedido, y para enviarte actualizaciones relacionadas con él. No usamos tus datos para publicidad de terceros.</p>
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">Almacenamiento.</strong> Tu información se almacena de forma segura y no se comparte con terceros salvo los servicios de pago (Flow) y despacho necesarios para completar tu pedido.</p>
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">Cookies.</strong> caferoast.cl utiliza cookies de análisis (Google Tag Manager) para entender el comportamiento de los visitantes y mejorar la experiencia. Puedes desactivarlas en la configuración de tu navegador.</p>
+            <p><strong style="color:var(--text-secondary);">Tus derechos.</strong> Tienes derecho a acceder, rectificar o eliminar tus datos personales. Para ejercerlos escríbenos a través de WhatsApp. Nos regimos por la Ley 19.628 sobre Protección de Datos Personales.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Reembolsos -->
+    <div style="border-top:1px solid var(--border);padding-top:0.5rem;padding-bottom:1rem;">
+      <div class="faq-item" style="border:none;border-radius:0;margin:0;">
+        <button class="faq-btn" aria-expanded="false" aria-controls="legal-reembolso" style="padding:0.75rem 0;font-size:0.875rem;color:var(--text-muted);">
+          Política de reembolso
+          <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer" id="legal-reembolso">
+          <div class="faq-answer-inner" style="color:var(--text-muted);font-size:0.8125rem;line-height:1.8;">
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">Productos alimenticios y derecho a retracto.</strong> El café molido a pedido es un producto alimenticio perecible confeccionado según las especificaciones del consumidor. Conforme al Reglamento del Ministerio de Economía (Decreto N°52, publicado el 27 de agosto de 2024, vigente desde el 28 de febrero de 2025), que regula las exclusiones al derecho a retracto bajo la Ley 19.496, este tipo de productos queda excluido del derecho a retracto por dos razones concurrentes: (1) es un bien perecible destinado a ser consumido en un plazo inferior a 10 días desde su recepción, y (2) es un bien confeccionado conforme a las especificaciones del consumidor (molienda, origen y gramaje elegidos). Esta exclusión es informada de forma previa y clara conforme exige el reglamento.</p>
+            <p style="margin-bottom:0.75rem;"><strong style="color:var(--text-secondary);">Producto con defecto o error nuestro.</strong> Si recibes un producto en mal estado, diferente al pedido, o el proveedor no cumplió las especificaciones solicitadas, tienes derecho a reposición o reembolso sin costo. Contáctanos por WhatsApp dentro de 48 horas de recibido el pedido, con foto del producto.</p>
+            <p><strong style="color:var(--text-secondary);">Cancelación antes de procesado.</strong> Puedes cancelar tu pedido sin costo mientras no haya sido procesado (molido). Una vez procesado, no se aceptan cancelaciones salvo defecto comprobable imputable a Cafe Roast.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">© 2025 Cafe Roast. Todos los derechos reservados.</div>
 </footer>
 
 <!-- STICKY MOBILE CTA -->
@@ -1145,60 +1357,74 @@
 
   // ===== QUIZ STATE =====
   var quizCups = null;
-  var quizGrind = null;
-  var PRICE_MAP = { '1_taza': { format: '250g', price: '$7.000' }, '2_tazas': { format: '500g', price: '$12.500' }, '3_o_mas': { format: '1kg', price: '$22.000' } };
-  var GRIND_MAP = {
-    'moka': 'molido para moka',
+  var quizMethod = null;
+  var quizOrigin = null;
+
+  var PRICE_MAP = {
+    '1_taza':  { format: '250g', price: '$9.000' },
+    '2_tazas': { format: '500g', price: '$16.500' },
+    '3_o_mas': { format: '1kg',  price: '$29.000' }
+  };
+
+  // Molienda recomendada según método. Hervidor y no_se → prensa francesa
+  var METHOD_GRIND_MAP = {
+    'moka':            'molido para moka',
     'prensa_francesa': 'molido grueso para prensa francesa',
-    'filtro': 'molido medio para filtro',
-    'espresso': 'molido fino para espresso',
-    'hervidor': 'molido grueso (ideal para hervidor)',
-    'no_se': 'molido versátil para filtro — el más fácil de empezar'
+    'filtro':          'molido medio para filtro',
+    'espresso':        'molido fino para espresso',
+    'hervidor':        'molido grueso para prensa francesa',
+    'no_se':           'molido grueso para prensa francesa'
   };
 
   function showQuizStep(step) {
     document.querySelectorAll('.quiz-step').forEach(function(s) { s.classList.remove('active'); });
     var el = document.getElementById('quizStep' + step);
     if (el) el.classList.add('active');
-    var fills = { 1: 33, 2: 66, 3: 100 };
+    var fills = { 1: 25, 2: 50, 3: 75, 4: 100 };
     var fill = document.getElementById('quizProgressFill');
     if (fill) { fill.style.width = fills[step] + '%'; fill.setAttribute('aria-valuenow', fills[step]); }
   }
 
   function selectCups(btn) {
-    document.querySelectorAll('#quizStep1 .quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed', 'false'); });
-    btn.classList.add('selected');
-    btn.setAttribute('aria-pressed', 'true');
+    document.querySelectorAll('#quizStep1 .quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
+    btn.classList.add('selected'); btn.setAttribute('aria-pressed','true');
     quizCups = btn.getAttribute('data-cups');
     dataLayer.push({ event: 'quiz_started' });
     setTimeout(function() { showQuizStep(2); }, 200);
   }
 
-  function selectGrind(btn) {
-    document.querySelectorAll('#quizStep2 .quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed', 'false'); });
-    btn.classList.add('selected');
-    btn.setAttribute('aria-pressed', 'true');
-    quizGrind = btn.getAttribute('data-grind');
+  function selectMethod(btn) {
+    document.querySelectorAll('#quizStep2 .quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
+    btn.classList.add('selected'); btn.setAttribute('aria-pressed','true');
+    quizMethod = btn.getAttribute('data-method');
+    setTimeout(function() { showQuizStep(3); }, 200);
+  }
+
+  function selectOrigin(btn) {
+    document.querySelectorAll('#quizStep3 .quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
+    btn.classList.add('selected'); btn.setAttribute('aria-pressed','true');
+    quizOrigin = btn.getAttribute('data-origin');
     setTimeout(function() { showQuizResult(); }, 200);
   }
 
   function showQuizResult() {
-    if (!quizCups || !quizGrind) return;
+    if (!quizCups || !quizMethod || !quizOrigin) return;
     var rec = PRICE_MAP[quizCups];
-    var grindLabel = GRIND_MAP[quizGrind] || 'molido versátil';
-    var recText = rec.format + ' de café ' + grindLabel;
+    var grindLabel = METHOD_GRIND_MAP[quizMethod] || 'molido grueso para prensa francesa';
+    var originLabel = quizOrigin === 'sorpresa' ? 'origen del día' : quizOrigin;
+    var recText = rec.format + ' · ' + originLabel + ' · ' + grindLabel;
     document.getElementById('quizResultRec').textContent = recText;
     document.getElementById('quizResultPrice').textContent = rec.price + ' CLP';
-    var msg = 'Hola Roast! 👋 El quiz me recomendó:\n• ' + recText + '\n¿Tienen disponibilidad?';
+    var msg = 'Hola Cafe Roast! 👋 El quiz me recomendó:\n• ' + rec.format + ' de café\n• Origen: ' + originLabel + '\n• Molienda: ' + grindLabel + '\n¿Tienen disponibilidad?';
     document.getElementById('quizResultCta').href = 'https://wa.me/56951172813?text=' + encodeURIComponent(msg);
-    showQuizStep(3);
+    showQuizStep(4);
   }
 
-  function quizBack() { showQuizStep(1); }
+  function quizBack(step) { showQuizStep(step); }
 
   function quizRestart() {
-    quizCups = null; quizGrind = null;
-    document.querySelectorAll('.quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed', 'false'); });
+    quizCups = null; quizMethod = null; quizOrigin = null;
+    document.querySelectorAll('.quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
     showQuizStep(1);
   }
 
@@ -1228,40 +1454,6 @@
     updateProductLink('500');
     updateProductLink('1kg');
   }
-
-  // ===== COUNTER ANIMATION =====
-  var counterDone = false;
-  var counterTarget = Math.floor(Math.random() * 501) + 500;
-
-  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
-
-  function animateCounter() {
-    if (counterDone) return;
-    counterDone = true;
-    var start = null;
-    var duration = 2000;
-    var el = document.getElementById('counterNumber');
-    function step(timestamp) {
-      if (!start) start = timestamp;
-      var progress = Math.min((timestamp - start) / duration, 1);
-      var eased = easeOutCubic(progress);
-      el.textContent = Math.floor(eased * counterTarget);
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      } else {
-        el.textContent = counterTarget;
-      }
-    }
-    requestAnimationFrame(step);
-  }
-
-  var counterObserver = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (entry.isIntersecting) animateCounter();
-    });
-  }, { threshold: 0.4 });
-  var counterEl = document.getElementById('counter');
-  if (counterEl) counterObserver.observe(counterEl);
 
   // ===== CAROUSEL =====
   var carouselTrack = document.getElementById('carouselTrack');
@@ -1364,6 +1556,37 @@
     });
   }, { threshold: 0.12 });
   fadeEls.forEach(function(el) { fadeObserver.observe(el); });
+
+  // ===== HAMBURGUESA =====
+  var hamburger = document.getElementById('navHamburger');
+  var drawer = document.getElementById('navDrawer');
+  var overlay = document.getElementById('navOverlay');
+
+  function openDrawer() {
+    hamburger.classList.add('open');
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    drawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    hamburger.classList.remove('open');
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    drawer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  if (hamburger) {
+    hamburger.addEventListener('click', function() {
+      drawer.classList.contains('open') ? closeDrawer() : openDrawer();
+    });
+  }
+  if (overlay) overlay.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDrawer(); });
 
   // ===== INIT =====
   initProductLinks();
