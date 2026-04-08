@@ -206,7 +206,7 @@ Espresso · Moka · Prensa francesa · Filtro / pour over · Chemex · AeroPress
 
 ## 9. Lo que los agentes deben saber antes de generar cualquier cosa
 
-1. **El antagonista es el café instantáneo.** Todo el copy de Cafe Roast existe en relación a él. El instantáneo es el punto de partida del cliente y el contraste que le da sentido a la marca.
+1. **El antagonista es el café instantáneo.** Gran parte del copy de Cafe Roast existe en relación a él. El instantáneo es el punto de partida del cliente y el contraste que le da sentido a la marca.
 
 2. **La marca no alecciona.** No enseña a hacer café. No habla de extracción, ratio, bloom, ni nada técnico. Si un concepto técnico aparece, se explica en una frase simple o no aparece.
 
@@ -214,10 +214,37 @@ Espresso · Moka · Prensa francesa · Filtro / pour over · Chemex · AeroPress
 
 4. **El humor es obligatorio, no opcional.** Un post sin gracia no es un post de Cafe Roast. El tono puede ser más o menos sarcástico según el formato, pero nunca es neutro ni corporativo.
 
-5. **La marca habla en español chileno.** Coloquial, sin regionalismos extremos, pero claramente chileno. "Tomar café" no "beber café". "Cafetera" no "máquina". "Tarro" para referirse al instantáneo.
+5. **La marca habla en español chileno.** Coloquial, sin regionalismos extremos, pero claramente chileno. "Tomar café" no "beber café". "Cafetera" no "máquina". " Café de tarro" para referirse al instantáneo.
 
-6. **El nombre de la marca es "Cafe Roast"** en textos corridos. El logo usa "Roast." con punto naranja. No "Café Roast" (sin tilde en el nombre oficial).
+6. **El nombre de la marca es "Café Roast"** en textos corridos. El logo usa "Roast." con punto naranja. No "Café Roast" (sin tilde en el nombre oficial).
 
 ---
+
+## 10. La colección de productos de Café Roast se compone de los siguientes tuestes.
+
+| Elemento | Se Cayó el Sistema | Modo Avión |
+|---|---|---|
+| Rol en la colección | Pausa / detención / ritual | Intensidad + foco / ejecución |
+| Momento principal de consumo | Cuando todo se detiene y aparece el tiempo | Después de almuerzo, y también para bloques de foco profundo |
+| Descripción interna | No es una falla, es una pausa legitimada. Todo se detiene sin culpa. Nadie exige, nadie corre. Este café existe para ese momento: cuando el tiempo aparece de golpe y se transforma en ritual. No activa ni empuja. **Sostiene la pausa.** | Modo avión no es una hora del día, es una decisión. Funciona especialmente cuando baja la energía, como después de almuerzo, pero no depende de eso. Este café corta la inercia y te mete de vuelta en la tarea. Es intenso, directo y diseñado para sostener foco real. |
+| Perfil de tueste | Medio | Italiano / oscuro |
+| Objetivo del tueste | Alta tomabilidad, balance y suavidad | Máximo impacto, cuerpo y solubilidad para espresso |
+| Desarrollo | Balanceado, enfocado en dulzor y redondez | Largo, con alta caramelización y baja acidez percibida |
+| Perfil sensorial interno | Chocolate, caramelo, frutos secos | Chocolate amargo, tostado, azúcar morena |
+| Acidez | Media-baja | Baja |
+| Cuerpo | Medio | Alto |
+| Final | Suave, redondo | Largo, intenso |
+| Métodos recomendados | Prensa francesa, filtro (cafetera o V60 simple) | Espresso, moka |
+| Ratio base | 1:15 – 1:17 | Espresso 1:2 |
+| Molienda | Media a gruesa | Fina |
+| Origen | Perú / Colombia (referencia Alto Amazonas) | Perú / Colombia (referencia Alto Amazonas) |
+| Proceso | Lavado | Lavado |
+| Altitud | 1.200 – 1.800 msnm | 1.200 – 1.800 msnm |
+| Varietal | Caturra / Bourbon | Caturra / Bourbon |
+| Intensidad | Media | Alta |
+| Formato disponible | 250 g / 500 g / 1 kg | 250 g / 500 g / 1 kg |
+| Fecha de tueste | ____ | ____ |
+| Microcopy de etiqueta | “Nada que hacer jefe.” | “Sin señal. Con foco.” |
+
 
 *Documento de referencia de marca — Cafe Roast · caferoast.cl · Abril 2026*
