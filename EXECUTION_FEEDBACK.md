@@ -84,3 +84,10 @@
 - Se actualizo el menu hamburguesa para cubrir las secciones vigentes de la landing: inicio, pain points, quiz, productos, resenas, `Próximamente en Roast`, FAQ y CTA final.
 - Se reemplazo el heading `Coming Next` por `Próximamente en Roast`, se ajusto el subcopy, se reordeno el contenido del panel de suscripciones a una secuencia mas natural y se paso la cobertura a grid para evitar que las ciudades se salgan del recuadro.
 - Validacion realizada con `rg` para confirmar la eliminacion de `footer-links`, la presencia del nuevo copy `Próximamente en Roast` y las nuevas anchors del drawer; tambien con parseo HTML via `python3` y `git diff --check`; no se ejecuto prueba visual automatizada en navegador.
+
+## 2026-04-08 - Reorden del footer
+
+- Se refresco el repo con `git pull --rebase origin main`; `main` ya estaba alineado con `origin/main` antes de editar.
+- Se reorganizo el footer en cuatro bloques de izquierda a derecha: wordmark `Roast.`, descriptor de marca y sitio, legales en columna y redes sociales.
+- Se redujo el espacio desperdiciado recomponiendo el grid para desktop y manteniendo un stack limpio en mobile, sin mezclar legales, redes y logo dentro del mismo bloque.
+- Validacion realizada con parseo HTML via `python3`, `git diff --check` y verificacion estructural del orden del footer para confirmar la secuencia wordmark, descriptor, legales y redes sociales; no se ejecuto prueba visual automatizada en navegador.

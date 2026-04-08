@@ -918,23 +918,24 @@
       max-width: 1200px;
       margin: 0 auto;
       display: grid;
-      gap: 2rem;
+      gap: 1.5rem;
       grid-template-columns: 1fr;
     }
-    .footer-logo {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 1.5rem;
-      letter-spacing: -0.02em;
-      margin-bottom: 0.5rem;
-    }
-    .footer-logo span { color: var(--accent); }
+    .footer-brand { display: flex; align-items: flex-start; }
     .footer-tagline { color: var(--text-secondary); font-size: 0.9375rem; }
+    .footer-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .footer-site {
+      color: var(--text-muted);
+      font-size: 0.8125rem;
+    }
     .footer-policies {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      margin-top: 1rem;
     }
     .footer-policies a {
       color: var(--text-muted);
@@ -942,6 +943,19 @@
       transition: color 200ms ease;
     }
     .footer-policies a:hover { color: var(--accent); }
+    .footer-legal {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .footer-legal-label,
+    .footer-social-label {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
     .footer-contact { display: flex; flex-direction: column; gap: 0.75rem; }
     .footer-socials {
       display: flex;
@@ -958,8 +972,13 @@
       font-size: 0.8125rem;
     }
     @media (min-width: 768px) {
-      .footer-inner { grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
-      .footer-contact { justify-self: end; }
+      .footer-inner {
+        grid-template-columns: auto minmax(220px, 1fr) auto auto;
+        align-items: start;
+        gap: 2rem;
+      }
+      .footer-contact { justify-self: end; align-items: flex-end; }
+      .footer-socials { justify-content: flex-end; }
     }
   </style>
 </head>
@@ -1412,11 +1431,23 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
-    <div>
+    <div class="footer-brand">
+      <span class="footer-logo-placeholder">Roast<span>.</span></span>
+    </div>
+    <div class="footer-meta">
       <p class="footer-tagline">Tu primer café real.</p>
-      <p style="color:var(--text-muted);font-size:0.8125rem;margin-top:0.25rem;">caferoast.cl · Santiago, Chile</p>
+      <p class="footer-site">caferoast.cl · Santiago, Chile</p>
+    </div>
+    <div class="footer-legal">
+      <p class="footer-legal-label">Legales</p>
+      <div class="footer-policies" aria-label="Links legales">
+        <a href="./policies/terminos-y-condiciones.html">Términos y condiciones</a>
+        <a href="./policies/politica-de-privacidad.html">Política de privacidad</a>
+        <a href="./policies/politica-de-reembolso.html">Política de reembolso</a>
+      </div>
     </div>
     <div class="footer-contact">
+      <p class="footer-social-label">Redes sociales</p>
       <div class="footer-socials" aria-label="Redes sociales">
         <a href="https://wa.me/56951172813"
            class="icon-link icon-link-whatsapp"
@@ -1432,16 +1463,8 @@
             <rect x="3" y="3" width="18" height="18" rx="5"></rect>
             <circle cx="12" cy="12" r="4"></circle>
             <circle cx="17.5" cy="6.5" r="1"></circle>
-          </svg>
+           </svg>
         </a>
-      </div>
-      <div class="footer-policies" aria-label="Links legales">
-        <a href="./policies/terminos-y-condiciones.html">Términos y condiciones</a>
-        <a href="./policies/politica-de-privacidad.html">Política de privacidad</a>
-        <a href="./policies/politica-de-reembolso.html">Política de reembolso</a>
-      </div>
-      <div style="margin-top:1.25rem;">
-        <span class="footer-logo-placeholder">Roast<span>.</span></span>
       </div>
     </div>
   </div>
