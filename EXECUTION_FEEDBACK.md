@@ -100,3 +100,13 @@
 - Se detecto ausencia de `canonical`, ausencia de metadatos `twitter:*`, `og:image` roto en `https://caferoast.cl/assets/og-image.jpg` y uso de `Organization` schema minimo sin `Product` ni `FAQPage`.
 - Se detecto que la propuesta de valor SEO esta concentrada en una sola landing: el `title` y el `h1` priorizan branding/copy por sobre keywords transaccionales como `cafe de especialidad`, `cafe molido`, `cafe en grano` y cobertura geografica.
 - Validacion realizada con `curl`, `rg`, inspeccion directa de `index.html` y comprobacion HTTP de assets y endpoints publicados; no se ejecuto PageSpeed Insights porque la API respondio `429 quota exceeded`.
+
+## 2026-04-08 - Evaluacion de logos raster en assets/logos
+
+- Se refresco el repo con `git fetch --all --prune`; `main` sigue alineado con `origin/main` antes de revisar.
+- Se inspeccionaron visualmente `assets/logos/logo_black.png`, `assets/logos/logo_white.png` y `assets/logos/favicon.png` para evaluar su uso como logotipo sobre version negra y como favicon.
+- Se detecto que los tres archivos usan extension `.png`, pero tecnicamente contienen imagen JPEG raster sin transparencia; en su estado actual sirven para mockup o revision, no como assets finales de marca.
+- `logo_black.png` funciona mejor como referencia visual sobre fondo oscuro, pero no como logotipo productivo porque trae el fondo negro horneado dentro del archivo.
+- `logo_white.png` es la variante mas cercana a wordmark para fondos claros, aunque el tono del lettering se ve cafe oscuro y no negro puro.
+- `favicon.png` es la mejor base conceptual para favicon porque simplifica a monograma `R` mas grano, pero conviene vectorizarlo o exportarlo con transparencia y simplificarlo un punto mas para 16x16.
+- Validacion realizada con revision visual directa en esta app, lectura de metadatos binarios y comparacion contra el favicon actual `assets/favicon.svg`; no se ejecuto prueba en navegador a tamanos reales de 16x16/32x32.
