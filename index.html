@@ -3,981 +3,136 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cafe Roast — Tu primer café real.</title>
-  <meta name="description" content="Café molido a pedido según tu método. Más sabor y más cafeína que el instantáneo. Despacho rápido en Santiago." />
-  <meta property="og:title" content="Cafe Roast — Tu primer café real." />
-  <meta property="og:description" content="Más sabor. Más cafeína. Igual de simple de hacer. Tu primer café real." />
+  <title>Café molido a pedido y café de especialidad en Santiago | Cafe Roast</title>
+  <meta name="description" content="Compra café molido a pedido o en grano, con molienda según tu cafetera y despacho rápido en Santiago. Café de especialidad simple de pedir por WhatsApp." />
+  <link rel="canonical" href="https://caferoast.cl/" />
+  <meta property="og:locale" content="es_CL" />
+  <meta property="og:title" content="Café molido a pedido y café de especialidad en Santiago | Cafe Roast" />
+  <meta property="og:description" content="Compra café molido a pedido o en grano, con molienda según tu cafetera y despacho rápido en Santiago. Café de especialidad simple de pedir por WhatsApp." />
   <meta property="og:image" content="https://caferoast.cl/assets/og-image.jpg" />
-  <meta property="og:url" content="https://caferoast.cl" />
+  <meta property="og:url" content="https://caferoast.cl/" />
   <meta property="og:type" content="website" />
-  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Café molido a pedido y café de especialidad en Santiago | Cafe Roast" />
+  <meta name="twitter:description" content="Café molido a pedido, café en grano y despacho rápido en Santiago. Pide por WhatsApp y deja el café instantáneo sin complicarte." />
+  <meta name="twitter:image" content="https://caferoast.cl/assets/og-image.jpg" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/site.css" />
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Organization","name":"Cafe Roast","url":"https://caferoast.cl","description":"Tu primer café real."}
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://caferoast.cl/#organization",
+        "name": "Cafe Roast",
+        "url": "https://caferoast.cl/",
+        "logo": "https://caferoast.cl/assets/logos/logo_white.png",
+        "description": "Café molido a pedido y café en grano para dejar el instantáneo sin cambiar tu rutina.",
+        "sameAs": [
+          "https://www.instagram.com/caferoast.cl"
+        ],
+        "contactPoint": [
+          {
+            "@type": "ContactPoint",
+            "contactType": "sales",
+            "telephone": "+56 9 5117 2813",
+            "availableLanguage": "es-CL",
+            "areaServed": "Región Metropolitana, Chile"
+          }
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://caferoast.cl/#website",
+        "url": "https://caferoast.cl/",
+        "name": "Cafe Roast",
+        "publisher": {
+          "@id": "https://caferoast.cl/#organization"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://caferoast.cl/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Venden café molido a pedido?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sí. Molemos el café según tu cafetera para moka, prensa francesa, filtro, espresso, Chemex o AeroPress."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿También venden café en grano?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sí. También puedes pedir el café en grano entero si prefieres molerlo en casa."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cómo sé qué molienda necesito?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Haz el quiz en esta misma página o escríbenos por WhatsApp. Te recomendamos la molienda correcta según tu forma de preparar café."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Hacen despacho de café en Santiago?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sí. Despachamos en la Región Metropolitana y hoy nuestra cobertura activa está concentrada en Santiago."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cuánto demora el café a domicilio?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "El despacho en Santiago suele tomar entre cero y dos días hábiles."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿El envío es gratis?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sí. El envío es gratis en Santiago para compras mayores a $36.000 CLP."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Qué formato me conviene?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "250g sirve para probar, 500g es el formato más popular y 1kg conviene para quien ya sabe que va a repetir."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Es complicado pasar del instantáneo al café de especialidad?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. La idea de Roast es justamente hacer ese cambio simple: nos dices cómo preparas tu café y nosotros hacemos el resto."
+            }
+          }
+        ]
+      }
+    ]
+  }
   </script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg-primary: #0D0D0D;
-      --bg-surface: #1A1A1A;
-      --bg-surface-hover: #222222;
-      --accent: #FF6B35;
-      --accent-hover: #E85A25;
-      --accent-secondary: #FFD166;
-      --text-primary: #F5F0E8;
-      --text-secondary: #9A9A9A;
-      --text-muted: #555555;
-      --success: #4CAF50;
-      --wa-green: #25D366;
-      --wa-green-hover: #1DA851;
-      --border: #2A2A2A;
-      --glass-border: rgba(245, 240, 232, 0.08);
-      --nav-height: 68px;
-    }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      font-size: 1rem;
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-    h1, h2, h3 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
-    }
-    h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); }
-    h2 { font-size: clamp(1.8rem, 4vw, 3rem); }
-    h3 { font-size: clamp(1.3rem, 2.5vw, 1.8rem); }
-    a { color: inherit; text-decoration: none; }
-    img { max-width: 100%; display: block; }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 clamp(1.25rem, 5vw, 2rem);
-    }
-    section { padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 5vw, 2rem); }
-    /* BUTTONS */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 1rem 2rem;
-      border-radius: 8px;
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      border: none;
-      transition: background 200ms ease, transform 150ms ease, border-color 200ms ease, color 200ms ease;
-      text-decoration: none;
-    }
-    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
-    .btn-primary:active { transform: translateY(0); }
-    .btn-whatsapp { background: var(--wa-green); color: #fff; }
-    .btn-whatsapp:hover { background: var(--wa-green-hover); transform: translateY(-2px); }
-    .btn-whatsapp:active { transform: translateY(0); }
-    .btn-secondary {
-      background: transparent;
-      color: var(--text-primary);
-      border: 1px solid var(--border);
-    }
-    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-    .icon-link {
-      width: 44px;
-      height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: transparent;
-      color: var(--text-secondary);
-      transition: color 200ms ease, border-color 200ms ease, background-color 200ms ease, transform 150ms ease;
-      text-decoration: none;
-    }
-    .icon-link:hover { transform: translateY(-2px); }
-    .icon-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-    .icon-link svg { flex-shrink: 0; }
-    .icon-link-accent:hover {
-      color: var(--accent);
-      border-color: var(--accent);
-      background: rgba(255, 107, 53, 0.08);
-    }
-    .icon-link-whatsapp {
-      color: var(--wa-green);
-      border-color: rgba(37, 211, 102, 0.28);
-      background: rgba(37, 211, 102, 0.08);
-    }
-    .icon-link-whatsapp:hover {
-      color: #fff;
-      border-color: var(--wa-green-hover);
-      background: var(--wa-green-hover);
-    }
-    .icon-link-whatsapp:focus-visible { outline-color: var(--wa-green); }
-    .hero-cta-secondary {
-      background: rgba(245, 240, 232, 0.12);
-      color: var(--text-primary);
-      border: 1px solid rgba(245, 240, 232, 0.2);
-      backdrop-filter: blur(10px);
-    }
-    .hero-cta-secondary:hover {
-      background: rgba(245, 240, 232, 0.2);
-      border-color: rgba(245, 240, 232, 0.3);
-      color: #fff;
-      transform: translateY(-2px);
-    }
-    .hero-cta-secondary:active { transform: translateY(0); }
-    .btn-full { width: 100%; }
-    /* BADGES */
-    .badge {
-      display: inline-block;
-      background: var(--accent);
-      color: #fff;
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 0.25rem 0.6rem;
-      border-radius: 4px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .badge-soon {
-      background: var(--accent-secondary);
-      color: var(--bg-primary);
-    }
-    /* CARDS */
-    .card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2rem;
-      transition: border-color 250ms ease, transform 200ms ease;
-    }
-    .card:hover { border-color: var(--accent); transform: translateY(-4px); }
-    .card-featured { border: 2px solid var(--accent); }
-    /* FADE IN SCROLL */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 500ms ease, transform 500ms ease;
-    }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
-    @media (prefers-reduced-motion: reduce) {
-      .fade-in { opacity: 1; transform: none; transition: none; }
-      * { transition: none !important; animation: none !important; }
-    }
-    .footer-logo-mark {
-      height: 32px;
-      width: auto;
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    .site-nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 1100;
-      background: rgba(10, 10, 10, 0.72);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--glass-border);
-      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
-      padding: 0 clamp(1rem, 5vw, 2rem);
-    }
-    .nav-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      min-height: var(--nav-height);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-    .nav-logo {
-      display: inline-flex;
-      align-items: center;
-      flex-shrink: 0;
-      line-height: 0;
-      text-decoration: none;
-    }
-    .nav-logo-mark {
-      height: clamp(1.95rem, 5vw, 2.2rem);
-      width: auto;
-      display: block;
-      filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.24));
-    }
-    .nav-right { display: flex; align-items: center; gap: 0.625rem; }
-    .nav-hamburger {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 5px;
-      width: 44px;
-      height: 44px;
-      background: rgba(245, 240, 232, 0.04);
-      border: 1px solid rgba(245, 240, 232, 0.12);
-      border-radius: 14px;
-      cursor: pointer;
-      padding: 0;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-      transition: border-color 200ms ease, background 200ms ease, transform 200ms ease, box-shadow 200ms ease;
-      flex-shrink: 0;
-    }
-    .nav-hamburger:hover {
-      border-color: rgba(255, 107, 53, 0.72);
-      background: rgba(255, 107, 53, 0.08);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
-    }
-    .nav-hamburger:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .nav-hamburger span {
-      display: block;
-      width: 20px;
-      height: 2px;
-      background: var(--text-primary);
-      border-radius: 999px;
-      transition: transform 300ms ease, opacity 200ms ease;
-    }
-    .nav-hamburger.open {
-      border-color: rgba(255, 107, 53, 0.72);
-      background: rgba(255, 107, 53, 0.12);
-    }
-    .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
-    .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
-    .nav-drawer {
-      position: fixed;
-      top: calc(var(--nav-height) + 0.625rem);
-      right: clamp(0.75rem, 3vw, 1.5rem);
-      left: auto;
-      width: min(340px, calc(100vw - 1.5rem));
-      height: calc(100dvh - var(--nav-height) - 1.25rem);
-      background: rgba(10, 10, 10, 0.96);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      box-shadow: 0 30px 64px rgba(0, 0, 0, 0.46);
-      z-index: 1080;
-      padding: 1.25rem 1.25rem 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      transform: translateX(calc(100% + 2rem));
-      visibility: hidden;
-      opacity: 0;
-      transition: transform 300ms cubic-bezier(0.4,0,0.2,1), opacity 250ms ease, visibility 300ms;
-    }
-    .nav-drawer.open { transform: translateX(0); visibility: visible; opacity: 1; }
-    .nav-drawer-overlay {
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(circle at top right, rgba(29, 168, 81, 0.08), transparent 18%),
-        rgba(0, 0, 0, 0.62);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      z-index: 1070;
-      opacity: 0;
-      pointer-events: none;
-      visibility: hidden;
-      transition: opacity 300ms ease, visibility 300ms;
-    }
-    .nav-drawer-overlay.open { opacity: 1; pointer-events: all; visibility: visible; }
-    .nav-drawer a {
-      display: block;
-      padding: 0.95rem 0;
-      border-bottom: 1px solid rgba(245, 240, 232, 0.08);
-      color: var(--text-secondary);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9375rem;
-      font-weight: 500;
-      transition: color 200ms ease, transform 200ms ease;
-      text-decoration: none;
-    }
-    .nav-drawer a:hover,
-    .nav-drawer a:focus-visible { color: var(--accent); transform: translateX(0.35rem); }
-    .nav-drawer a:focus-visible {
-      outline: 2px solid rgba(255, 107, 53, 0.6);
-      outline-offset: 4px;
-      border-radius: 10px;
-    }
-    .nav-drawer a.drawer-active { color: var(--text-primary); }
-    .nav-drawer .drawer-section {
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      padding: 1rem 0 0.5rem;
-    }
-    /* ===== HERO ===== */
-    #hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      position: relative;
-      padding-top: calc(var(--nav-height) + 1rem);
-      overflow: hidden;
-    }
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
-    }
-    .hero-bg::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(13,13,13,0.72);
-    }
-    .hero-content {
-      position: relative;
-      z-index: 1;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 clamp(1.25rem, 5vw, 2rem);
-      animation: heroFadeIn 0.8s ease forwards;
-    }
-    @keyframes heroFadeIn {
-      from { opacity: 0; transform: translateY(24px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .hero-eyebrow {
-      display: inline-block;
-      color: var(--accent);
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      font-size: 0.875rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-    }
-    .hero-headline {
-      max-width: 14ch;
-      margin-bottom: 1.25rem;
-    }
-    .hero-sub {
-      max-width: 50ch;
-      color: var(--text-secondary);
-      font-size: 1.125rem;
-      margin-bottom: 2rem;
-    }
-    .hero-ctas {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      align-items: center;
-    }
-    @media (min-width: 768px) {
-      .hero-content { text-align: left; }
-    }
-    /* ===== PAIN POINTS ===== */
-    #pain-points { background: var(--bg-primary); }
-    #pain-points .section-header { text-align: center; margin-bottom: 3rem; }
-    .pain-grid {
-      display: grid;
-      gap: 1.5rem;
-      grid-template-columns: 1fr;
-    }
-    @media (min-width: 768px) { .pain-grid { grid-template-columns: repeat(3, 1fr); } }
-    .pain-card-icon {
-      width: 48px;
-      height: 48px;
-      margin-bottom: 1.25rem;
-      color: var(--accent);
-    }
-    .pain-card h3 { margin-bottom: 0.5rem; }
-    .pain-card p { color: var(--text-secondary); }
-    /* ===== QUIZ ===== */
-    #quiz { background: var(--bg-surface); }
-    #quiz .section-header { text-align: center; margin-bottom: 2.5rem; }
-    .quiz-wrap {
-      background: rgba(13, 13, 13, 0.74);
-      border-radius: 20px;
-      max-width: 980px;
-      margin: 0 auto;
-      border: 1px solid rgba(245, 240, 232, 0.12);
-      overflow: hidden;
-      box-shadow: 0 28px 64px rgba(0, 0, 0, 0.24);
-    }
-    @media (min-width: 900px) {
-      .quiz-wrap {
-        display: grid;
-        grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.1fr);
-      }
-    }
-    .quiz-visual {
-      min-height: 220px;
-      background:
-        linear-gradient(180deg, rgba(13, 13, 13, 0.14), rgba(13, 13, 13, 0.42)),
-        url("https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1200&q=80");
-      background-size: cover;
-      background-position: center;
-    }
-    @media (min-width: 900px) {
-      .quiz-visual { min-height: 100%; }
-    }
-    .quiz-panel {
-      display: flex;
-      flex-direction: column;
-      padding: clamp(1.5rem, 4vw, 3rem);
-      background: rgba(26, 26, 26, 0.92);
-      backdrop-filter: blur(8px);
-    }
-    .quiz-progress {
-      background: var(--border);
-      height: 4px;
-      border-radius: 2px;
-      margin-bottom: 2rem;
-      overflow: hidden;
-    }
-    .quiz-progress-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 2px;
-      transition: width 300ms ease;
-    }
-    .quiz-step-stack { position: relative; }
-    .quiz-step { display: none; }
-    .quiz-step.active {
-      display: block;
-      animation: quizFade 250ms ease forwards;
-    }
-    @keyframes quizFade {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .quiz-question {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 600;
-      font-size: 1.25rem;
-      margin-bottom: 1.5rem;
-    }
-    .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
-    .quiz-option {
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.875rem 1.25rem;
-      width: 100%;
-      text-align: left;
-      color: var(--text-primary);
-      font-family: 'Inter', sans-serif;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: border-color 200ms ease, background 200ms ease;
-    }
-    .quiz-option:hover { border-color: var(--accent); }
-    .quiz-option:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .quiz-option.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .quiz-nav { display: flex; gap: 1rem; margin-top: 1.5rem; align-items: center; }
-    .quiz-back {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      padding: 0.625rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.875rem;
-      transition: border-color 200ms ease, color 200ms ease;
-    }
-    .quiz-back:hover { border-color: var(--accent); color: var(--accent); }
-    .quiz-result-card {
-      background: var(--bg-primary);
-      border: 2px solid var(--accent);
-      border-radius: 12px;
-      padding: 2rem;
-      text-align: center;
-    }
-    .quiz-result-tag {
-      color: var(--accent);
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 0.75rem;
-    }
-    .quiz-result-rec {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-    .quiz-result-price {
-      color: var(--accent-secondary);
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-    }
-    .quiz-restart {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 0.875rem;
-      margin-top: 1rem;
-      text-decoration: underline;
-      font-family: 'Inter', sans-serif;
-    }
-    .quiz-restart:hover { color: var(--text-secondary); }
-    /* ===== PRODUCTS ===== */
-    #products { background: var(--bg-primary); }
-    #products .section-header { text-align: center; margin-bottom: 0.75rem; }
-    #products .section-sub { text-align: center; color: var(--text-secondary); margin-bottom: 3rem; }
-    .products-grid {
-      display: grid;
-      gap: 1.5rem;
-      grid-template-columns: 1fr;
-    }
-    @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
-    .product-card { position: relative; display: flex; flex-direction: column; }
-    .product-badge-wrap {
-      position: absolute;
-      top: -0.75rem;
-      left: 50%;
-      transform: translateX(-50%);
-      white-space: nowrap;
-    }
-    .product-img {
-      width: 100%;
-      aspect-ratio: 1;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 1.25rem;
-    }
-    .product-label {
-      color: var(--text-secondary);
-      font-size: 0.875rem;
-      margin-bottom: 0.25rem;
-    }
-    .product-size {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 1.5rem;
-      margin-bottom: 0.25rem;
-    }
-    .product-desc { color: var(--text-secondary); font-size: 0.9375rem; margin-bottom: 1rem; }
-    .product-selectors { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
-    .product-selectors select {
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text-primary);
-      padding: 0.625rem 0.875rem;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9375rem;
-      cursor: pointer;
-      width: 100%;
-      transition: border-color 200ms ease;
-    }
-    .product-selectors select:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
-    .product-selectors select:hover { border-color: var(--accent); }
-    .product-price {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 2rem;
-      color: var(--text-primary);
-      margin-bottom: 1.25rem;
-    }
-    .product-price span { font-size: 1rem; font-weight: 400; color: var(--text-secondary); }
-    .product-purchase-row {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-top: auto;
-    }
-    .product-purchase-row .product-price { margin-bottom: 0; }
-    .product-cta-icon {
-      width: 48px;
-      height: 48px;
-      flex-shrink: 0;
-    }
-    .free-shipping-note {
-      text-align: center;
-      margin-top: 2rem;
-      color: var(--text-secondary);
-      font-size: 0.875rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-    .free-shipping-note svg { color: var(--success); }
-    /* ===== COUNTER ===== */
-    #counter { background: var(--bg-primary); position: relative; overflow: hidden; }
-    .counter-noise {
-      position: absolute;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-    }
-    .counter-inner { position: relative; z-index: 1; text-align: center; }
-    .counter-number {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: clamp(4rem, 10vw, 8rem);
-      color: var(--accent);
-      line-height: 1;
-      display: block;
-    }
-    .counter-unit {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(1.5rem, 3vw, 2.5rem);
-      font-weight: 600;
-      color: var(--accent);
-    }
-    .counter-headline {
-      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-      color: var(--text-secondary);
-      margin-top: 1rem;
-    }
-    /* ===== REVIEWS ===== */
-    #reviews { background: var(--bg-surface); }
-    #reviews .section-header { text-align: center; margin-bottom: 2.5rem; }
-    .carousel-wrap { position: relative; overflow: hidden; }
-    .carousel-track {
-      display: flex;
-      gap: 1.5rem;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      padding-bottom: 0.5rem;
-    }
-    .carousel-track::-webkit-scrollbar { display: none; }
-    .review-card {
-      flex: 0 0 300px;
-      scroll-snap-align: start;
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.75rem;
-    }
-    .review-stars { color: var(--accent-secondary); font-size: 1.1rem; margin-bottom: 0.75rem; }
-    .review-text { color: var(--text-primary); font-size: 0.9375rem; margin-bottom: 1rem; }
-    .review-author { font-weight: 600; font-size: 0.875rem; }
-    .review-location { color: var(--text-secondary); font-size: 0.8125rem; }
-    .carousel-dots {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-top: 1.5rem;
-    }
-    .carousel-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--border);
-      cursor: pointer;
-      border: none;
-      transition: background 200ms ease;
-      padding: 0;
-    }
-    .carousel-dot.active { background: var(--accent); }
-    /* ===== COMING NEXT ===== */
-    #coming-next {
-      background:
-        radial-gradient(circle at top left, rgba(255, 107, 53, 0.18), transparent 30%),
-        linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-primary) 100%);
-    }
-    #coming-next .section-header {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-    .coming-next-sub {
-      max-width: 56ch;
-      margin: 0.75rem auto 0;
-      color: var(--text-secondary);
-    }
-    .coming-next-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-    @media (min-width: 960px) {
-      .coming-next-grid {
-        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-        align-items: stretch;
-      }
-    }
-    .coming-next-panel {
-      height: 100%;
-      border-radius: 20px;
-      padding: clamp(2rem, 5vw, 3rem);
-      box-shadow: 0 28px 56px rgba(0, 0, 0, 0.22);
-      overflow: hidden;
-    }
-    .coming-next-panel h3 {
-      font-size: clamp(1.5rem, 3vw, 2.2rem);
-      margin-bottom: 0.75rem;
-    }
-    .coming-next-panel p {
-      font-size: 1rem;
-      line-height: 1.7;
-    }
-    .sub-card {
-      background: rgba(13, 13, 13, 0.88);
-      border: 1px solid rgba(245, 240, 232, 0.16);
-    }
-    .sub-inner {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      height: 100%;
-    }
-    .sub-badge { margin-bottom: 1rem; }
-    .sub-headline { margin-bottom: 0.75rem; }
-    .sub-body { color: rgba(245, 240, 232, 0.78); max-width: 34ch; }
-    .sub-details {
-      display: flex;
-      flex-direction: column;
-      gap: 0.875rem;
-    }
-    .sub-detail-label {
-      color: var(--text-secondary);
-      font-size: 0.8125rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .sub-freqs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-    .sub-freq {
-      background: rgba(245, 240, 232, 0.08);
-      border: 1px solid rgba(245, 240, 232, 0.14);
-      border-radius: 8px;
-      padding: 0.5rem 1.25rem;
-      font-weight: 500;
-      font-size: 0.9375rem;
-      color: var(--text-primary);
-    }
-    .sub-cta { width: 100%; }
-    @media (min-width: 640px) {
-      .sub-cta { width: auto; }
-    }
-    /* ===== COVERAGE MAP ===== */
-    .coverage-card {
-      background: rgba(245, 240, 232, 0.03);
-      border: 1px solid rgba(245, 240, 232, 0.08);
-    }
-    .coverage-body {
-      color: var(--text-secondary);
-      margin-bottom: 1.75rem;
-      max-width: 44ch;
-    }
-    .coverage-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
-      width: 100%;
-      margin: 0;
-    }
-    @media (min-width: 640px) {
-      .coverage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-    .coverage-badge-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.6rem;
-      background: var(--bg-primary);
-      border-radius: 10px;
-      padding: 1rem 1.125rem;
-      font-weight: 500;
-      min-width: 0;
-    }
-    .coverage-badge-item.active { border: 2px solid var(--accent); color: var(--text-primary); }
-    .coverage-badge-item.soon { border: 1px solid var(--border); color: var(--text-secondary); }
-    .coverage-badge-item svg { flex-shrink: 0; }
-    .coverage-badge-copy {
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-    }
-    .coverage-badge-city {
-      font-weight: 600;
-      line-height: 1.25;
-    }
-    .coverage-badge-region {
-      font-size: 0.8125rem;
-      line-height: 1.35;
-    }
-    /* ===== FAQ ===== */
-    #faq { background: var(--bg-primary); }
-    #faq .section-header { text-align: center; margin-bottom: 2.5rem; }
-    .faq-list { max-width: 720px; margin: 0 auto; }
-    .faq-item {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      margin-bottom: 0.75rem;
-      overflow: hidden;
-      background: rgba(245, 240, 232, 0.02);
-      transition: border-color 200ms ease, background 200ms ease, box-shadow 200ms ease;
-    }
-    .faq-item:hover,
-    .faq-item:focus-within {
-      border-color: var(--accent);
-      background: rgba(255, 107, 53, 0.04);
-    }
-    .faq-item.open {
-      border-color: var(--accent);
-      background: rgba(255, 107, 53, 0.05);
-      box-shadow: 0 20px 44px rgba(0, 0, 0, 0.16);
-    }
-    .faq-btn {
-      width: 100%;
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.25rem 1.5rem;
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      text-align: left;
-      gap: 1rem;
-      transition: color 200ms ease;
-    }
-    .faq-item:hover .faq-btn,
-    .faq-item:focus-within .faq-btn,
-    .faq-item.open .faq-btn,
-    .faq-btn:hover,
-    .faq-btn:focus-visible { color: var(--accent); }
-    .faq-btn:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: -2px;
-      border-radius: 16px;
-    }
-    .faq-chevron {
-      flex-shrink: 0;
-      color: currentColor;
-      transition: transform 250ms ease;
-    }
-    .faq-item.open .faq-chevron { transform: rotate(180deg); }
-    .faq-answer {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 300ms ease;
-    }
-    .faq-answer-inner {
-      padding: 0 1.5rem 1.25rem;
-      border-top: 1px solid rgba(245, 240, 232, 0.05);
-      color: var(--text-secondary);
-      font-size: 0.9375rem;
-    }
-    /* ===== FINAL CTA ===== */
-    #final-cta {
-      background: var(--accent);
-      text-align: center;
-      padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 5vw, 2rem);
-    }
-    #final-cta h2 { color: #fff; margin-bottom: 0.75rem; }
-    .final-sub { color: rgba(255,255,255,0.85); font-size: 1.125rem; margin-bottom: 2rem; }
-    .btn-final {
-      background: #fff;
-      color: var(--accent);
-      font-weight: 700;
-    }
-    .btn-final:hover { background: #f0ede6; transform: translateY(-2px); }
-    /* ===== FOOTER ===== */
-    footer {
-      background: var(--bg-primary);
-      border-top: 1px solid var(--border);
-      padding: 3rem clamp(1.25rem, 5vw, 2rem);
-    }
-    .footer-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      gap: 1.5rem;
-      grid-template-columns: 1fr;
-    }
-    .footer-brand { display: flex; align-items: flex-start; }
-    .footer-tagline { color: var(--text-secondary); font-size: 0.9375rem; }
-    .footer-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-    .footer-site {
-      color: var(--text-muted);
-      font-size: 0.8125rem;
-    }
-    .footer-policies {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .footer-policies a {
-      color: var(--text-muted);
-      font-size: 0.875rem;
-      transition: color 200ms ease;
-    }
-    .footer-policies a:hover { color: var(--accent); }
-    .footer-legal {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    .footer-legal-label,
-    .footer-social-label {
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .footer-contact { display: flex; flex-direction: column; gap: 0.75rem; }
-    .footer-socials {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-    .footer-bottom {
-      max-width: 1200px;
-      margin: 2rem auto 0;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 0.8125rem;
-    }
-    @media (min-width: 768px) {
-      .footer-inner {
-        grid-template-columns: auto minmax(220px, 1fr) auto auto;
-        align-items: start;
-        gap: 2rem;
-      }
-      .footer-contact { justify-self: end; align-items: flex-end; }
-      .footer-socials { justify-content: flex-end; }
-    }
-  </style>
 </head>
 <body>
-
-<!-- NAV -->
 <nav class="site-nav" aria-label="Navegación principal">
   <div class="nav-inner">
-    <a href="#" class="nav-logo" aria-label="Roast - ir al inicio">
-      <img src="./assets/logos/roast-logo-dark.svg" alt="Roast" class="nav-logo-mark" />
+    <a href="/" class="nav-logo" aria-label="Roast - ir al inicio">
+      <img src="/assets/logos/roast-logo-dark.svg" alt="Roast" class="nav-logo-mark" />
     </a>
     <div class="nav-right">
       <button class="nav-hamburger" id="navHamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="navDrawer">
@@ -987,452 +142,490 @@
   </div>
 </nav>
 
-<!-- DRAWER OVERLAY -->
 <div class="nav-drawer-overlay" id="navOverlay" aria-hidden="true"></div>
 
-<!-- DRAWER -->
 <nav class="nav-drawer" id="navDrawer" aria-label="Menú de navegación" aria-hidden="true">
-  <div class="drawer-section">Navegar</div>
+  <div class="drawer-section">Explorar</div>
+  <a href="/cafe-molido/" onclick="closeDrawer()">Café molido</a>
+  <a href="/cafe-en-grano/" onclick="closeDrawer()">Café en grano</a>
+  <a href="/cafe-de-especialidad/" onclick="closeDrawer()">Café de especialidad</a>
+  <a href="/cafe-a-domicilio/" onclick="closeDrawer()">Café a domicilio</a>
+  <div class="drawer-section">Home</div>
   <a href="#hero" onclick="closeDrawer()">Inicio</a>
-  <a href="#pain-points" onclick="closeDrawer()">¿Por qué Café Roast?</a>
+  <a href="#seo-hub" onclick="closeDrawer()">Tipos de café</a>
   <a href="#quiz" onclick="closeDrawer()">Quiz</a>
   <a href="#products" onclick="closeDrawer()">Productos y precios</a>
-  <a href="#reviews" onclick="closeDrawer()">Reseñas</a>
-  <a href="#coming-next" onclick="closeDrawer()">Próximamente en Roast</a>
   <a href="#faq" onclick="closeDrawer()">Preguntas frecuentes</a>
   <a href="#final-cta" onclick="closeDrawer()">Pedir ahora</a>
 </nav>
 
-<!-- HERO -->
-<section id="hero" aria-label="Sección principal">
-  <div class="hero-bg" role="img" aria-label="Café siendo vertido en taza oscura"></div>
-  <div class="hero-content">
-    <span class="hero-eyebrow">Tu primer café real.</span>
-    <h1 class="hero-headline">Tu desayuno merece más que agua tibia con colorante.</h1>
-    <p class="hero-sub">Café Roast. Más sabor y más cafeína, y tan simple de preparar como el de tarro.</p>
-    <div class="hero-ctas">
-      <a href="https://wa.me/56951172813?text=Hola%20Cafe%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
-         class="btn btn-whatsapp"
-         target="_blank" rel="noopener noreferrer"
-         aria-label="Pedir por WhatsApp"
-         onclick="dataLayer.push({event:'cta_click_hero'});dataLayer.push({event:'whatsapp_click',label:'hero'})">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
-        Pedir por WhatsApp
-      </a>
-      <a href="#products" class="btn btn-secondary hero-cta-secondary" aria-label="Ir a productos para elegir tu café">Elegir mi café →</a>
+<main>
+  <section id="hero" aria-label="Sección principal">
+    <div class="hero-bg" role="img" aria-label="Café servido en una taza sobre una superficie oscura"></div>
+    <div class="hero-content">
+      <span class="hero-eyebrow">Café molido a pedido en Santiago</span>
+      <h1 class="hero-headline">Café molido a pedido, en grano y a domicilio en Santiago.</h1>
+      <p class="hero-sub">Roast te ayuda a dejar el café instantáneo sin rituales raros: eliges formato, nos dices cómo lo preparas y te lo mandamos listo para tu cafetera.</p>
+      <div class="hero-ctas">
+        <a href="https://wa.me/56951172813?text=Hola%20Cafe%20Roast!%20%F0%9F%91%8B%20Quiero%20pedir%20caf%C3%A9%20molido%20a%20pedido%20o%20en%20grano.%20%C2%BFPor%20d%C3%B3nde%20empiezo%3F"
+           class="btn btn-whatsapp"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Pedir por WhatsApp"
+           onclick="dataLayer.push({event:'cta_click_hero'});dataLayer.push({event:'whatsapp_click',label:'hero'})">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+          Pedir por WhatsApp
+        </a>
+        <a href="#seo-hub" class="btn btn-secondary hero-cta-secondary" aria-label="Explorar tipos de café">Explorar tipos de café</a>
+      </div>
+      <ul class="hero-proof" aria-label="Resumen de beneficios">
+        <li>Molienda según tu cafetera</li>
+        <li>Despacho en Santiago</li>
+        <li>Desde $9.000 CLP</li>
+      </ul>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- PAIN POINTS -->
-<section id="pain-points" aria-labelledby="pain-heading">
-  <div class="container">
-    <div class="section-header fade-in">
-      <h2 id="pain-heading">¿Tu café de las mañanas te está fallando?</h2>
+  <section id="pain-points" aria-labelledby="pain-heading">
+    <div class="container">
+      <div class="section-header fade-in">
+        <h2 id="pain-heading">Si el café de tarro ya te aburrió, este es el siguiente paso lógico.</h2>
+      </div>
+      <div class="pain-grid">
+        <div class="card pain-card fade-in" aria-label="Problema: Sabor plano">
+          <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/><path d="M9 14s0-2 2-2 2 2 2 2" stroke-linecap="round"/><path d="M8 11h.01M16 11h.01" stroke-linecap="round"/></svg>
+          <h3>Sabe a poco</h3>
+          <p>El café instantáneo te deja una taza plana. Roast parte de grano real, no de un polvo resignado a existir.</p>
+        </div>
+        <div class="card pain-card fade-in" aria-label="Problema: No despierta">
+          <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h3>No te mueve la aguja</h3>
+          <p>Tres tazas y sigues bostezando. Acá el café sí se siente, sin necesidad de volverlo un hobby técnico.</p>
+        </div>
+        <div class="card pain-card fade-in" aria-label="Solución: Café simple">
+          <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <h3>Más café real, misma rutina</h3>
+          <p>Pides café molido a pedido o en grano, eliges el formato, y listo. Sin molinillo si no quieres, sin clases magistrales tampoco.</p>
+        </div>
+      </div>
     </div>
-    <div class="pain-grid">
-      <div class="card pain-card fade-in" aria-label="Problema: Sabe a nada">
-        <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/><path d="M9 14s0-2 2-2 2 2 2 2" stroke-linecap="round"/><path d="M8 11h.01M16 11h.01" stroke-linecap="round"/></svg>
-        <h3>Sabe a nada</h3>
-        <p>El café instantáneo promete mucho y entrega poco. Sabor plano, aroma artificial, decepción garantizada.</p>
-      </div>
-      <div class="card pain-card fade-in" aria-label="Problema: No despierta a nadie">
-        <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <h3>No despierta a nadie</h3>
-        <p>Lleva tan poco café de verdad que podrías tomar tres tazas, seguir con sueño... y con acidez</p>
-      </div>
-      <div class="card pain-card fade-in" aria-label="Solución: Simple como siempre">
-        <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        <h3>¿Y el café real es muy complicado?</h3>
-        <p>Para nada. En Roast te lo entregamos recién molido, preciso para tu cafetera.</p>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<!-- QUIZ -->
-<section id="quiz" aria-labelledby="quiz-heading">
-  <div class="container">
-    <div class="section-header fade-in">
-      <h2 id="quiz-heading">¿Qué café te recomendamos? 2 preguntas y listo.</h2>
-    </div>
-    <div class="quiz-wrap fade-in">
-      <div class="quiz-visual" role="img" aria-label="Cafeteras y métodos de preparación de café sobre una mesa"></div>
-      <div class="quiz-panel">
-        <div class="quiz-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del quiz">
-          <div class="quiz-progress-fill" id="quizProgressFill" style="width: 50%"></div>
-        </div>
-        <div class="quiz-step-stack" id="quizStepStack">
-          <!-- Step 1 -->
-          <div class="quiz-step active" id="quizStep1" role="group" aria-labelledby="quizQ1">
-            <p class="quiz-question" id="quizQ1">¿Cuántas tazas de café tomas al día?</p>
-            <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ1">
-              <button class="quiz-option" aria-pressed="false" data-cups="1_taza" onclick="selectCups(this)">1 taza</button>
-              <button class="quiz-option" aria-pressed="false" data-cups="2_tazas" onclick="selectCups(this)">2 tazas</button>
-              <button class="quiz-option" aria-pressed="false" data-cups="3_o_mas" onclick="selectCups(this)">3 o más</button>
-            </div>
-          </div>
-          <!-- Step 2 -->
-          <div class="quiz-step" id="quizStep2" role="group" aria-labelledby="quizQ2">
-            <p class="quiz-question" id="quizQ2">¿Cómo preparas tu café?</p>
-            <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ2">
-              <button class="quiz-option" aria-pressed="false" data-method="moka" onclick="selectMethod(this)">Cafetera italiana (moka)</button>
-              <button class="quiz-option" aria-pressed="false" data-method="prensa_francesa" onclick="selectMethod(this)">Prensa francesa</button>
-              <button class="quiz-option" aria-pressed="false" data-method="filtro" onclick="selectMethod(this)">Cafetera de filtro</button>
-              <button class="quiz-option" aria-pressed="false" data-method="espresso" onclick="selectMethod(this)">Máquina de espresso</button>
-              <button class="quiz-option" aria-pressed="false" data-method="hervidor" onclick="selectMethod(this)">Solo tengo hervidor</button>
-              <button class="quiz-option" aria-pressed="false" data-method="no_se" onclick="selectMethod(this)">Aún no sé, sorpréndeme</button>
-            </div>
-            <div class="quiz-nav">
-              <button class="quiz-back" onclick="quizBack(1)" aria-label="Volver a la pregunta anterior">← Volver</button>
-            </div>
-          </div>
-          <!-- Step 3: Result -->
-          <div class="quiz-step" id="quizStep3" aria-live="polite">
-            <div class="quiz-result-card">
-              <p class="quiz-result-tag">Tu recomendación</p>
-              <p class="quiz-result-rec" id="quizResultRec">—</p>
-              <p class="quiz-result-price" id="quizResultPrice">—</p>
-              <a id="quizResultCta"
-                 href="#"
-                 class="btn btn-whatsapp btn-full"
-                 target="_blank" rel="noopener noreferrer"
-                 aria-label="Pedir por WhatsApp según recomendación"
-                 onclick="dataLayer.push({event:'quiz_completed'});dataLayer.push({event:'whatsapp_click',label:'quiz_result'})">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
-                Pedir esto por WhatsApp →
-              </a>
-              <button class="quiz-restart" onclick="quizRestart()" aria-label="Reiniciar el quiz">Volver a empezar</button>
-            </div>
-          </div>
-        </div>
+  <section id="seo-hub" aria-labelledby="seo-hub-heading">
+    <div class="container">
+      <div class="section-header fade-in">
+        <h2 id="seo-hub-heading">Explora Roast según lo que realmente estás buscando.</h2>
+      </div>
+      <p class="section-sub fade-in">Si ya vienes con una intención clara, entra directo a la página que te conviene. Así encuentras más rápido el tipo de café, formato y mensaje correcto.</p>
+      <div class="seo-hub-grid">
+        <article class="seo-hub-card fade-in">
+          <span class="badge">MOLIDO</span>
+          <h3>Café molido a pedido</h3>
+          <p>Para moka, prensa francesa, filtro, espresso y más. Tú nos dices la cafetera, nosotros hacemos el resto.</p>
+          <a class="seo-hub-link" href="/cafe-molido/">Ver café molido →</a>
+        </article>
+        <article class="seo-hub-card fade-in">
+          <span class="badge">EN GRANO</span>
+          <h3>Café en grano</h3>
+          <p>Si ya tienes molinillo o te gusta ajustar tu molienda en casa, esta es tu entrada natural a Roast.</p>
+          <a class="seo-hub-link" href="/cafe-en-grano/">Ver café en grano →</a>
+        </article>
+        <article class="seo-hub-card fade-in">
+          <span class="badge">SIN POSE</span>
+          <h3>Café de especialidad</h3>
+          <p>Café de especialidad sin tecnicismos ni vocabulario gourmet. Solo mejor café, más claro y más simple de pedir.</p>
+          <a class="seo-hub-link" href="/cafe-de-especialidad/">Ver café de especialidad →</a>
+        </article>
+        <article class="seo-hub-card fade-in">
+          <span class="badge">SANTIAGO</span>
+          <h3>Café a domicilio</h3>
+          <p>Pide por WhatsApp y recibe tu café en Santiago con despacho rápido y envío gratis sobre $36.000 CLP.</p>
+          <a class="seo-hub-link" href="/cafe-a-domicilio/">Ver café a domicilio →</a>
+        </article>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- PRODUCTS -->
-<section id="products" aria-labelledby="products-heading">
-  <div class="container">
-    <div class="section-header fade-in">
-      <h2 id="products-heading">Elige tu café</h2>
-    </div>
-    <p class="section-sub fade-in">Todos disponibles en grano o molido a pedido según tu cafetera.</p>
-    <div class="products-grid">
-      <!-- 250g -->
-      <div class="card product-card fade-in" aria-label="Producto 250g">
-        <img src="https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?auto=format&fit=crop&w=900&q=80" alt="Granos de cafe tostado servidos sobre una mesa de madera" class="product-img" loading="lazy" />
-        <p class="product-label">Para empezar</p>
-        <p class="product-size">250g</p>
-        <p class="product-desc">Ideal si quieres probar Roast por primera vez.</p>
-        <div class="product-selectors">
-          <select id="grind250" aria-label="Selecciona molienda para 250g" onchange="updateProductLink('250')">
-            <option value="espresso">Molido para espresso</option>
-            <option value="moka">Molido para moka</option>
-            <option value="prensa francesa">Molido para prensa francesa</option>
-            <option value="filtro / pour over">Molido para filtro / pour over</option>
-            <option value="chemex">Molido para chemex</option>
-            <option value="aeropress">Molido para aeropress</option>
-            <option value="grano entero">En grano entero</option>
-          </select>
-        </div>
-        <div class="product-purchase-row">
-          <p class="product-price">$9.000 <span>CLP</span></p>
-          <a id="waLink250"
-             href="#"
-             class="icon-link icon-link-whatsapp product-cta-icon"
-             target="_blank" rel="noopener noreferrer"
-             aria-label="Pedir 250g por WhatsApp"
-             onclick="dataLayer.push({event:'product_card_click',format:'250g'});dataLayer.push({event:'whatsapp_click',label:'product_250g'})">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
-          </a>
-        </div>
+  <section id="quiz" aria-labelledby="quiz-heading">
+    <div class="container">
+      <div class="section-header fade-in">
+        <h2 id="quiz-heading">¿No sabes si pedir café molido o en grano? Haz el quiz.</h2>
       </div>
-      <!-- 500g FEATURED -->
-      <div class="card product-card card-featured fade-in" aria-label="Producto 500g - el más popular" style="position:relative;">
-        <div class="product-badge-wrap">
-          <span class="badge" aria-label="Más popular">MÁS POPULAR</span>
-        </div>
-        <img src="https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=900&q=80" alt="Taza de cafe recien preparado junto a granos de cafe" class="product-img" loading="lazy" />
-        <p class="product-label">El más popular</p>
-        <p class="product-size">500g</p>
-        <p class="product-desc">El favorito. Rinde el mes completo si tomas 1–2 tazas al día.</p>
-        <div class="product-selectors">
-          <select id="grind500" aria-label="Selecciona molienda para 500g" onchange="updateProductLink('500')">
-            <option value="moka">Molido para moka</option>
-            <option value="espresso">Molido para espresso</option>
-            <option value="prensa francesa">Molido para prensa francesa</option>
-            <option value="filtro / pour over">Molido para filtro / pour over</option>
-            <option value="chemex">Molido para chemex</option>
-            <option value="aeropress">Molido para aeropress</option>
-            <option value="grano entero">En grano entero</option>
-          </select>
-        </div>
-        <div class="product-purchase-row">
-          <p class="product-price">$16.500 <span>CLP</span></p>
-          <a id="waLink500"
-             href="#"
-             class="icon-link icon-link-whatsapp product-cta-icon"
-             target="_blank" rel="noopener noreferrer"
-             aria-label="Pedir 500g por WhatsApp"
-             onclick="dataLayer.push({event:'product_card_click',format:'500g'});dataLayer.push({event:'whatsapp_click',label:'product_500g'})">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
-          </a>
-        </div>
-      </div>
-      <!-- 1kg -->
-      <div class="card product-card fade-in" aria-label="Producto 1kg - mejor precio">
-        <div class="product-badge-wrap">
-          <span class="badge" aria-label="Mejor precio por gramo">MEJOR PRECIO/GRAMO</span>
-        </div>
-        <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=900&q=80" alt="Pala sirviendo granos de cafe tostado desde un saco" class="product-img" loading="lazy" />
-        <p class="product-label">El más conveniente</p>
-        <p class="product-size">1kg</p>
-        <p class="product-desc">El mejor precio por gramo. Para los que ya saben lo que quieren.</p>
-        <div class="product-selectors">
-          <select id="grind1kg" aria-label="Selecciona molienda para 1kg" onchange="updateProductLink('1kg')">
-            <option value="filtro / pour over">Molido para filtro / pour over</option>
-            <option value="espresso">Molido para espresso</option>
-            <option value="moka">Molido para moka</option>
-            <option value="prensa francesa">Molido para prensa francesa</option>
-            <option value="chemex">Molido para chemex</option>
-            <option value="aeropress">Molido para aeropress</option>
-            <option value="grano entero">En grano entero</option>
-          </select>
-        </div>
-        <div class="product-purchase-row">
-          <p class="product-price">$29.000 <span>CLP</span></p>
-          <a id="waLink1kg"
-             href="#"
-             class="icon-link icon-link-whatsapp product-cta-icon"
-             target="_blank" rel="noopener noreferrer"
-             aria-label="Pedir 1kg por WhatsApp"
-             onclick="dataLayer.push({event:'product_card_click',format:'1kg'});dataLayer.push({event:'whatsapp_click',label:'product_1kg'})">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-    <p class="free-shipping-note fade-in">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      Envío gratis en Santiago en compras mayores a $36.000 CLP
-    </p>
-  </div>
-</section>
-
-<!-- REVIEWS -->
-<section id="reviews" aria-labelledby="reviews-heading">
-  <div class="container">
-    <div class="section-header fade-in">
-      <h2 id="reviews-heading">Lo que dicen quienes ya dejaron el instantáneo</h2>
-    </div>
-    <div class="carousel-wrap fade-in">
-      <div class="carousel-track" id="carouselTrack" aria-label="Reseñas de clientes">
-        <div class="review-card" role="article" aria-label="Reseña de Catalina R.">
-          <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
-          <p class="review-text">"No puedo creer que tomé café instantáneo tanto tiempo. Roast es otro nivel y lo preparo igual que antes."</p>
-          <p class="review-author">Catalina R.</p>
-          <p class="review-location">Santiago</p>
-        </div>
-        <div class="review-card" role="article" aria-label="Reseña de Matías F.">
-          <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
-          <p class="review-text">"Le pedí el molido para moka y quedó perfecto desde el primer día. Súper fácil todo."</p>
-          <p class="review-author">Matías F.</p>
-          <p class="review-location">Las Condes</p>
-        </div>
-        <div class="review-card" role="article" aria-label="Reseña de Valentina G.">
-          <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
-          <p class="review-text">"El de Colombia es increíble. Y llegó rapidísimo. Ya pedí el kilo."</p>
-          <p class="review-author">Valentina G.</p>
-          <p class="review-location">Ñuñoa</p>
-        </div>
-        <div class="review-card" role="article" aria-label="Reseña de Diego P.">
-          <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
-          <p class="review-text">"Pensé que el café real iba a ser complicado. Para nada. Me explicaron todo por WhatsApp en 2 minutos."</p>
-          <p class="review-author">Diego P.</p>
-          <p class="review-location">Providencia</p>
-        </div>
-        <div class="review-card" role="article" aria-label="Reseña de Isidora M.">
-          <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
-          <p class="review-text">"El quiz fue genial, me recomendaron el tamaño justo. Justo lo que necesitaba."</p>
-          <p class="review-author">Isidora M.</p>
-          <p class="review-location">Santiago Centro</p>
-        </div>
-      </div>
-      <div class="carousel-dots" id="carouselDots" role="tablist" aria-label="Navegación de reseñas"></div>
-    </div>
-  </div>
-</section>
-
-<!-- COMING NEXT -->
-<section id="coming-next" aria-labelledby="coming-next-heading">
-  <div class="container">
-    <div class="section-header fade-in">
-      <h2 id="coming-next-heading">Próximamente en Roast</h2>
-      <p class="coming-next-sub">Lo siguiente en Roast: suscripciones automáticas y expansión a nuevas ciudades, manteniendo la misma simpleza y velocidad.</p>
-    </div>
-    <div class="coming-next-grid">
-      <div class="coming-next-panel sub-card fade-in">
-        <div class="sub-inner">
-          <div>
-            <div class="sub-badge"><span class="badge badge-soon">PRÓXIMAMENTE</span></div>
-            <h3 class="sub-headline">Nunca más te quedes sin café.</h3>
-            <p class="sub-body">Pronto podrás suscribirte y recibir tu Roast automáticamente. Elige tu frecuencia: semanal, quincenal o mensual. Sin complicaciones, sin olvidarte.</p>
+      <div class="quiz-wrap fade-in">
+        <div class="quiz-visual" role="img" aria-label="Métodos de preparación de café sobre una mesa"></div>
+        <div class="quiz-panel">
+          <div class="quiz-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del quiz">
+            <div class="quiz-progress-fill" id="quizProgressFill" style="width: 50%"></div>
           </div>
-          <div class="sub-details">
-            <p class="sub-detail-label">Frecuencias previstas</p>
-            <div class="sub-freqs" aria-label="Opciones de frecuencia">
-              <span class="sub-freq">Semanal</span>
-              <span class="sub-freq">Quincenal</span>
-              <span class="sub-freq">Mensual</span>
+          <div class="quiz-step-stack" id="quizStepStack">
+            <div class="quiz-step active" id="quizStep1" role="group" aria-labelledby="quizQ1">
+              <p class="quiz-question" id="quizQ1">¿Cuántas tazas de café tomas al día?</p>
+              <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ1">
+                <button class="quiz-option" aria-pressed="false" data-cups="1_taza" onclick="selectCups(this)">1 taza</button>
+                <button class="quiz-option" aria-pressed="false" data-cups="2_tazas" onclick="selectCups(this)">2 tazas</button>
+                <button class="quiz-option" aria-pressed="false" data-cups="3_o_mas" onclick="selectCups(this)">3 o más</button>
+              </div>
             </div>
-          </div>
-          <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20que%20me%20avisen%20cuando%20lancen%20las%20suscripciones%20%F0%9F%99%8C"
-             class="btn btn-secondary sub-cta"
-             target="_blank" rel="noopener noreferrer"
-             aria-label="Avisarme cuando esté disponible la suscripción"
-             onclick="dataLayer.push({event:'subscription_interest'});dataLayer.push({event:'whatsapp_click',label:'subscription_teaser'})">
-            Avisarme cuando esté disponible
-          </a>
-        </div>
-      </div>
-      <div class="coming-next-panel coverage-card fade-in">
-        <div class="sub-badge"><span class="badge badge-soon">EXPANSIÓN</span></div>
-        <h3>Hoy en Santiago. Pronto en todo Chile.</h3>
-        <p class="coverage-body">Seguimos partiendo por Santiago, pero ya estamos preparando la expansión a nuevas ciudades para que Roast llegue a más mesas sin perder velocidad ni consistencia.</p>
-        <div class="coverage-grid" role="list" aria-label="Ciudades de cobertura">
-          <div class="coverage-badge-item active" role="listitem" aria-label="Santiago - activo">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <div class="coverage-badge-copy">
-              <p class="coverage-badge-city" style="color:var(--text-primary)">Santiago</p>
-              <p class="coverage-badge-region" style="color:var(--accent)">Región Metropolitana</p>
+            <div class="quiz-step" id="quizStep2" role="group" aria-labelledby="quizQ2">
+              <p class="quiz-question" id="quizQ2">¿Cómo preparas tu café?</p>
+              <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ2">
+                <button class="quiz-option" aria-pressed="false" data-method="moka" onclick="selectMethod(this)">Cafetera italiana (moka)</button>
+                <button class="quiz-option" aria-pressed="false" data-method="prensa_francesa" onclick="selectMethod(this)">Prensa francesa</button>
+                <button class="quiz-option" aria-pressed="false" data-method="filtro" onclick="selectMethod(this)">Cafetera de filtro</button>
+                <button class="quiz-option" aria-pressed="false" data-method="espresso" onclick="selectMethod(this)">Máquina de espresso</button>
+                <button class="quiz-option" aria-pressed="false" data-method="hervidor" onclick="selectMethod(this)">Solo tengo hervidor</button>
+                <button class="quiz-option" aria-pressed="false" data-method="no_se" onclick="selectMethod(this)">Aún no sé, sorpréndeme</button>
+              </div>
+              <div class="quiz-nav">
+                <button class="quiz-back" onclick="quizBack(1)" aria-label="Volver a la pregunta anterior">← Volver</button>
+              </div>
             </div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="coverage-badge-item soon" role="listitem" aria-label="Talca - próximamente">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <div class="coverage-badge-copy">
-              <p class="coverage-badge-city">Talca</p>
-              <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
-            </div>
-          </div>
-          <div class="coverage-badge-item soon" role="listitem" aria-label="Chillán - próximamente">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <div class="coverage-badge-copy">
-              <p class="coverage-badge-city">Chillán</p>
-              <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
-            </div>
-          </div>
-          <div class="coverage-badge-item soon" role="listitem" aria-label="Puerto Varas - próximamente">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <div class="coverage-badge-copy">
-              <p class="coverage-badge-city">Puerto Varas</p>
-              <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
+            <div class="quiz-step" id="quizStep3" aria-live="polite">
+              <div class="quiz-result-card">
+                <p class="quiz-result-tag">Tu recomendación</p>
+                <p class="quiz-result-rec" id="quizResultRec">—</p>
+                <p class="quiz-result-price" id="quizResultPrice">—</p>
+                <a id="quizResultCta"
+                   href="#"
+                   class="btn btn-whatsapp btn-full"
+                   target="_blank" rel="noopener noreferrer"
+                   aria-label="Pedir por WhatsApp según recomendación"
+                   onclick="dataLayer.push({event:'quiz_completed'});dataLayer.push({event:'whatsapp_click',label:'quiz_result'})">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+                  Pedir esto por WhatsApp →
+                </a>
+                <button class="quiz-restart" onclick="quizRestart()" aria-label="Reiniciar el quiz">Volver a empezar</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- FAQ -->
-<section id="faq" aria-labelledby="faq-heading">
-  <div class="container">
-    <div class="section-header fade-in">
-      <h2 id="faq-heading">Preguntas frecuentes</h2>
+  <section id="products" aria-labelledby="products-heading">
+    <div class="container">
+      <div class="section-header fade-in">
+        <h2 id="products-heading">Compra café molido o en grano en el formato que te acomode.</h2>
+      </div>
+      <p class="section-sub fade-in">Todos los formatos están disponibles para molido a pedido según tu cafetera o como café en grano si prefieres moler en casa.</p>
+      <div class="products-grid">
+        <div class="card product-card fade-in" aria-label="Producto 250g">
+          <img src="https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?auto=format&fit=crop&w=900&q=80" alt="Granos de café sobre una mesa de madera" class="product-img" loading="lazy" />
+          <p class="product-label">Para empezar</p>
+          <p class="product-size">250g</p>
+          <p class="product-desc">El formato ideal si quieres dejar el instantáneo sin comprometerte con un kilo desde el día uno.</p>
+          <div class="product-selectors">
+            <select id="grind250" aria-label="Selecciona molienda para 250g" onchange="updateProductLink('250')">
+              <option value="espresso">Molido para espresso</option>
+              <option value="moka">Molido para moka</option>
+              <option value="prensa francesa">Molido para prensa francesa</option>
+              <option value="filtro / pour over">Molido para filtro / pour over</option>
+              <option value="chemex">Molido para chemex</option>
+              <option value="aeropress">Molido para aeropress</option>
+              <option value="grano entero">En grano entero</option>
+            </select>
+          </div>
+          <div class="product-purchase-row">
+            <p class="product-price">$9.000 <span>CLP</span></p>
+            <a id="waLink250"
+               href="#"
+               class="icon-link icon-link-whatsapp product-cta-icon"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Pedir 250g por WhatsApp"
+               onclick="dataLayer.push({event:'product_card_click',format:'250g'});dataLayer.push({event:'whatsapp_click',label:'product_250g'})">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="card product-card card-featured fade-in" aria-label="Producto 500g - el más popular" style="position:relative;">
+          <div class="product-badge-wrap">
+            <span class="badge" aria-label="Más popular">MÁS POPULAR</span>
+          </div>
+          <img src="https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=900&q=80" alt="Taza de café recién preparado junto a granos de café" class="product-img" loading="lazy" />
+          <p class="product-label">El más popular</p>
+          <p class="product-size">500g</p>
+          <p class="product-desc">Rinde bien para 1 a 2 tazas diarias y es el formato más natural para repetir sin quedarte corto.</p>
+          <div class="product-selectors">
+            <select id="grind500" aria-label="Selecciona molienda para 500g" onchange="updateProductLink('500')">
+              <option value="moka">Molido para moka</option>
+              <option value="espresso">Molido para espresso</option>
+              <option value="prensa francesa">Molido para prensa francesa</option>
+              <option value="filtro / pour over">Molido para filtro / pour over</option>
+              <option value="chemex">Molido para chemex</option>
+              <option value="aeropress">Molido para aeropress</option>
+              <option value="grano entero">En grano entero</option>
+            </select>
+          </div>
+          <div class="product-purchase-row">
+            <p class="product-price">$16.500 <span>CLP</span></p>
+            <a id="waLink500"
+               href="#"
+               class="icon-link icon-link-whatsapp product-cta-icon"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Pedir 500g por WhatsApp"
+               onclick="dataLayer.push({event:'product_card_click',format:'500g'});dataLayer.push({event:'whatsapp_click',label:'product_500g'})">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="card product-card fade-in" aria-label="Producto 1kg - mejor precio">
+          <div class="product-badge-wrap">
+            <span class="badge" aria-label="Mejor precio por gramo">MEJOR PRECIO/GRAMO</span>
+          </div>
+          <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=900&q=80" alt="Pala sirviendo granos de café tostado desde un saco" class="product-img" loading="lazy" />
+          <p class="product-label">El más conveniente</p>
+          <p class="product-size">1kg</p>
+          <p class="product-desc">Para quienes ya encontraron su ritmo y quieren asegurar café real por más tiempo al mejor precio por gramo.</p>
+          <div class="product-selectors">
+            <select id="grind1kg" aria-label="Selecciona molienda para 1kg" onchange="updateProductLink('1kg')">
+              <option value="filtro / pour over">Molido para filtro / pour over</option>
+              <option value="espresso">Molido para espresso</option>
+              <option value="moka">Molido para moka</option>
+              <option value="prensa francesa">Molido para prensa francesa</option>
+              <option value="chemex">Molido para chemex</option>
+              <option value="aeropress">Molido para aeropress</option>
+              <option value="grano entero">En grano entero</option>
+            </select>
+          </div>
+          <div class="product-purchase-row">
+            <p class="product-price">$29.000 <span>CLP</span></p>
+            <a id="waLink1kg"
+               href="#"
+               class="icon-link icon-link-whatsapp product-cta-icon"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Pedir 1kg por WhatsApp"
+               onclick="dataLayer.push({event:'product_card_click',format:'1kg'});dataLayer.push({event:'whatsapp_click',label:'product_1kg'})">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <p class="free-shipping-note fade-in">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Envío gratis en Santiago en compras mayores a $36.000 CLP
+      </p>
+      <p class="products-note fade-in">Si ya sabes lo que quieres, entra directo a <a href="/cafe-molido/">café molido</a>, <a href="/cafe-en-grano/">café en grano</a>, <a href="/cafe-de-especialidad/">café de especialidad</a> o <a href="/cafe-a-domicilio/">café a domicilio</a>.</p>
     </div>
-    <div class="faq-list fade-in" id="faqList">
-      <div class="faq-item">
-        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a1">
-          ¿Necesito un molinillo?
-          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer" id="faq-a1" role="region"><div class="faq-answer-inner">No. Nosotros molemos el café según tu método de preparación. Sólo dinos cómo quieres prepararlo y listo.</div></div>
+  </section>
+
+  <section id="reviews" aria-labelledby="reviews-heading">
+    <div class="container">
+      <div class="section-header fade-in">
+        <h2 id="reviews-heading">Lo que dicen quienes cambiaron el café instantáneo por café real.</h2>
       </div>
-      <div class="faq-item">
-        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a2">
-          ¿Cómo sé qué café elegir?
-          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer" id="faq-a2" role="region"><div class="faq-answer-inner">Haz el quiz en esta misma página y te recomendamos el formato y molienda exactos. O escríbenos por WhatsApp y te ayudamos en 2 minutos.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a3">
-          ¿Cuánto dura una bolsa?
-          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer" id="faq-a3" role="region"><div class="faq-answer-inner">Depende de cuántas tazas tomas. Una bolsa de 500g dura entre 2 y 4 semanas para 1–2 tazas diarias.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a4">
-          ¿Hacen envíos fuera de Santiago?
-          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer" id="faq-a4" role="region"><div class="faq-answer-inner">Por ahora despachamos en la Región Metropolitana. Muy pronto llegaremos a Talca, Chillán y Puerto Varas. Consúltanos por whatsapp a ver si llegamos a tu ciudad.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a5">
-          ¿Cuándo llega mi pedido?
-          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer" id="faq-a5" role="region"><div class="faq-answer-inner">Despachamos rápido. Podrías recibir tu café entre cero a dos días hábiles en Santiago.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a6">
-          ¿El envío es gratis?
-          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer" id="faq-a6" role="region"><div class="faq-answer-inner">Sí, el envío es gratis en Santiago en compras mayores a $36.000 CLP.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a7">
-          ¿Puedo pedir en grano sin moler?
-          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer" id="faq-a7" role="region"><div class="faq-answer-inner">Claro, también vendemos el café en grano entero si ya tienes tu propio molinillo.</div></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-btn" aria-expanded="false" aria-controls="faq-a8">
-          ¿Venden cápsulas Nespresso o Dolce Gusto?
-          <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="faq-answer" id="faq-a8" role="region"><div class="faq-answer-inner">Por ahora no. Nos especializamos en café en grano y molido fresco.</div></div>
+      <div class="carousel-wrap fade-in">
+        <div class="carousel-track" id="carouselTrack" aria-label="Reseñas de clientes">
+          <div class="review-card" role="article" aria-label="Reseña de Catalina R.">
+            <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
+            <p class="review-text">"No puedo creer que tomé café instantáneo tanto tiempo. Roast es otro nivel y lo preparo igual que antes."</p>
+            <p class="review-author">Catalina R.</p>
+            <p class="review-location">Santiago</p>
+          </div>
+          <div class="review-card" role="article" aria-label="Reseña de Matías F.">
+            <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
+            <p class="review-text">"Le pedí el molido para moka y quedó perfecto desde el primer día. Súper fácil todo."</p>
+            <p class="review-author">Matías F.</p>
+            <p class="review-location">Las Condes</p>
+          </div>
+          <div class="review-card" role="article" aria-label="Reseña de Valentina G.">
+            <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
+            <p class="review-text">"El de Colombia es increíble. Y llegó rapidísimo. Ya pedí el kilo."</p>
+            <p class="review-author">Valentina G.</p>
+            <p class="review-location">Ñuñoa</p>
+          </div>
+          <div class="review-card" role="article" aria-label="Reseña de Diego P.">
+            <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
+            <p class="review-text">"Pensé que el café de especialidad iba a ser complicado. Para nada. Me explicaron todo por WhatsApp en 2 minutos."</p>
+            <p class="review-author">Diego P.</p>
+            <p class="review-location">Providencia</p>
+          </div>
+          <div class="review-card" role="article" aria-label="Reseña de Isidora M.">
+            <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
+            <p class="review-text">"El quiz fue genial. Me recomendaron el formato justo y pasé del café de tarro al de verdad sin trauma."</p>
+            <p class="review-author">Isidora M.</p>
+            <p class="review-location">Santiago Centro</p>
+          </div>
+        </div>
+        <div class="carousel-dots" id="carouselDots" role="tablist" aria-label="Navegación de reseñas"></div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- FINAL CTA -->
-<section id="final-cta" aria-labelledby="final-heading">
-  <h2 id="final-heading">Tu primer café real está a un mensaje de distancia.</h2>
-  <p class="final-sub">Molido a pedido. Despacho rápido en Santiago.</p>
-  <a href="https://wa.me/56951172813?text=Hola%20Cafe%20Roast!%20%F0%9F%91%8B%20Quiero%20hacer%20mi%20primer%20pedido.%20%C2%BFPor%20d%C3%B3nde%20empezamos%3F"
-     class="btn btn-final"
-     target="_blank" rel="noopener noreferrer"
-     aria-label="Pedir por WhatsApp ahora"
-     onclick="dataLayer.push({event:'whatsapp_click',label:'final_cta'})">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="#FF6B35" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
-    Pedir por WhatsApp ahora
-  </a>
-</section>
+  <section id="coming-next" aria-labelledby="coming-next-heading">
+    <div class="container">
+      <div class="section-header fade-in">
+        <h2 id="coming-next-heading">Próximamente en Roast</h2>
+        <p class="coming-next-sub">Después de ordenar el café de todos los días, lo siguiente es que pedirlo sea todavía más automático y que llegue a más ciudades.</p>
+      </div>
+      <div class="coming-next-grid">
+        <div class="coming-next-panel sub-card fade-in">
+          <div class="sub-inner">
+            <div>
+              <div class="sub-badge"><span class="badge badge-soon">PRÓXIMAMENTE</span></div>
+              <h3 class="sub-headline">Suscripciones para no quedarte seco.</h3>
+              <p class="sub-body">Pronto podrás recibir tu Roast de forma semanal, quincenal o mensual. Menos reposición manual, mismo café real.</p>
+            </div>
+            <div class="sub-details">
+              <p class="sub-detail-label">Frecuencias previstas</p>
+              <div class="sub-freqs" aria-label="Opciones de frecuencia">
+                <span class="sub-freq">Semanal</span>
+                <span class="sub-freq">Quincenal</span>
+                <span class="sub-freq">Mensual</span>
+              </div>
+            </div>
+            <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20que%20me%20avisen%20cuando%20lancen%20las%20suscripciones."
+               class="btn btn-secondary sub-cta"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Avisarme cuando esté disponible la suscripción"
+               onclick="dataLayer.push({event:'subscription_interest'});dataLayer.push({event:'whatsapp_click',label:'subscription_teaser'})">
+              Avisarme cuando esté disponible
+            </a>
+          </div>
+        </div>
+        <div class="coming-next-panel coverage-card fade-in">
+          <div class="sub-badge"><span class="badge badge-soon">EXPANSIÓN</span></div>
+          <h3>Hoy en Santiago. Después, más ciudades.</h3>
+          <p class="coverage-body">Nuestra cobertura activa hoy está en la Región Metropolitana. La expansión viene después, pero primero queremos hacer bien el café a domicilio en Santiago.</p>
+          <div class="coverage-grid" role="list" aria-label="Ciudades de cobertura">
+            <div class="coverage-badge-item active" role="listitem" aria-label="Santiago - activo">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <div class="coverage-badge-copy">
+                <p class="coverage-badge-city" style="color:var(--text-primary)">Santiago</p>
+                <p class="coverage-badge-region" style="color:var(--accent)">Región Metropolitana</p>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="coverage-badge-item soon" role="listitem" aria-label="Talca - próximamente">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <div class="coverage-badge-copy">
+                <p class="coverage-badge-city">Talca</p>
+                <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
+              </div>
+            </div>
+            <div class="coverage-badge-item soon" role="listitem" aria-label="Chillán - próximamente">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <div class="coverage-badge-copy">
+                <p class="coverage-badge-city">Chillán</p>
+                <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
+              </div>
+            </div>
+            <div class="coverage-badge-item soon" role="listitem" aria-label="Puerto Varas - próximamente">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <div class="coverage-badge-copy">
+                <p class="coverage-badge-city">Puerto Varas</p>
+                <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<!-- FOOTER -->
+  <section id="faq" aria-labelledby="faq-heading">
+    <div class="container">
+      <div class="section-header fade-in">
+        <h2 id="faq-heading">Preguntas frecuentes sobre el café Roast</h2>
+      </div>
+      <div class="faq-list fade-in" id="faqList">
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false" aria-controls="faq-a1">
+            ¿Venden café molido a pedido?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer" id="faq-a1" role="region"><div class="faq-answer-inner">Sí. Molemos el café según tu cafetera. Tú nos dices si usas moka, prensa francesa, filtro, espresso, Chemex o AeroPress, y te llega listo para preparar.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false" aria-controls="faq-a2">
+            ¿También venden café en grano?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer" id="faq-a2" role="region"><div class="faq-answer-inner">Sí. Si ya tienes molinillo o te gusta controlar la molienda en casa, también puedes pedir Roast en grano entero.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false" aria-controls="faq-a3">
+            ¿Cómo sé qué molienda necesito?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer" id="faq-a3" role="region"><div class="faq-answer-inner">Haz el quiz de esta página o escríbenos por WhatsApp. Te recomendamos la molienda correcta según tu cafetera y tu ritmo de consumo.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false" aria-controls="faq-a4">
+            ¿Hacen despacho de café en Santiago?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer" id="faq-a4" role="region"><div class="faq-answer-inner">Sí. Operamos en la Región Metropolitana y hoy nuestro foco está en que el café a domicilio en Santiago llegue rápido y bien molido.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false" aria-controls="faq-a5">
+            ¿Cuánto demora el café a domicilio?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer" id="faq-a5" role="region"><div class="faq-answer-inner">El despacho en Santiago suele demorar entre cero y dos días hábiles, dependiendo de la zona y del momento en que confirmes el pedido.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false" aria-controls="faq-a6">
+            ¿El envío es gratis?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer" id="faq-a6" role="region"><div class="faq-answer-inner">Sí. El envío es gratis en Santiago para compras mayores a $36.000 CLP.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false" aria-controls="faq-a7">
+            ¿Qué formato me conviene?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer" id="faq-a7" role="region"><div class="faq-answer-inner">250g sirve para probar, 500g es el más popular y 1kg conviene cuando ya sabes que este café se va a quedar en tu rutina.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" aria-expanded="false" aria-controls="faq-a8">
+            ¿Es complicado pasar del instantáneo al café de especialidad?
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer" id="faq-a8" role="region"><div class="faq-answer-inner">No. Esa es la gracia de Roast: tomar mejor café sin transformar tu desayuno en una clase. Cambias el café, no tu vida completa.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="final-cta" aria-labelledby="final-heading">
+    <h2 id="final-heading">Pide café molido a pedido o en grano por WhatsApp.</h2>
+    <p class="final-sub">Despacho rápido en Santiago. Molienda según tu cafetera. Cero café de tarro.</p>
+    <a href="https://wa.me/56951172813?text=Hola%20Cafe%20Roast!%20%F0%9F%91%8B%20Quiero%20pedir%20caf%C3%A9%20molido%20a%20pedido%20o%20en%20grano."
+       class="btn btn-final"
+       target="_blank" rel="noopener noreferrer"
+       aria-label="Pedir por WhatsApp ahora"
+       onclick="dataLayer.push({event:'whatsapp_click',label:'final_cta'})">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#FF6B35" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+      Pedir por WhatsApp ahora
+    </a>
+  </section>
+</main>
+
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
-      <img src="./assets/logos/roast-logo-dark.svg" alt="Roast" class="footer-logo-mark" />
+      <img src="/assets/logos/roast-logo-dark.svg" alt="Roast" class="footer-logo-mark" />
     </div>
     <div class="footer-meta">
-      <p class="footer-tagline">Tu primer café real.</p>
+      <p class="footer-tagline">Café molido a pedido, en grano y a domicilio en Santiago.</p>
       <p class="footer-site">caferoast.cl · Santiago, Chile</p>
+    </div>
+    <div class="footer-explore">
+      <p class="footer-explore-label">Explorar</p>
+      <div class="footer-policies" aria-label="Links de exploración">
+        <a href="/cafe-molido/">Café molido</a>
+        <a href="/cafe-en-grano/">Café en grano</a>
+        <a href="/cafe-de-especialidad/">Café de especialidad</a>
+        <a href="/cafe-a-domicilio/">Café a domicilio</a>
+      </div>
     </div>
     <div class="footer-legal">
       <p class="footer-legal-label">Legales</p>
       <div class="footer-policies" aria-label="Links legales">
-        <a href="./policies/terminos-y-condiciones.html">Términos y condiciones</a>
-        <a href="./policies/politica-de-privacidad.html">Política de privacidad</a>
-        <a href="./policies/politica-de-reembolso.html">Política de reembolso</a>
+        <a href="/policies/terminos-y-condiciones.html">Términos y condiciones</a>
+        <a href="/policies/politica-de-privacidad.html">Política de privacidad</a>
+        <a href="/policies/politica-de-reembolso.html">Política de reembolso</a>
       </div>
     </div>
     <div class="footer-contact">
@@ -1452,304 +645,14 @@
             <rect x="3" y="3" width="18" height="18" rx="5"></rect>
             <circle cx="12" cy="12" r="4"></circle>
             <circle cx="17.5" cy="6.5" r="1"></circle>
-           </svg>
+          </svg>
         </a>
       </div>
     </div>
   </div>
-
-  <div class="footer-bottom">© 2025 Cafe Roast. Todos los derechos reservados.</div>
+  <div class="footer-bottom">© 2026 Cafe Roast. Todos los derechos reservados.</div>
 </footer>
 
-<script>
-  // ===== dataLayer init =====
-  window.dataLayer = window.dataLayer || [];
-
-  // ===== QUIZ STATE =====
-  var quizCups = null;
-  var quizMethod = null;
-  var QUIZ_DESKTOP_BREAKPOINT = 900;
-  var QUIZ_RESULT_REFERENCE_TEXT = '1kg de café molido grueso para prensa francesa';
-  var QUIZ_RESULT_REFERENCE_PRICE = '$29.000 CLP';
-
-  var PRICE_MAP = {
-    '1_taza':  { format: '250g', price: '$9.000' },
-    '2_tazas': { format: '500g', price: '$16.500' },
-    '3_o_mas': { format: '1kg',  price: '$29.000' }
-  };
-
-  // Molienda recomendada según método. Hervidor y no_se → prensa francesa
-  var METHOD_GRIND_MAP = {
-    'moka':            'molido para moka',
-    'prensa_francesa': 'molido grueso para prensa francesa',
-    'filtro':          'molido medio para filtro',
-    'espresso':        'molido fino para espresso',
-    'hervidor':        'molido grueso para prensa francesa',
-    'no_se':           'molido grueso para prensa francesa'
-  };
-
-  function syncQuizPanelHeight() {
-    var stack = document.getElementById('quizStepStack');
-    var stepThree = document.getElementById('quizStep3');
-    var actualRec = document.getElementById('quizResultRec');
-    var actualPrice = document.getElementById('quizResultPrice');
-    if (!stack || !stepThree) return;
-
-    if (window.innerWidth < QUIZ_DESKTOP_BREAKPOINT) {
-      stack.style.minHeight = '';
-      return;
-    }
-
-    if (!stack.clientWidth) return;
-
-    var clone = stepThree.cloneNode(true);
-    var cloneRec = clone.querySelector('.quiz-result-rec');
-    var clonePrice = clone.querySelector('.quiz-result-price');
-    var cloneCta = clone.querySelector('a');
-    var recText = QUIZ_RESULT_REFERENCE_TEXT;
-    var priceText = QUIZ_RESULT_REFERENCE_PRICE;
-
-    if (actualRec && actualRec.textContent.trim() !== '—' && actualRec.textContent.trim().length > QUIZ_RESULT_REFERENCE_TEXT.length) {
-      recText = actualRec.textContent.trim();
-    }
-    if (actualPrice && actualPrice.textContent.trim() !== '—' && actualPrice.textContent.trim().length > QUIZ_RESULT_REFERENCE_PRICE.length) {
-      priceText = actualPrice.textContent.trim();
-    }
-
-    clone.removeAttribute('id');
-    clone.style.display = 'block';
-    clone.style.visibility = 'hidden';
-    clone.style.position = 'absolute';
-    clone.style.top = '0';
-    clone.style.left = '0';
-    clone.style.width = stack.clientWidth + 'px';
-    clone.style.pointerEvents = 'none';
-    clone.setAttribute('aria-hidden', 'true');
-
-    if (cloneRec) cloneRec.textContent = recText;
-    if (clonePrice) clonePrice.textContent = priceText;
-    if (cloneCta) cloneCta.href = '#';
-
-    stack.appendChild(clone);
-    stack.style.minHeight = Math.ceil(clone.offsetHeight) + 'px';
-    stack.removeChild(clone);
-  }
-
-  function showQuizStep(step) {
-    document.querySelectorAll('.quiz-step').forEach(function(s) { s.classList.remove('active'); });
-    var el = document.getElementById('quizStep' + step);
-    if (el) el.classList.add('active');
-    var fills = { 1: 50, 2: 100, 3: 100 };
-    var fill = document.getElementById('quizProgressFill');
-    if (fill) { fill.style.width = fills[step] + '%'; fill.setAttribute('aria-valuenow', fills[step]); }
-    syncQuizPanelHeight();
-  }
-
-  function selectCups(btn) {
-    document.querySelectorAll('#quizStep1 .quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
-    btn.classList.add('selected'); btn.setAttribute('aria-pressed','true');
-    quizCups = btn.getAttribute('data-cups');
-    dataLayer.push({ event: 'quiz_started' });
-    setTimeout(function() { showQuizStep(2); }, 200);
-  }
-
-  function selectMethod(btn) {
-    document.querySelectorAll('#quizStep2 .quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
-    btn.classList.add('selected'); btn.setAttribute('aria-pressed','true');
-    quizMethod = btn.getAttribute('data-method');
-    setTimeout(function() { showQuizResult(); }, 200);
-  }
-
-  function showQuizResult() {
-    if (!quizCups || !quizMethod) return;
-    var rec = PRICE_MAP[quizCups];
-    var grindLabel = METHOD_GRIND_MAP[quizMethod] || 'molido grueso para prensa francesa';
-    var recText = rec.format + ' de café ' + grindLabel;
-    document.getElementById('quizResultRec').textContent = recText;
-    document.getElementById('quizResultPrice').textContent = rec.price + ' CLP';
-    var msg = 'Hola Café Roast! 👋 El quiz me recomendó:\n• ' + recText + '\n¿Tienen disponibilidad?';
-    document.getElementById('quizResultCta').href = 'https://wa.me/56951172813?text=' + encodeURIComponent(msg);
-    showQuizStep(3);
-  }
-
-  function quizBack(step) { showQuizStep(step); }
-
-  function quizRestart() {
-    quizCups = null; quizMethod = null;
-    document.querySelectorAll('.quiz-option').forEach(function(b) { b.classList.remove('selected'); b.setAttribute('aria-pressed','false'); });
-    showQuizStep(1);
-  }
-
-  // ===== PRODUCT WHATSAPP LINKS =====
-  function buildProductLink(format, grindId) {
-    var grind = document.getElementById(grindId) ? document.getElementById(grindId).value : '';
-    var msg = 'Hola Café Roast! 👋 Quiero pedir:\n• ' + format + ' de café ' + grind + '\n¿Tienen disponibilidad?';
-    return 'https://wa.me/56951172813?text=' + encodeURIComponent(msg);
-  }
-
-  function updateProductLink(size) {
-    if (size === '250') {
-      var el = document.getElementById('waLink250');
-      if (el) el.href = buildProductLink('250g', 'grind250');
-    } else if (size === '500') {
-      var el = document.getElementById('waLink500');
-      if (el) el.href = buildProductLink('500g', 'grind500');
-    } else if (size === '1kg') {
-      var el = document.getElementById('waLink1kg');
-      if (el) el.href = buildProductLink('1kg', 'grind1kg');
-    }
-  }
-
-  function initProductLinks() {
-    updateProductLink('250');
-    updateProductLink('500');
-    updateProductLink('1kg');
-  }
-
-  // ===== CAROUSEL =====
-  var carouselTrack = document.getElementById('carouselTrack');
-  var carouselDotsContainer = document.getElementById('carouselDots');
-  var carouselInterval = null;
-  var currentDot = 0;
-  var isHovered = false;
-
-  function buildDots() {
-    if (!carouselTrack || !carouselDotsContainer) return;
-    var cards = carouselTrack.querySelectorAll('.review-card');
-    cards.forEach(function(_, i) {
-      var dot = document.createElement('button');
-      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-      dot.setAttribute('aria-label', 'Ir a reseña ' + (i + 1));
-      dot.setAttribute('role', 'tab');
-      dot.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
-      dot.addEventListener('click', function() { scrollToCard(i); });
-      carouselDotsContainer.appendChild(dot);
-    });
-  }
-
-  function scrollToCard(index) {
-    if (!carouselTrack) return;
-    var cards = carouselTrack.querySelectorAll('.review-card');
-    if (!cards[index]) return;
-    carouselTrack.scrollTo({ left: cards[index].offsetLeft, behavior: 'smooth' });
-    updateDot(index);
-  }
-
-  function updateDot(index) {
-    currentDot = index;
-    var dots = carouselDotsContainer ? carouselDotsContainer.querySelectorAll('.carousel-dot') : [];
-    dots.forEach(function(d, i) {
-      d.classList.toggle('active', i === index);
-      d.setAttribute('aria-selected', i === index ? 'true' : 'false');
-    });
-  }
-
-  function autoScroll() {
-    if (!carouselTrack || isHovered) return;
-    var cards = carouselTrack.querySelectorAll('.review-card');
-    var next = (currentDot + 1) % cards.length;
-    scrollToCard(next);
-  }
-
-  function startCarousel() {
-    carouselInterval = setInterval(autoScroll, 4000);
-  }
-
-  if (carouselTrack) {
-    buildDots();
-    startCarousel();
-    carouselTrack.addEventListener('mouseenter', function() { isHovered = true; });
-    carouselTrack.addEventListener('mouseleave', function() { isHovered = false; });
-    carouselTrack.addEventListener('scroll', function() {
-      var cards = carouselTrack.querySelectorAll('.review-card');
-      var scrollLeft = carouselTrack.scrollLeft;
-      var closest = 0;
-      var minDist = Infinity;
-      cards.forEach(function(card, i) {
-        var dist = Math.abs(card.offsetLeft - scrollLeft);
-        if (dist < minDist) { minDist = dist; closest = i; }
-      });
-      updateDot(closest);
-    });
-  }
-
-  // ===== ACCORDION (one open at a time) =====
-  var faqItems = document.querySelectorAll('.faq-item');
-  faqItems.forEach(function(item) {
-    var btn = item.querySelector('.faq-btn');
-    var answer = item.querySelector('.faq-answer');
-    if (!btn || !answer) return;
-    btn.addEventListener('click', function() {
-      var isOpen = item.classList.contains('open');
-      faqItems.forEach(function(i) {
-        i.classList.remove('open');
-        var b = i.querySelector('.faq-btn');
-        var a = i.querySelector('.faq-answer');
-        if (b) b.setAttribute('aria-expanded', 'false');
-        if (a) a.style.maxHeight = null;
-      });
-      if (!isOpen) {
-        item.classList.add('open');
-        btn.setAttribute('aria-expanded', 'true');
-        answer.style.maxHeight = answer.scrollHeight + 'px';
-      }
-    });
-  });
-
-  // ===== FADE IN ON SCROLL =====
-  var fadeEls = document.querySelectorAll('.fade-in');
-  var fadeObserver = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        fadeObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12 });
-  fadeEls.forEach(function(el) { fadeObserver.observe(el); });
-
-  // ===== HAMBURGUESA =====
-  var hamburger = document.getElementById('navHamburger');
-  var drawer = document.getElementById('navDrawer');
-  var overlay = document.getElementById('navOverlay');
-
-  function openDrawer() {
-    hamburger.classList.add('open');
-    drawer.classList.add('open');
-    overlay.classList.add('open');
-    hamburger.setAttribute('aria-expanded', 'true');
-    hamburger.setAttribute('aria-label', 'Cerrar menú');
-    drawer.setAttribute('aria-hidden', 'false');
-    overlay.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeDrawer() {
-    hamburger.classList.remove('open');
-    drawer.classList.remove('open');
-    overlay.classList.remove('open');
-    hamburger.setAttribute('aria-expanded', 'false');
-    hamburger.setAttribute('aria-label', 'Abrir menú');
-    drawer.setAttribute('aria-hidden', 'true');
-    overlay.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-  }
-
-  if (hamburger) {
-    hamburger.addEventListener('click', function() {
-      drawer.classList.contains('open') ? closeDrawer() : openDrawer();
-    });
-  }
-  if (overlay) overlay.addEventListener('click', closeDrawer);
-  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDrawer(); });
-  window.addEventListener('resize', syncQuizPanelHeight);
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(syncQuizPanelHeight);
-  }
-
-  // ===== INIT =====
-  initProductLinks();
-  syncQuizPanelHeight();
-</script>
+<script src="/assets/site.js"></script>
 </body>
 </html>

@@ -118,3 +118,14 @@
 - Se construyo el acento del logotipo como grano naranja separado del wordmark para acercarlo a la propuesta visual aprobada y dejar el asset con fondo transparente.
 - Se reemplazo el wordmark textual del header y del footer por el nuevo SVG oscuro, manteniendo el favicon actual sin cambios.
 - Validacion realizada con `git diff --check`, busqueda de referencias viejas con `rg` y parseo XML del SVG con `python3`; no se ejecuto validacion visual automatizada porque el entorno no tiene herramientas locales para rasterizar o previsualizar SVG.
+
+## 2026-04-08 - SEO v1 con 4 URLs comerciales y base tecnica
+
+- Se refresco el repo con `git pull --ff-only`; `main` ya estaba alineado con `origin/main` antes de editar.
+- Se extrajo el CSS y JS compartidos a `assets/site.css` y `assets/site.js` para sostener la landing principal y las nuevas paginas SEO sin introducir framework ni build step.
+- Se reescribio `index.html` como hub SEO con nuevo `title`, `meta description`, `canonical`, Open Graph, Twitter Cards, `Organization` + `WebSite` + `FAQPage`, y enlaces visibles hacia `/cafe-molido/`, `/cafe-en-grano/`, `/cafe-de-especialidad/` y `/cafe-a-domicilio/`.
+- Se crearon las 4 nuevas URLs limpias con `index.html` propio, cada una con hero especifico, copy distinto, bloque de formatos, FAQ especifica, `canonical`, OG, Twitter y schema `WebPage` + `BreadcrumbList` + `FAQPage`.
+- Se creo `assets/og-image.jpg` como asset social real y se agregaron `robots.txt` y `sitemap.xml`; `robots.txt` permite el sitio, bloquea `/policies/` y publica el sitemap con solo las 5 URLs indexables.
+- Se mantuvieron las paginas legales publicas y enlazadas desde el footer, pero fuera de `sitemap.xml` y bloqueadas por `robots.txt` conforme al alcance definido.
+- Se mejoro la generacion de mensajes de WhatsApp para productos, dejando frases legibles para molienda y grano entero.
+- Validacion realizada con `git diff --check`, `rg` sobre metadatos SEO y schema, servidor local `python3 -m http.server`, verificacion HTTP `200` de `/`, las 4 nuevas URLs, `/robots.txt`, `/sitemap.xml` y `/assets/og-image.jpg`; no se ejecuto prueba visual automatizada en navegador ni validacion externa en Rich Results Test desde este entorno.
