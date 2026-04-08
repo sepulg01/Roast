@@ -91,3 +91,12 @@
 - Se reorganizo el footer en cuatro bloques de izquierda a derecha: wordmark `Roast.`, descriptor de marca y sitio, legales en columna y redes sociales.
 - Se redujo el espacio desperdiciado recomponiendo el grid para desktop y manteniendo un stack limpio en mobile, sin mezclar legales, redes y logo dentro del mismo bloque.
 - Validacion realizada con parseo HTML via `python3`, `git diff --check` y verificacion estructural del orden del footer para confirmar la secuencia wordmark, descriptor, legales y redes sociales; no se ejecuto prueba visual automatizada en navegador.
+
+## 2026-04-08 - Diagnostico SEO de caferoast.cl
+
+- Se refresco el repo con `git pull --ff-only`; `main` ya estaba alineado con `origin/main` antes de revisar.
+- Se audito el sitio publicado `https://caferoast.cl` y el markup local para revisar indexabilidad, metadatos, enlazado, datos estructurados y activos compartibles.
+- Se confirmo que el home responde `200`, que las paginas legales existen y que faltan `robots.txt` y `sitemap.xml`.
+- Se detecto ausencia de `canonical`, ausencia de metadatos `twitter:*`, `og:image` roto en `https://caferoast.cl/assets/og-image.jpg` y uso de `Organization` schema minimo sin `Product` ni `FAQPage`.
+- Se detecto que la propuesta de valor SEO esta concentrada en una sola landing: el `title` y el `h1` priorizan branding/copy por sobre keywords transaccionales como `cafe de especialidad`, `cafe molido`, `cafe en grano` y cobertura geografica.
+- Validacion realizada con `curl`, `rg`, inspeccion directa de `index.html` y comprobacion HTTP de assets y endpoints publicados; no se ejecuto PageSpeed Insights porque la API respondio `429 quota exceeded`.
