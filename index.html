@@ -697,16 +697,49 @@
       padding: 0;
     }
     .carousel-dot.active { background: var(--accent); }
-    /* ===== SUBSCRIPTION TEASER ===== */
-    #subscription { background: var(--accent); }
+    /* ===== COMING NEXT ===== */
+    #coming-next {
+      background:
+        radial-gradient(circle at top left, rgba(255, 107, 53, 0.18), transparent 30%),
+        linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-primary) 100%);
+    }
+    #coming-next .section-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .coming-next-sub {
+      max-width: 56ch;
+      margin: 0.75rem auto 0;
+      color: var(--text-secondary);
+    }
+    .coming-next-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    @media (min-width: 960px) {
+      .coming-next-grid {
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        align-items: stretch;
+      }
+    }
+    .coming-next-panel {
+      height: 100%;
+      border-radius: 20px;
+      padding: clamp(2rem, 5vw, 3rem);
+      box-shadow: 0 28px 56px rgba(0, 0, 0, 0.22);
+    }
+    .coming-next-panel h3 {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      margin-bottom: 0.75rem;
+    }
+    .coming-next-panel p {
+      font-size: 1rem;
+      line-height: 1.7;
+    }
     .sub-card {
       background: rgba(13, 13, 13, 0.88);
       border: 1px solid rgba(245, 240, 232, 0.16);
-      border-radius: 16px;
-      padding: clamp(2rem, 5vw, 3.5rem);
-      max-width: 900px;
-      margin: 0 auto;
-      box-shadow: 0 28px 56px rgba(0, 0, 0, 0.22);
     }
     .sub-badge { margin-bottom: 1rem; }
     .sub-headline { margin-bottom: 0.75rem; }
@@ -730,15 +763,22 @@
       .sub-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
     }
     /* ===== COVERAGE MAP ===== */
-    #coverage { background: var(--bg-surface); }
-    #coverage .section-header { text-align: center; margin-bottom: 2.5rem; }
+    .coverage-card {
+      background: rgba(245, 240, 232, 0.03);
+      border: 1px solid rgba(245, 240, 232, 0.08);
+    }
+    .coverage-body {
+      color: var(--text-secondary);
+      margin-bottom: 1.75rem;
+      max-width: 44ch;
+    }
     .coverage-grid {
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
-      justify-content: center;
+      justify-content: flex-start;
       width: 100%;
-      margin: 0 auto;
+      margin: 0;
     }
     @media (min-width: 1024px) {
       .coverage-grid { flex-wrap: nowrap; }
@@ -1180,69 +1220,71 @@
   </div>
 </section>
 
-<!-- SUBSCRIPTION TEASER -->
-<section id="subscription" aria-labelledby="sub-heading">
-  <div class="container">
-    <div class="sub-card fade-in">
-      <div class="sub-inner">
-        <div>
-          <div class="sub-badge"><span class="badge badge-soon">PRÓXIMAMENTE</span></div>
-          <h2 class="sub-headline" id="sub-heading">Nunca más te quedes sin café.</h2>
-          <p class="sub-body">Pronto podrás suscribirte y recibir tu Roast automáticamente. Elige tu frecuencia: semanal, quincenal o mensual. Sin complicaciones, sin olvidarte.</p>
-        </div>
-        <div>
-          <div class="sub-freqs" aria-label="Opciones de frecuencia">
-            <span class="sub-freq">Semanal</span>
-            <span class="sub-freq">Quincenal</span>
-            <span class="sub-freq">Mensual</span>
-          </div>
-          <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20que%20me%20avisen%20cuando%20lancen%20las%20suscripciones%20%F0%9F%99%8C"
-             class="btn btn-secondary"
-             target="_blank" rel="noopener noreferrer"
-             aria-label="Avisarme cuando esté disponible la suscripción"
-             onclick="dataLayer.push({event:'subscription_interest'});dataLayer.push({event:'whatsapp_click',label:'subscription_teaser'})">
-            Avisarme cuando esté disponible
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- COVERAGE -->
-<section id="coverage" aria-labelledby="coverage-heading">
+<!-- COMING NEXT -->
+<section id="coming-next" aria-labelledby="coming-next-heading">
   <div class="container">
     <div class="section-header fade-in">
-      <h2 id="coverage-heading">Hoy en Santiago. Pronto en todo Chile.</h2>
+      <h2 id="coming-next-heading">Coming Next</h2>
+      <p class="coming-next-sub">Lo próximo en Roast: suscripciones automáticas y nuevas ciudades para que el café te siga más de cerca.</p>
     </div>
-    <div class="coverage-grid fade-in" role="list" aria-label="Ciudades de cobertura">
-      <div class="coverage-badge-item active" role="listitem" aria-label="Santiago - activo">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <div>
-          <p style="font-weight:600;color:var(--text-primary)">Santiago</p>
-          <p style="font-size:0.8125rem;color:var(--accent)">Región Metropolitana</p>
+    <div class="coming-next-grid">
+      <div class="coming-next-panel sub-card fade-in">
+        <div class="sub-inner">
+          <div>
+            <div class="sub-badge"><span class="badge badge-soon">PRÓXIMAMENTE</span></div>
+            <h3 class="sub-headline">Nunca más te quedes sin café.</h3>
+            <p class="sub-body">Pronto podrás suscribirte y recibir tu Roast automáticamente. Elige tu frecuencia: semanal, quincenal o mensual. Sin complicaciones, sin olvidarte.</p>
+          </div>
+          <div>
+            <div class="sub-freqs" aria-label="Opciones de frecuencia">
+              <span class="sub-freq">Semanal</span>
+              <span class="sub-freq">Quincenal</span>
+              <span class="sub-freq">Mensual</span>
+            </div>
+            <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20que%20me%20avisen%20cuando%20lancen%20las%20suscripciones%20%F0%9F%99%8C"
+               class="btn btn-secondary"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Avisarme cuando esté disponible la suscripción"
+               onclick="dataLayer.push({event:'subscription_interest'});dataLayer.push({event:'whatsapp_click',label:'subscription_teaser'})">
+              Avisarme cuando esté disponible
+            </a>
+          </div>
         </div>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
-      <div class="coverage-badge-item soon" role="listitem" aria-label="Talca - próximamente">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <div>
-          <p style="font-weight:600;">Talca</p>
-          <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
-        </div>
-      </div>
-      <div class="coverage-badge-item soon" role="listitem" aria-label="Chillán - próximamente">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <div>
-          <p style="font-weight:600;">Chillán</p>
-          <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
-        </div>
-      </div>
-      <div class="coverage-badge-item soon" role="listitem" aria-label="Puerto Varas - próximamente">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <div>
-          <p style="font-weight:600;">Puerto Varas</p>
-          <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
+      <div class="coming-next-panel coverage-card fade-in">
+        <div class="sub-badge"><span class="badge badge-soon">EXPANSIÓN</span></div>
+        <h3>Hoy en Santiago. Pronto en todo Chile.</h3>
+        <p class="coverage-body">Seguimos partiendo por Santiago, pero ya estamos preparando la expansión a nuevas ciudades para que Roast llegue a más mesas sin perder velocidad ni consistencia.</p>
+        <div class="coverage-grid" role="list" aria-label="Ciudades de cobertura">
+          <div class="coverage-badge-item active" role="listitem" aria-label="Santiago - activo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div>
+              <p style="font-weight:600;color:var(--text-primary)">Santiago</p>
+              <p style="font-size:0.8125rem;color:var(--accent)">Región Metropolitana</p>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="coverage-badge-item soon" role="listitem" aria-label="Talca - próximamente">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div>
+              <p style="font-weight:600;">Talca</p>
+              <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
+            </div>
+          </div>
+          <div class="coverage-badge-item soon" role="listitem" aria-label="Chillán - próximamente">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div>
+              <p style="font-weight:600;">Chillán</p>
+              <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
+            </div>
+          </div>
+          <div class="coverage-badge-item soon" role="listitem" aria-label="Puerto Varas - próximamente">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div>
+              <p style="font-weight:600;">Puerto Varas</p>
+              <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

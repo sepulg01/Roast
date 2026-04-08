@@ -69,3 +69,10 @@
 - Se refresco el repo con `git fetch origin`; `main` sigue alineado con `origin/main` y se mantuvieron intactas las eliminaciones existentes en `assets/logos/`.
 - Se elimino por completo el bloque CSS de `#sticky-cta` y su markup al final de `index.html`, dejando la landing sin CTA persistente en mobile.
 - Validacion realizada con `rg` sobre `index.html` para confirmar que ya no queda markup ni CSS de `sticky-cta`, y con `git diff --check`; no se ejecuto prueba visual automatizada en navegador.
+
+## 2026-04-08 - Fusion de Subscription Teaser y Coverage
+
+- Se refresco el repo con `git pull --rebase origin main`; `main` ya estaba alineado con `origin/main` antes de editar.
+- Se fusionaron las secciones `Subscription Teaser` y `Coverage` en un solo bloque `#coming-next`, con un heading comun y dos paneles lado a lado desde desktop que conservan todo el contenido previo.
+- Se ajusto el CSS para reemplazar los estilos de seccion independientes por una sola composicion responsive, manteniendo el CTA de suscripcion y los badges de cobertura dentro del nuevo layout.
+- Validacion realizada con `rg` sobre `index.html` para confirmar la presencia de `#coming-next` y la eliminacion de las secciones `#subscription` y `#coverage`, con parseo HTML via `python3` y `git diff --check`; no se ejecuto prueba visual automatizada en navegador.
