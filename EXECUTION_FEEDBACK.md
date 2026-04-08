@@ -63,3 +63,9 @@
 - Se envolvieron los pasos del quiz en un contenedor persistente y se agrego `syncQuizPanelHeight()` para fijar la altura del panel derecho en escritorio usando como referencia visual el paso de recomendacion.
 - La altura minima del quiz se recalcula al cargar, al cambiar de paso, al redimensionar la ventana y al terminar de cargar las fuentes; bajo `900px` vuelve a altura automatica.
 - Validacion realizada con parseo HTML via `python3`, `git diff --check` y verificacion por HTTP con `python3 -m http.server` de la presencia del nuevo wordmark, del contenedor `quizStepStack` y de la logica `syncQuizPanelHeight`; no se ejecuto prueba visual automatizada en navegador.
+
+## 2026-04-08 - Eliminacion del CTA sticky mobile
+
+- Se refresco el repo con `git fetch origin`; `main` sigue alineado con `origin/main` y se mantuvieron intactas las eliminaciones existentes en `assets/logos/`.
+- Se elimino por completo el bloque CSS de `#sticky-cta` y su markup al final de `index.html`, dejando la landing sin CTA persistente en mobile.
+- Validacion realizada con `rg` sobre `index.html` para confirmar que ya no queda markup ni CSS de `sticky-cta`, y con `git diff --check`; no se ejecuto prueba visual automatizada en navegador.
