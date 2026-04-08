@@ -129,3 +129,14 @@
 - Se mantuvieron las paginas legales publicas y enlazadas desde el footer, pero fuera de `sitemap.xml` y bloqueadas por `robots.txt` conforme al alcance definido.
 - Se mejoro la generacion de mensajes de WhatsApp para productos, dejando frases legibles para molienda y grano entero.
 - Validacion realizada con `git diff --check`, `rg` sobre metadatos SEO y schema, servidor local `python3 -m http.server`, verificacion HTTP `200` de `/`, las 4 nuevas URLs, `/robots.txt`, `/sitemap.xml` y `/assets/og-image.jpg`; no se ejecuto prueba visual automatizada en navegador ni validacion externa en Rich Results Test desde este entorno.
+
+## 2026-04-08 - Ajuste del hero y reconversion editorial del home
+
+- Se refresco el repo antes de editar y se confirmo que el worktree contenia otros cambios ya presentes en archivos ajenos a esta iteracion; se preservaron sin tocar.
+- Se restauro en `index.html` el hero anterior con el eyebrow `Tu primer cafe real.` y el H1 `Tu desayuno merece mas que agua tibia con colorante.`, manteniendo intacto el `hero-proof`.
+- Se reemplazo el subcopy del hero con la version acordada sobre dejar el cafe instantaneo y pedir formato + molienda por domicilio.
+- Se elimino la linea visible `Si ya sabes lo que quieres...` y se movio el `seo-hub` al tramo final del `main`, justo antes del CTA final, con tono de articulos educativos en lugar de categorias de producto.
+- Se redujo la seccion de productos a 2 cards: `Se cayo el sistema` y `Modo Avion`, cada una con `Formato`, `Molienda`, precio dinamico y CTA de WhatsApp conectado al contrato compartido ya existente en `assets/site.js`.
+- Se cambio el wordmark del header y footer a la version tipografica `Roast.` usando las clases solicitadas, sin modificar la estructura de wrappers circundante.
+- Se incorporaron ilustraciones SVG inline como reemplazo temporal de imagenes de producto dentro de `index.html`, porque el generador de imagenes no estuvo disponible en esta sesion.
+- Validacion realizada con `git diff --check`, inspeccion puntual de `index.html`, confirmacion de atributos `data-product-*` y lectura del contrato ya existente en `assets/site.js`; no se ejecuto render visual automatizado en navegador desde este entorno.

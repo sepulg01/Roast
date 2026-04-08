@@ -132,7 +132,7 @@
 <nav class="site-nav" aria-label="Navegación principal">
   <div class="nav-inner">
     <a href="/" class="nav-logo" aria-label="Roast - ir al inicio">
-      <img src="/assets/logos/roast-logo-dark.svg" alt="Roast" class="nav-logo-mark" />
+      <span class="nav-logo-wordmark" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(1.95rem,5vw,2.2rem);letter-spacing:-0.02em;line-height:1;display:inline-flex;align-items:center;color:var(--text-primary);text-shadow:0 10px 22px rgba(0,0,0,0.24);">Roast<span style="color:var(--accent);">.</span></span>
     </a>
     <div class="nav-right">
       <button class="nav-hamburger" id="navHamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="navDrawer">
@@ -163,9 +163,9 @@
   <section id="hero" aria-label="Sección principal">
     <div class="hero-bg" role="img" aria-label="Café servido en una taza sobre una superficie oscura"></div>
     <div class="hero-content">
-      <span class="hero-eyebrow">Café molido a pedido en Santiago</span>
-      <h1 class="hero-headline">Café molido a pedido, en grano y a domicilio en Santiago.</h1>
-      <p class="hero-sub">Roast te ayuda a dejar el café instantáneo sin rituales raros: eliges formato, nos dices cómo lo preparas y te lo mandamos listo para tu cafetera.</p>
+      <span class="hero-eyebrow">Tu primer café real.</span>
+      <h1 class="hero-headline">Tu desayuno merece más que agua tibia con colorante.</h1>
+      <p class="hero-sub">Roast es el paso para dejar el café instantáneo: Sólo eliges formato, nos dices cómo te gustaría prepararlo y te lo mandamos listo a tu domicilio.</p>
       <div class="hero-ctas">
         <a href="https://wa.me/56951172813?text=Hola%20Cafe%20Roast!%20%F0%9F%91%8B%20Quiero%20pedir%20caf%C3%A9%20molido%20a%20pedido%20o%20en%20grano.%20%C2%BFPor%20d%C3%B3nde%20empiezo%3F"
            class="btn btn-whatsapp"
@@ -206,41 +206,6 @@
           <h3>Más café real, misma rutina</h3>
           <p>Pides café molido a pedido o en grano, eliges el formato, y listo. Sin molinillo si no quieres, sin clases magistrales tampoco.</p>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="seo-hub" aria-labelledby="seo-hub-heading">
-    <div class="container">
-      <div class="section-header fade-in">
-        <h2 id="seo-hub-heading">Explora Roast según lo que realmente estás buscando.</h2>
-      </div>
-      <p class="section-sub fade-in">Si ya vienes con una intención clara, entra directo a la página que te conviene. Así encuentras más rápido el tipo de café, formato y mensaje correcto.</p>
-      <div class="seo-hub-grid">
-        <article class="seo-hub-card fade-in">
-          <span class="badge">MOLIDO</span>
-          <h3>Café molido a pedido</h3>
-          <p>Para moka, prensa francesa, filtro, espresso y más. Tú nos dices la cafetera, nosotros hacemos el resto.</p>
-          <a class="seo-hub-link" href="/cafe-molido/">Ver café molido →</a>
-        </article>
-        <article class="seo-hub-card fade-in">
-          <span class="badge">EN GRANO</span>
-          <h3>Café en grano</h3>
-          <p>Si ya tienes molinillo o te gusta ajustar tu molienda en casa, esta es tu entrada natural a Roast.</p>
-          <a class="seo-hub-link" href="/cafe-en-grano/">Ver café en grano →</a>
-        </article>
-        <article class="seo-hub-card fade-in">
-          <span class="badge">SIN POSE</span>
-          <h3>Café de especialidad</h3>
-          <p>Café de especialidad sin tecnicismos ni vocabulario gourmet. Solo mejor café, más claro y más simple de pedir.</p>
-          <a class="seo-hub-link" href="/cafe-de-especialidad/">Ver café de especialidad →</a>
-        </article>
-        <article class="seo-hub-card fade-in">
-          <span class="badge">SANTIAGO</span>
-          <h3>Café a domicilio</h3>
-          <p>Pide por WhatsApp y recibe tu café en Santiago con despacho rápido y envío gratis sobre $36.000 CLP.</p>
-          <a class="seo-hub-link" href="/cafe-a-domicilio/">Ver café a domicilio →</a>
-        </article>
       </div>
     </div>
   </section>
@@ -305,106 +270,84 @@
   <section id="products" aria-labelledby="products-heading">
     <div class="container">
       <div class="section-header fade-in">
-        <h2 id="products-heading">Compra café molido o en grano en el formato que te acomode.</h2>
+        <h2 id="products-heading">Dos tuestes para dos estados muy distintos del día.</h2>
       </div>
-      <p class="section-sub fade-in">Todos los formatos están disponibles para molido a pedido según tu cafetera o como café en grano si prefieres moler en casa.</p>
+      <p class="section-sub fade-in">Elige formato y molienda por card. El precio y el mensaje de WhatsApp se actualizan solos.</p>
       <div class="products-grid">
-        <div class="card product-card fade-in" aria-label="Producto 250g">
-          <img src="https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?auto=format&fit=crop&w=900&q=80" alt="Granos de café sobre una mesa de madera" class="product-img" loading="lazy" />
-          <p class="product-label">Para empezar</p>
-          <p class="product-size">250g</p>
-          <p class="product-desc">El formato ideal si quieres dejar el instantáneo sin comprometerte con un kilo desde el día uno.</p>
+        <article class="card product-card fade-in" aria-label="Se cayó el sistema" data-product-card data-product-id="se-cayo-el-sistema">
+          <img src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 900'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2308080b'/%3E%3Cstop offset='100%25' stop-color='%231b1411'/%3E%3C/linearGradient%3E%3ClinearGradient id='glow' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ff6b35' stop-opacity='.9'/%3E%3Cstop offset='100%25' stop-color='%23ff6b35' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1200' height='900' fill='url(%23bg)'/%3E%3Ccircle cx='270' cy='220' r='160' fill='%23ff6b35' opacity='.08'/%3E%3Ccircle cx='960' cy='180' r='190' fill='%23ff6b35' opacity='.06'/%3E%3Cpath d='M735 215c40 18 73 52 88 94 20 56 7 130-27 173-34 44-88 70-141 76-78 10-172-18-222-73-49-54-58-141-26-201 40-76 139-121 226-116 44 3 86 12 102 47z' fill='url(%23glow)' opacity='.45'/%3E%3Cg transform='translate(260 270)'%3E%3Crect x='0' y='180' width='620' height='52' rx='26' fill='%23201817' stroke='%23ff6b35' stroke-opacity='.25'/%3E%3Crect x='110' y='60' width='320' height='170' rx='32' fill='%23111114' stroke='%23f5f0e8' stroke-opacity='.12'/%3E%3Cpath d='M160 94h140c30 0 54 24 54 54v20c0 30-24 54-54 54H160c-30 0-54-24-54-54v-20c0-30 24-54 54-54z' fill='none' stroke='%23f5f0e8' stroke-opacity='.14' stroke-width='8'/%3E%3Cpath d='M245 78c12-28 28-44 50-52' fill='none' stroke='%23ff6b35' stroke-width='8' stroke-linecap='round'/%3E%3Cpath d='M290 34c10 13 17 30 17 48' fill='none' stroke='%23ff6b35' stroke-width='8' stroke-linecap='round'/%3E%3Cpath d='M325 58c12 14 20 31 21 50' fill='none' stroke='%23ff6b35' stroke-width='8' stroke-linecap='round' opacity='.7'/%3E%3Ccircle cx='505' cy='120' r='94' fill='%23151212' stroke='%23f5f0e8' stroke-opacity='.1' stroke-width='6'/%3E%3Cpath d='M474 120h62M505 89v62' stroke='%23ff6b35' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M506 62v116' stroke='%23ff6b35' stroke-opacity='.25' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M552 92l42-42' stroke='%23f5f0e8' stroke-opacity='.18' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M552 148l42 42' stroke='%23f5f0e8' stroke-opacity='.18' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M458 92l-42-42' stroke='%23f5f0e8' stroke-opacity='.18' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M458 148l-42 42' stroke='%23f5f0e8' stroke-opacity='.18' stroke-width='10' stroke-linecap='round'/%3E%3Ccircle cx='415' cy='116' r='22' fill='%23ff6b35' opacity='.85'/%3E%3Cpath d='M435 142c45 46 85 54 118 46' fill='none' stroke='%23ff6b35' stroke-opacity='.34' stroke-width='8' stroke-linecap='round'/%3E%3Cpath d='M145 300c58-22 118-22 180 0' fill='none' stroke='%23ff6b35' stroke-opacity='.24' stroke-width='8' stroke-linecap='round'/%3E%3Cpath d='M168 334c54-18 108-18 163 0' fill='none' stroke='%23f5f0e8' stroke-opacity='.08' stroke-width='6' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E" alt="Escena oscura y pausada con café y señales de sistema detenido" class="product-img" loading="lazy" width="900" height="675" />
+          <p class="product-label">Pausa / ritual</p>
+          <p class="product-size">Se cayó el sistema</p>
+          <p class="product-desc">Un café para cuando el día se frena. Más redondo, más amable y listo para acompañar la pausa sin meterle drama extra.</p>
           <div class="product-selectors">
-            <select id="grind250" aria-label="Selecciona molienda para 250g" onchange="updateProductLink('250')">
-              <option value="espresso">Molido para espresso</option>
-              <option value="moka">Molido para moka</option>
-              <option value="prensa francesa">Molido para prensa francesa</option>
-              <option value="filtro / pour over">Molido para filtro / pour over</option>
-              <option value="chemex">Molido para chemex</option>
-              <option value="aeropress">Molido para aeropress</option>
-              <option value="grano entero">En grano entero</option>
+            <select id="sistema-format" data-product-format aria-label="Selecciona formato para Se cayó el sistema">
+              <option value="250g">250g</option>
+              <option value="500g" selected>500g</option>
+              <option value="1kg">1kg</option>
+            </select>
+            <select id="sistema-grind" data-product-grind aria-label="Selecciona molienda para Se cayó el sistema">
+              <option value="prensa francesa" selected>Prensa francesa</option>
+              <option value="filtro / pour over">Filtro / pour over</option>
+              <option value="moka">Moka</option>
+              <option value="espresso">Espresso</option>
+              <option value="chemex">Chemex</option>
+              <option value="aeropress">AeroPress</option>
+              <option value="grano entero">Grano entero</option>
             </select>
           </div>
           <div class="product-purchase-row">
-            <p class="product-price">$9.000 <span>CLP</span></p>
-            <a id="waLink250"
+            <p class="product-price" id="se-cayo-price" data-product-price>$16.500 <span>CLP</span></p>
+            <a id="se-cayo-wa"
                href="#"
                class="icon-link icon-link-whatsapp product-cta-icon"
                target="_blank" rel="noopener noreferrer"
-               aria-label="Pedir 250g por WhatsApp"
-               onclick="dataLayer.push({event:'product_card_click',format:'250g'});dataLayer.push({event:'whatsapp_click',label:'product_250g'})">
+               aria-label="Pedir Se cayó el sistema por WhatsApp"
+               data-product-link>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
             </a>
           </div>
-        </div>
-        <div class="card product-card card-featured fade-in" aria-label="Producto 500g - el más popular" style="position:relative;">
+        </article>
+        <article class="card product-card card-featured fade-in" aria-label="Modo Avión" data-product-card data-product-id="modo-avion">
           <div class="product-badge-wrap">
-            <span class="badge" aria-label="Más popular">MÁS POPULAR</span>
+            <span class="badge" aria-label="Más intenso">FOCO DIRECTO</span>
           </div>
-          <img src="https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=900&q=80" alt="Taza de café recién preparado junto a granos de café" class="product-img" loading="lazy" />
-          <p class="product-label">El más popular</p>
-          <p class="product-size">500g</p>
-          <p class="product-desc">Rinde bien para 1 a 2 tazas diarias y es el formato más natural para repetir sin quedarte corto.</p>
+          <img src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 900'%3E%3Cdefs%3E%3ClinearGradient id='bg2' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2307090c'/%3E%3Cstop offset='100%25' stop-color='%23201916'/%3E%3C/linearGradient%3E%3ClinearGradient id='ring' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ff6b35'/%3E%3Cstop offset='100%25' stop-color='%23ffd166'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1200' height='900' fill='url(%23bg2)'/%3E%3Cpath d='M130 670c110-190 276-278 495-265 188 11 325 94 447 246' fill='none' stroke='%23ff6b35' stroke-opacity='.12' stroke-width='20' stroke-linecap='round'/%3E%3Ccircle cx='860' cy='210' r='180' fill='%23ff6b35' opacity='.07'/%3E%3Ccircle cx='320' cy='150' r='120' fill='%23ffd166' opacity='.05'/%3E%3Cg transform='translate(240 190)'%3E%3Cpath d='M110 330c0-87 71-158 158-158h154c87 0 158 71 158 158v118H110V330z' fill='%23111114' stroke='%23f5f0e8' stroke-opacity='.12' stroke-width='6'/%3E%3Crect x='182' y='182' width='266' height='102' rx='36' fill='%23181618' stroke='%23ff6b35' stroke-opacity='.35' stroke-width='8'/%3E%3Cpath d='M208 205c34-46 76-70 125-70s91 24 125 70' fill='none' stroke='url(%23ring)' stroke-width='10' stroke-linecap='round'/%3E%3Ccircle cx='341' cy='270' r='102' fill='%23141416' stroke='%23ff6b35' stroke-opacity='.24' stroke-width='6'/%3E%3Cpath d='M341 205c14 18 25 39 25 65 0 36-18 62-25 75-7-13-25-39-25-75 0-26 11-47 25-65z' fill='%23ff6b35' opacity='.9'/%3E%3Cpath d='M341 166v39M341 335v40M278 270h38M366 270h38' stroke='%23f5f0e8' stroke-opacity='.22' stroke-width='8' stroke-linecap='round'/%3E%3Cpath d='M530 100l62 66-62 66' fill='none' stroke='%23ff6b35' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M550 166H435' fill='none' stroke='%23ff6b35' stroke-width='10' stroke-linecap='round'/%3E%3Cpath d='M505 366l60 32-22 64-68-10-10-68z' fill='%23ff6b35' opacity='.82'/%3E%3Cpath d='M168 500c70-40 161-62 260-62 145 0 270 48 366 126' fill='none' stroke='%23f5f0e8' stroke-opacity='.09' stroke-width='10' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E" alt="Escena intensa y enfocada con café oscuro y energía contenida" class="product-img" loading="lazy" width="900" height="675" />
+          <p class="product-label">Intensidad / foco</p>
+          <p class="product-size">Modo Avión</p>
+          <p class="product-desc">Más oscuro, más directo y con más carácter. El café para entrar en modo foco sin pedir permiso.</p>
           <div class="product-selectors">
-            <select id="grind500" aria-label="Selecciona molienda para 500g" onchange="updateProductLink('500')">
-              <option value="moka">Molido para moka</option>
-              <option value="espresso">Molido para espresso</option>
-              <option value="prensa francesa">Molido para prensa francesa</option>
-              <option value="filtro / pour over">Molido para filtro / pour over</option>
-              <option value="chemex">Molido para chemex</option>
-              <option value="aeropress">Molido para aeropress</option>
-              <option value="grano entero">En grano entero</option>
+            <select id="avion-format" data-product-format aria-label="Selecciona formato para Modo Avión">
+              <option value="250g">250g</option>
+              <option value="500g" selected>500g</option>
+              <option value="1kg">1kg</option>
+            </select>
+            <select id="avion-grind" data-product-grind aria-label="Selecciona molienda para Modo Avión">
+              <option value="espresso" selected>Espresso</option>
+              <option value="moka">Moka</option>
+              <option value="prensa francesa">Prensa francesa</option>
+              <option value="filtro / pour over">Filtro / pour over</option>
+              <option value="chemex">Chemex</option>
+              <option value="aeropress">AeroPress</option>
+              <option value="grano entero">Grano entero</option>
             </select>
           </div>
           <div class="product-purchase-row">
-            <p class="product-price">$16.500 <span>CLP</span></p>
-            <a id="waLink500"
+            <p class="product-price" id="modo-avion-price" data-product-price>$16.500 <span>CLP</span></p>
+            <a id="modo-avion-wa"
                href="#"
                class="icon-link icon-link-whatsapp product-cta-icon"
                target="_blank" rel="noopener noreferrer"
-               aria-label="Pedir 500g por WhatsApp"
-               onclick="dataLayer.push({event:'product_card_click',format:'500g'});dataLayer.push({event:'whatsapp_click',label:'product_500g'})">
+               aria-label="Pedir Modo Avión por WhatsApp"
+               data-product-link>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
             </a>
           </div>
-        </div>
-        <div class="card product-card fade-in" aria-label="Producto 1kg - mejor precio">
-          <div class="product-badge-wrap">
-            <span class="badge" aria-label="Mejor precio por gramo">MEJOR PRECIO/GRAMO</span>
-          </div>
-          <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=900&q=80" alt="Pala sirviendo granos de café tostado desde un saco" class="product-img" loading="lazy" />
-          <p class="product-label">El más conveniente</p>
-          <p class="product-size">1kg</p>
-          <p class="product-desc">Para quienes ya encontraron su ritmo y quieren asegurar café real por más tiempo al mejor precio por gramo.</p>
-          <div class="product-selectors">
-            <select id="grind1kg" aria-label="Selecciona molienda para 1kg" onchange="updateProductLink('1kg')">
-              <option value="filtro / pour over">Molido para filtro / pour over</option>
-              <option value="espresso">Molido para espresso</option>
-              <option value="moka">Molido para moka</option>
-              <option value="prensa francesa">Molido para prensa francesa</option>
-              <option value="chemex">Molido para chemex</option>
-              <option value="aeropress">Molido para aeropress</option>
-              <option value="grano entero">En grano entero</option>
-            </select>
-          </div>
-          <div class="product-purchase-row">
-            <p class="product-price">$29.000 <span>CLP</span></p>
-            <a id="waLink1kg"
-               href="#"
-               class="icon-link icon-link-whatsapp product-cta-icon"
-               target="_blank" rel="noopener noreferrer"
-               aria-label="Pedir 1kg por WhatsApp"
-               onclick="dataLayer.push({event:'product_card_click',format:'1kg'});dataLayer.push({event:'whatsapp_click',label:'product_1kg'})">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
-            </a>
-          </div>
-        </div>
+        </article>
       </div>
       <p class="free-shipping-note fade-in">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         Envío gratis en Santiago en compras mayores a $36.000 CLP
       </p>
-      <p class="products-note fade-in">Si ya sabes lo que quieres, entra directo a <a href="/cafe-molido/">café molido</a>, <a href="/cafe-en-grano/">café en grano</a>, <a href="/cafe-de-especialidad/">café de especialidad</a> o <a href="/cafe-a-domicilio/">café a domicilio</a>.</p>
     </div>
   </section>
 
@@ -588,6 +531,41 @@
     </div>
   </section>
 
+  <section id="seo-hub" aria-labelledby="seo-hub-heading">
+    <div class="container">
+      <div class="section-header fade-in">
+        <h2 id="seo-hub-heading">Artículos para entender el café antes de pedirlo.</h2>
+      </div>
+      <p class="section-sub fade-in">Si quieres elegir mejor, parte por aquí. Son guías cortas, directas y sin palabras de pose.</p>
+      <div class="seo-hub-grid">
+        <article class="seo-hub-card fade-in">
+          <span class="badge">GUÍA</span>
+          <h3>Café molido</h3>
+          <p>Qué significa molido a pedido, cómo cambia la taza y cómo elegir la molienda correcta sin adivinar.</p>
+          <a class="seo-hub-link" href="/cafe-molido/">Leer artículo →</a>
+        </article>
+        <article class="seo-hub-card fade-in">
+          <span class="badge">GUÍA</span>
+          <h3>Café en grano</h3>
+          <p>Cuándo conviene comprar grano entero, cuándo no y qué ganas si mueles recién antes de preparar.</p>
+          <a class="seo-hub-link" href="/cafe-en-grano/">Leer artículo →</a>
+        </article>
+        <article class="seo-hub-card fade-in">
+          <span class="badge">GUÍA</span>
+          <h3>Café de especialidad</h3>
+          <p>Una explicación simple de qué significa de verdad, sin convertirlo en una clase gourmet innecesaria.</p>
+          <a class="seo-hub-link" href="/cafe-de-especialidad/">Leer artículo →</a>
+        </article>
+        <article class="seo-hub-card fade-in">
+          <span class="badge">GUÍA</span>
+          <h3>Café a domicilio</h3>
+          <p>Qué esperar del despacho en Santiago, cobertura, tiempos y cómo pedir sin complicarte.</p>
+          <a class="seo-hub-link" href="/cafe-a-domicilio/">Leer artículo →</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <section id="final-cta" aria-labelledby="final-heading">
     <h2 id="final-heading">Pide café molido a pedido o en grano por WhatsApp.</h2>
     <p class="final-sub">Despacho rápido en Santiago. Molienda según tu cafetera. Cero café de tarro.</p>
@@ -605,7 +583,7 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
-      <img src="/assets/logos/roast-logo-dark.svg" alt="Roast" class="footer-logo-mark" />
+      <span class="footer-logo-wordmark" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:2rem;letter-spacing:-0.02em;line-height:1;display:inline-flex;align-items:center;color:var(--text-primary);text-shadow:0 10px 22px rgba(0,0,0,0.24);">Roast<span style="color:var(--accent);">.</span></span>
     </div>
     <div class="footer-meta">
       <p class="footer-tagline">Café molido a pedido, en grano y a domicilio en Santiago.</p>
@@ -652,7 +630,6 @@
   </div>
   <div class="footer-bottom">© 2026 Cafe Roast. Todos los derechos reservados.</div>
 </footer>
-
 <script src="/assets/site.js"></script>
 </body>
 </html>
