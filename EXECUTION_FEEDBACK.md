@@ -76,3 +76,11 @@
 - Se fusionaron las secciones `Subscription Teaser` y `Coverage` en un solo bloque `#coming-next`, con un heading comun y dos paneles lado a lado desde desktop que conservan todo el contenido previo.
 - Se ajusto el CSS para reemplazar los estilos de seccion independientes por una sola composicion responsive, manteniendo el CTA de suscripcion y los badges de cobertura dentro del nuevo layout.
 - Validacion realizada con `rg` sobre `index.html` para confirmar la presencia de `#coming-next` y la eliminacion de las secciones `#subscription` y `#coverage`, con parseo HTML via `python3` y `git diff --check`; no se ejecuto prueba visual automatizada en navegador.
+
+## 2026-04-08 - Drawer, footer y ajustes de Proximamente
+
+- Se refresco el repo con `git pull --rebase origin main`; `main` ya estaba alineado con `origin/main` antes de editar.
+- Se eliminaron del footer los 4 links internos a secciones y se recompuso el grid para dejar solo marca, redes y links legales.
+- Se actualizo el menu hamburguesa para cubrir las secciones vigentes de la landing: inicio, pain points, quiz, productos, resenas, `Próximamente en Roast`, FAQ y CTA final.
+- Se reemplazo el heading `Coming Next` por `Próximamente en Roast`, se ajusto el subcopy, se reordeno el contenido del panel de suscripciones a una secuencia mas natural y se paso la cobertura a grid para evitar que las ciudades se salgan del recuadro.
+- Validacion realizada con `rg` para confirmar la eliminacion de `footer-links`, la presencia del nuevo copy `Próximamente en Roast` y las nuevas anchors del drawer; tambien con parseo HTML via `python3` y `git diff --check`; no se ejecuto prueba visual automatizada en navegador.

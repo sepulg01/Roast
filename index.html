@@ -728,6 +728,7 @@
       border-radius: 20px;
       padding: clamp(2rem, 5vw, 3rem);
       box-shadow: 0 28px 56px rgba(0, 0, 0, 0.22);
+      overflow: hidden;
     }
     .coming-next-panel h3 {
       font-size: clamp(1.5rem, 3vw, 2.2rem);
@@ -741,14 +742,31 @@
       background: rgba(13, 13, 13, 0.88);
       border: 1px solid rgba(245, 240, 232, 0.16);
     }
+    .sub-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      height: 100%;
+    }
     .sub-badge { margin-bottom: 1rem; }
     .sub-headline { margin-bottom: 0.75rem; }
-    .sub-body { color: rgba(245, 240, 232, 0.78); margin-bottom: 1.75rem; max-width: 52ch; }
+    .sub-body { color: rgba(245, 240, 232, 0.78); max-width: 34ch; }
+    .sub-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+    }
+    .sub-detail-label {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
     .sub-freqs {
       display: flex;
       flex-wrap: wrap;
       gap: 0.75rem;
-      margin-bottom: 2rem;
     }
     .sub-freq {
       background: rgba(245, 240, 232, 0.08);
@@ -759,8 +777,9 @@
       font-size: 0.9375rem;
       color: var(--text-primary);
     }
-    @media (min-width: 768px) {
-      .sub-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
+    .sub-cta { width: 100%; }
+    @media (min-width: 640px) {
+      .sub-cta { width: auto; }
     }
     /* ===== COVERAGE MAP ===== */
     .coverage-card {
@@ -773,28 +792,42 @@
       max-width: 44ch;
     }
     .coverage-grid {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 1rem;
-      justify-content: flex-start;
       width: 100%;
       margin: 0;
     }
-    @media (min-width: 1024px) {
-      .coverage-grid { flex-wrap: nowrap; }
+    @media (min-width: 640px) {
+      .coverage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     .coverage-badge-item {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 0.6rem;
       background: var(--bg-primary);
       border-radius: 10px;
-      padding: 0.875rem 1.25rem;
+      padding: 1rem 1.125rem;
       font-weight: 500;
+      min-width: 0;
     }
     .coverage-badge-item.active { border: 2px solid var(--accent); color: var(--text-primary); }
     .coverage-badge-item.soon { border: 1px solid var(--border); color: var(--text-secondary); }
     .coverage-badge-item svg { flex-shrink: 0; }
+    .coverage-badge-copy {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .coverage-badge-city {
+      font-weight: 600;
+      line-height: 1.25;
+    }
+    .coverage-badge-region {
+      font-size: 0.8125rem;
+      line-height: 1.35;
+    }
     /* ===== FAQ ===== */
     #faq { background: var(--bg-primary); }
     #faq .section-header { text-align: center; margin-bottom: 2.5rem; }
@@ -888,7 +921,6 @@
       gap: 2rem;
       grid-template-columns: 1fr;
     }
-    @media (min-width: 768px) { .footer-inner { grid-template-columns: repeat(3, 1fr); } }
     .footer-logo {
       font-family: 'Space Grotesk', sans-serif;
       font-weight: 700;
@@ -898,9 +930,6 @@
     }
     .footer-logo span { color: var(--accent); }
     .footer-tagline { color: var(--text-secondary); font-size: 0.9375rem; }
-    .footer-links { display: flex; flex-direction: column; gap: 0.5rem; }
-    .footer-links a { color: var(--text-secondary); font-size: 0.9375rem; transition: color 200ms ease; }
-    .footer-links a:hover { color: var(--accent); }
     .footer-policies {
       display: flex;
       flex-direction: column;
@@ -928,6 +957,10 @@
       color: var(--text-muted);
       font-size: 0.8125rem;
     }
+    @media (min-width: 768px) {
+      .footer-inner { grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
+      .footer-contact { justify-self: end; }
+    }
   </style>
 </head>
 <body>
@@ -952,11 +985,14 @@
 <!-- DRAWER -->
 <nav class="nav-drawer" id="navDrawer" aria-label="Menú de navegación" aria-hidden="true">
   <div class="drawer-section">Navegar</div>
+  <a href="#hero" onclick="closeDrawer()">Inicio</a>
   <a href="#pain-points" onclick="closeDrawer()">¿Por qué Café Roast?</a>
-  <a href="#products" onclick="closeDrawer()">Elegir mi café</a>
+  <a href="#quiz" onclick="closeDrawer()">Quiz</a>
   <a href="#products" onclick="closeDrawer()">Productos y precios</a>
   <a href="#reviews" onclick="closeDrawer()">Reseñas</a>
+  <a href="#coming-next" onclick="closeDrawer()">Próximamente en Roast</a>
   <a href="#faq" onclick="closeDrawer()">Preguntas frecuentes</a>
+  <a href="#final-cta" onclick="closeDrawer()">Pedir ahora</a>
 </nav>
 
 <!-- HERO -->
@@ -1224,8 +1260,8 @@
 <section id="coming-next" aria-labelledby="coming-next-heading">
   <div class="container">
     <div class="section-header fade-in">
-      <h2 id="coming-next-heading">Coming Next</h2>
-      <p class="coming-next-sub">Lo próximo en Roast: suscripciones automáticas y nuevas ciudades para que el café te siga más de cerca.</p>
+      <h2 id="coming-next-heading">Próximamente en Roast</h2>
+      <p class="coming-next-sub">Lo siguiente en Roast: suscripciones automáticas y expansión a nuevas ciudades, manteniendo la misma simpleza y velocidad.</p>
     </div>
     <div class="coming-next-grid">
       <div class="coming-next-panel sub-card fade-in">
@@ -1235,20 +1271,21 @@
             <h3 class="sub-headline">Nunca más te quedes sin café.</h3>
             <p class="sub-body">Pronto podrás suscribirte y recibir tu Roast automáticamente. Elige tu frecuencia: semanal, quincenal o mensual. Sin complicaciones, sin olvidarte.</p>
           </div>
-          <div>
+          <div class="sub-details">
+            <p class="sub-detail-label">Frecuencias previstas</p>
             <div class="sub-freqs" aria-label="Opciones de frecuencia">
               <span class="sub-freq">Semanal</span>
               <span class="sub-freq">Quincenal</span>
               <span class="sub-freq">Mensual</span>
             </div>
-            <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20que%20me%20avisen%20cuando%20lancen%20las%20suscripciones%20%F0%9F%99%8C"
-               class="btn btn-secondary"
-               target="_blank" rel="noopener noreferrer"
-               aria-label="Avisarme cuando esté disponible la suscripción"
-               onclick="dataLayer.push({event:'subscription_interest'});dataLayer.push({event:'whatsapp_click',label:'subscription_teaser'})">
-              Avisarme cuando esté disponible
-            </a>
           </div>
+          <a href="https://wa.me/56951172813?text=Hola%20Roast!%20%F0%9F%91%8B%20Quiero%20que%20me%20avisen%20cuando%20lancen%20las%20suscripciones%20%F0%9F%99%8C"
+             class="btn btn-secondary sub-cta"
+             target="_blank" rel="noopener noreferrer"
+             aria-label="Avisarme cuando esté disponible la suscripción"
+             onclick="dataLayer.push({event:'subscription_interest'});dataLayer.push({event:'whatsapp_click',label:'subscription_teaser'})">
+            Avisarme cuando esté disponible
+          </a>
         </div>
       </div>
       <div class="coming-next-panel coverage-card fade-in">
@@ -1258,30 +1295,30 @@
         <div class="coverage-grid" role="list" aria-label="Ciudades de cobertura">
           <div class="coverage-badge-item active" role="listitem" aria-label="Santiago - activo">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <div>
-              <p style="font-weight:600;color:var(--text-primary)">Santiago</p>
-              <p style="font-size:0.8125rem;color:var(--accent)">Región Metropolitana</p>
+            <div class="coverage-badge-copy">
+              <p class="coverage-badge-city" style="color:var(--text-primary)">Santiago</p>
+              <p class="coverage-badge-region" style="color:var(--accent)">Región Metropolitana</p>
             </div>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
           <div class="coverage-badge-item soon" role="listitem" aria-label="Talca - próximamente">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <div>
-              <p style="font-weight:600;">Talca</p>
+            <div class="coverage-badge-copy">
+              <p class="coverage-badge-city">Talca</p>
               <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
             </div>
           </div>
           <div class="coverage-badge-item soon" role="listitem" aria-label="Chillán - próximamente">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <div>
-              <p style="font-weight:600;">Chillán</p>
+            <div class="coverage-badge-copy">
+              <p class="coverage-badge-city">Chillán</p>
               <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
             </div>
           </div>
           <div class="coverage-badge-item soon" role="listitem" aria-label="Puerto Varas - próximamente">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <div>
-              <p style="font-weight:600;">Puerto Varas</p>
+            <div class="coverage-badge-copy">
+              <p class="coverage-badge-city">Puerto Varas</p>
               <span class="badge badge-soon" style="font-size:0.65rem;padding:0.15rem 0.45rem;">Próximamente</span>
             </div>
           </div>
@@ -1379,12 +1416,6 @@
       <p class="footer-tagline">Tu primer café real.</p>
       <p style="color:var(--text-muted);font-size:0.8125rem;margin-top:0.25rem;">caferoast.cl · Santiago, Chile</p>
     </div>
-    <nav class="footer-links" aria-label="Links de navegación">
-      <a href="#pain-points">¿Por qué Café Roast?</a>
-      <a href="#products">Elegir mi café</a>
-      <a href="#products">Productos</a>
-      <a href="#faq">Preguntas frecuentes</a>
-    </nav>
     <div class="footer-contact">
       <div class="footer-socials" aria-label="Redes sociales">
         <a href="https://wa.me/56951172813"
