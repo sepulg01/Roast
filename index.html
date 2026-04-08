@@ -174,18 +174,12 @@
       .fade-in { opacity: 1; transform: none; transition: none; }
       * { transition: none !important; animation: none !important; }
     }
-    .footer-logo-placeholder {
+    .footer-logo-mark {
       height: 32px;
-      display: inline-flex;
-      align-items: center;
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 1.3rem;
-      color: #F5F0E8;
-      letter-spacing: -0.02em;
+      width: auto;
+      display: block;
       margin-bottom: 0.5rem;
     }
-    .footer-logo-placeholder span { color: #FF6B35; }
     .site-nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -210,20 +204,15 @@
       display: inline-flex;
       align-items: center;
       flex-shrink: 0;
+      line-height: 0;
       text-decoration: none;
     }
-    .nav-logo-wordmark {
-      display: inline-flex;
-      align-items: center;
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: clamp(1.55rem, 4vw, 1.8rem);
-      line-height: 1;
-      letter-spacing: -0.02em;
-      color: var(--text-primary);
-      text-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
+    .nav-logo-mark {
+      height: clamp(1.95rem, 5vw, 2.2rem);
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.24));
     }
-    .nav-logo-wordmark span { color: var(--accent); }
     .nav-right { display: flex; align-items: center; gap: 0.625rem; }
     .nav-hamburger {
       display: flex;
@@ -988,7 +977,7 @@
 <nav class="site-nav" aria-label="Navegación principal">
   <div class="nav-inner">
     <a href="#" class="nav-logo" aria-label="Roast - ir al inicio">
-      <span class="nav-logo-wordmark">Roast<span>.</span></span>
+      <img src="./assets/logos/roast-logo-dark.svg" alt="Roast" class="nav-logo-mark" />
     </a>
     <div class="nav-right">
       <button class="nav-hamburger" id="navHamburger" aria-label="Abrir menú" aria-expanded="false" aria-controls="navDrawer">
@@ -1432,7 +1421,7 @@
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
-      <span class="footer-logo-placeholder">Roast<span>.</span></span>
+      <img src="./assets/logos/roast-logo-dark.svg" alt="Roast" class="footer-logo-mark" />
     </div>
     <div class="footer-meta">
       <p class="footer-tagline">Tu primer café real.</p>

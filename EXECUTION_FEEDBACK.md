@@ -110,3 +110,11 @@
 - `logo_white.png` es la variante mas cercana a wordmark para fondos claros, aunque el tono del lettering se ve cafe oscuro y no negro puro.
 - `favicon.png` es la mejor base conceptual para favicon porque simplifica a monograma `R` mas grano, pero conviene vectorizarlo o exportarlo con transparencia y simplificarlo un punto mas para 16x16.
 - Validacion realizada con revision visual directa en esta app, lectura de metadatos binarios y comparacion contra el favicon actual `assets/favicon.svg`; no se ejecuto prueba en navegador a tamanos reales de 16x16/32x32.
+
+## 2026-04-08 - Preparacion de logo oscuro final
+
+- Se refresco el repo con `git pull --rebase origin main`; `main` ya estaba alineado con `origin/main` antes de editar.
+- Se recupero del historial el lettering vectorial de Roast y se simplifico a una version final sin adornos secundarios, manteniendo una sola marca oscura en `assets/logos/roast-logo-dark.svg`.
+- Se construyo el acento del logotipo como grano naranja separado del wordmark para acercarlo a la propuesta visual aprobada y dejar el asset con fondo transparente.
+- Se reemplazo el wordmark textual del header y del footer por el nuevo SVG oscuro, manteniendo el favicon actual sin cambios.
+- Validacion realizada con `git diff --check`, busqueda de referencias viejas con `rg` y parseo XML del SVG con `python3`; no se ejecuto validacion visual automatizada porque el entorno no tiene herramientas locales para rasterizar o previsualizar SVG.
