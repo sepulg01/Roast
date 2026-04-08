@@ -128,30 +128,63 @@
   }
 
   // ===== PRODUCT WHATSAPP LINKS =====
-  function buildProductLink(format, grindId) {
-    var grind = document.getElementById(grindId) ? document.getElementById(grindId).value : '';
+  var PRODUCT_PRICE_MAP = {
+    '250g': '$9.000',
+    '500g': '$16.500',
+    '1kg': '$29.000'
+  };
+
+  var PRODUCT_NAME_MAP = {
+    'se-cayo-el-sistema': 'Se cayó el sistema',
+    'modo-avion': 'Modo Avión'
+  };
+
+  function buildProductMessage(productId, format, grind) {
+    var productName = PRODUCT_NAME_MAP[productId] || productId;
     var grindText = PRODUCT_GRIND_LABEL_MAP[grind] || grind;
-    var msg = 'Hola Café Roast! 👋 Quiero pedir:\n• ' + format + ' de café ' + grindText + '\n¿Tienen disponibilidad?';
-    return 'https://wa.me/56951172813?text=' + encodeURIComponent(msg);
+    return 'Hola Café Roast. Quiero pedir ' + productName + ' en formato ' + format + ' y molienda ' + grindText + '.';
   }
 
-  function updateProductLink(size) {
-    if (size === '250') {
-      var el = document.getElementById('waLink250');
-      if (el) el.href = buildProductLink('250g', 'grind250');
-    } else if (size === '500') {
-      var el = document.getElementById('waLink500');
-      if (el) el.href = buildProductLink('500g', 'grind500');
-    } else if (size === '1kg') {
-      var el = document.getElementById('waLink1kg');
-      if (el) el.href = buildProductLink('1kg', 'grind1kg');
+  function updateProductCard(card) {
+    if (!card) return;
+
+    var productId = card.getAttribute('data-product-id') || '';
+    var formatSelect = card.querySelector('[data-product-format]');
+    var grindSelect = card.querySelector('[data-product-grind]');
+    var priceEl = card.querySelector('[data-product-price]');
+    var linkEl = card.querySelector('[data-product-link]');
+    var format = formatSelect ? formatSelect.value : '250g';
+    var grind = grindSelect ? grindSelect.value : 'grano entero';
+    var price = PRODUCT_PRICE_MAP[format] || PRODUCT_PRICE_MAP['250g'];
+
+    if (priceEl) {
+      priceEl.innerHTML = price + ' <span>CLP</span>';
+    }
+
+    if (linkEl) {
+      var msg = buildProductMessage(productId, format, grind);
+      linkEl.href = 'https://wa.me/56951172813?text=' + encodeURIComponent(msg);
+      linkEl.setAttribute('aria-label', 'Pedir ' + PRODUCT_NAME_MAP[productId] + ' por WhatsApp');
+      linkEl.setAttribute('data-product-format-selected', format);
+      linkEl.setAttribute('data-product-grind-selected', grind);
     }
   }
 
-  function initProductLinks() {
-    updateProductLink('250');
-    updateProductLink('500');
-    updateProductLink('1kg');
+  function initProductCards() {
+    var productCards = document.querySelectorAll('[data-product-card]');
+    productCards.forEach(function(card) {
+      var formatSelect = card.querySelector('[data-product-format]');
+      var grindSelect = card.querySelector('[data-product-grind]');
+
+      if (formatSelect) {
+        formatSelect.addEventListener('change', function() { updateProductCard(card); });
+      }
+      if (grindSelect) {
+        grindSelect.addEventListener('change', function() { updateProductCard(card); });
+      }
+
+      updateProductCard(card);
+    });
   }
 
   // ===== CAROUSEL =====
@@ -298,5 +331,5 @@
   }
 
   // ===== INIT =====
-  initProductLinks();
+  initProductCards();
   syncQuizPanelHeight();

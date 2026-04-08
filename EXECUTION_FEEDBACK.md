@@ -140,3 +140,14 @@
 - Se cambio el wordmark del header y footer a la version tipografica `Roast.` usando las clases solicitadas, sin modificar la estructura de wrappers circundante.
 - Se incorporaron ilustraciones SVG inline como reemplazo temporal de imagenes de producto dentro de `index.html`, porque el generador de imagenes no estuvo disponible en esta sesion.
 - Validacion realizada con `git diff --check`, inspeccion puntual de `index.html`, confirmacion de atributos `data-product-*` y lectura del contrato ya existente en `assets/site.js`; no se ejecuto render visual automatizado en navegador desde este entorno.
+
+## 2026-04-08 - Integracion final de home, articulos y selector dinamico
+
+- Se refresco `main`, se integraron los commits intermedios empujados por subagentes y se normalizo el estado local antes del cierre final.
+- Se pulio `index.html` para dejar el home coherente con la nueva navegacion editorial, el wordmark textual `Roast.` y la nueva seccion de 2 productos basada en `Se cayo el sistema` y `Modo Avion`.
+- Se extendio `assets/site.css` con soporte para wordmark tipografico, cards de producto orientadas a coleccion y nuevos bloques de metadata, manteniendo el resto del layout existente.
+- Se reescribio `assets/site.js` para que el home deje de depender de ids por tamano y pase a usar cards semanticas por producto con `Formato`, `Molienda`, precio dinamico y CTA de WhatsApp construido por `data-product-*`.
+- Se corrigieron y limpiaron las 4 paginas articulo: `cafe-molido/`, `cafe-en-grano/`, `cafe-de-especialidad/` y `cafe-a-domicilio/`, dejando fuera cards de producto, precios y selectores, y cerrando errores estructurales que habian quedado durante la transicion.
+- En `cafe-a-domicilio/` se rehizo por completo el cuerpo principal para dejarlo como guia editorial sobre cobertura, tiempos y logica de despacho en Santiago, sin residuos de la landing transaccional anterior.
+- Validacion realizada con `git diff --check`, `node --check assets/site.js`, parseo HTML via `python3`, busqueda de `products-note` y de secciones `#products` en las paginas articulo, y servidor local `python3 -m http.server` con respuesta `200` para `/`, `/cafe-molido/`, `/cafe-en-grano/`, `/cafe-de-especialidad/` y `/cafe-a-domicilio/`.
+- Limitacion registrada: el tool integrado `image_gen` no estuvo disponible y tampoco habia `OPENAI_API_KEY` para el fallback CLI del skill `imagegen`, por lo que las visuales de producto quedaron resueltas con ilustraciones SVG personalizadas dentro del home como solucion practica de esta sesion.

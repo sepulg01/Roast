@@ -212,6 +212,18 @@
       display: block;
       filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.24));
     }
+    .nav-logo-wordmark {
+      display: inline-flex;
+      align-items: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.55rem, 4vw, 1.8rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      text-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
+    }
+    .nav-logo-wordmark span { color: var(--accent); }
     .nav-right { display: flex; align-items: center; gap: 0.625rem; }
     .nav-hamburger {
       display: flex;
@@ -607,8 +619,8 @@
       gap: 1.5rem;
       grid-template-columns: 1fr;
     }
-    @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
-    .product-card { position: relative; display: flex; flex-direction: column; }
+    @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .product-card { position: relative; display: flex; flex-direction: column; gap: 0.95rem; }
     .product-badge-wrap {
       position: absolute;
       top: -0.75rem;
@@ -618,24 +630,93 @@
     }
     .product-img {
       width: 100%;
-      aspect-ratio: 1;
+      aspect-ratio: 5 / 4;
       object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 1.25rem;
+      border-radius: 12px;
+      margin-bottom: 0.25rem;
+      background: linear-gradient(180deg, rgba(255, 107, 53, 0.08), rgba(13, 13, 13, 0.08));
     }
+    .product-kicker,
     .product-label {
       color: var(--text-secondary);
       font-size: 0.875rem;
       margin-bottom: 0.25rem;
     }
+    .product-title,
     .product-size {
       font-family: 'Space Grotesk', sans-serif;
       font-weight: 700;
       font-size: 1.5rem;
       margin-bottom: 0.25rem;
     }
-    .product-desc { color: var(--text-secondary); font-size: 0.9375rem; margin-bottom: 1rem; }
+    .product-microcopy {
+      color: var(--accent-secondary);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .product-desc,
+    .product-story {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+      margin-bottom: 0;
+    }
+    .product-flavor-list {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding-left: 0;
+      margin: 0;
+    }
+    .product-flavor-list li {
+      margin-bottom: 0;
+      padding: 0.45rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(245, 240, 232, 0.1);
+      background: rgba(13, 13, 13, 0.5);
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+    }
+    .product-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+    .product-meta-item {
+      border: 1px solid rgba(245, 240, 232, 0.08);
+      border-radius: 12px;
+      padding: 0.85rem 0.95rem;
+      background: rgba(13, 13, 13, 0.38);
+    }
+    .product-meta-label {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+    }
+    .product-meta-value {
+      color: var(--text-primary);
+      font-size: 0.9375rem;
+      font-weight: 600;
+    }
     .product-selectors { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .product-select-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .product-select-label {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
     .product-selectors select {
       background: var(--bg-primary);
       border: 1px solid var(--border);
@@ -985,6 +1066,18 @@
       grid-template-columns: 1fr;
     }
     .footer-brand { display: flex; align-items: flex-start; }
+    .footer-logo-wordmark {
+      display: inline-flex;
+      align-items: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    .footer-logo-wordmark span { color: var(--accent); }
     .footer-tagline { color: var(--text-secondary); font-size: 0.9375rem; }
     .footer-meta {
       display: flex;
