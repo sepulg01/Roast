@@ -151,3 +151,14 @@
 - En `cafe-a-domicilio/` se rehizo por completo el cuerpo principal para dejarlo como guia editorial sobre cobertura, tiempos y logica de despacho en Santiago, sin residuos de la landing transaccional anterior.
 - Validacion realizada con `git diff --check`, `node --check assets/site.js`, parseo HTML via `python3`, busqueda de `products-note` y de secciones `#products` en las paginas articulo, y servidor local `python3 -m http.server` con respuesta `200` para `/`, `/cafe-molido/`, `/cafe-en-grano/`, `/cafe-de-especialidad/` y `/cafe-a-domicilio/`.
 - Limitacion registrada: el tool integrado `image_gen` no estuvo disponible y tampoco habia `OPENAI_API_KEY` para el fallback CLI del skill `imagegen`, por lo que las visuales de producto quedaron resueltas con ilustraciones SVG personalizadas dentro del home como solucion practica de esta sesion.
+
+## 2026-04-09 - SEO v2: indexacion, articulos y señales de frescura
+
+- Se refresco el repo con `git pull --ff-only origin main`; `main` ya estaba alineado con `origin/main` antes de editar.
+- Se corrigio la estrategia de indexacion de legales: `robots.txt` dejo de bloquear `/policies/` y las 3 paginas legales ahora exponen `meta name="robots" content="noindex,follow"` junto con self-canonical absoluto.
+- Se actualizo `sitemap.xml` para mantener solo las 5 URLs indexables y agregar `lastmod` manual en todas.
+- Se alineo el schema del home con la identidad visual actual cambiando `Organization.logo` a `assets/logos/roast-wordmark.png`, y se genero ese asset PNG transparente a partir de `Space Grotesk Bold`.
+- Se extrajeron las 2 ilustraciones inline del home a `assets/products/se-cayo-el-sistema.svg` y `assets/products/modo-avion.svg`, dejando `index.html` con referencias a assets fisicos en vez de `data:image/svg+xml`.
+- Se reconvirtieron las 4 landings editoriales a una capa SEO mas clara: `cafe-molido/`, `cafe-en-grano/`, `cafe-de-especialidad/` y `cafe-a-domicilio/` ahora declaran `Article` + `BreadcrumbList` + `FAQPage`, mantienen un solo `H1`, agregan interlinking contextual dentro del cuerpo y suman un bloque `Que te conviene pedir ahora?` antes del CTA final.
+- Se corrigio por completo la ortografia y acentuacion de `cafe-a-domicilio/` en `title`, `description`, Open Graph, Twitter, headings, FAQ, body copy y JSON-LD.
+- Validacion realizada con `git diff --check`, parseo HTML via `python3`, inspeccion de tipos JSON-LD, busqueda dirigida para confirmar ausencia de residuos ASCII en `cafe-a-domicilio/`, servidor local `python3 -m http.server` y verificacion HTTP `200` para `/`, las 4 URLs editoriales, `robots.txt`, `sitemap.xml`, los 2 SVG de producto y `assets/logos/roast-wordmark.png`.

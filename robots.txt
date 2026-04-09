@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /policies/
 
 Sitemap: https://caferoast.cl/sitemap.xml
