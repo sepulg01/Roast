@@ -481,37 +481,41 @@
     #quiz { background: var(--bg-surface); }
     #quiz .section-header { text-align: center; margin-bottom: 2.5rem; }
     .quiz-wrap {
-      background: rgba(13, 13, 13, 0.74);
-      border-radius: 20px;
+      position: relative;
       max-width: 980px;
       margin: 0 auto;
+      border-radius: 20px;
       border: 1px solid rgba(245, 240, 232, 0.12);
       overflow: hidden;
       box-shadow: 0 28px 64px rgba(0, 0, 0, 0.24);
-    }
-    @media (min-width: 900px) {
-      .quiz-wrap {
-        display: grid;
-        grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.1fr);
-      }
-    }
-    .quiz-visual {
-      min-height: 220px;
       background:
-        linear-gradient(180deg, rgba(13, 13, 13, 0.14), rgba(13, 13, 13, 0.42)),
-        url("https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1200&q=80");
-      background-size: cover;
-      background-position: center;
+        radial-gradient(circle at top left, rgba(255, 107, 53, 0.18), transparent 22%),
+        radial-gradient(circle at 85% 15%, rgba(255, 209, 102, 0.1), transparent 24%),
+        linear-gradient(135deg, rgba(46, 46, 46, 0.96) 0%, rgba(21, 21, 21, 0.96) 52%, rgba(13, 13, 13, 1) 100%);
     }
-    @media (min-width: 900px) {
-      .quiz-visual { min-height: 100%; }
+    .quiz-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.12'/%3E%3C/svg%3E");
+      opacity: 0.2;
+      pointer-events: none;
+    }
+    .quiz-wrap::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, transparent 12%, rgba(255, 107, 53, 0.08) 62%, transparent 100%);
+      pointer-events: none;
     }
     .quiz-panel {
+      position: relative;
+      z-index: 1;
       display: flex;
       flex-direction: column;
       padding: clamp(1.5rem, 4vw, 3rem);
-      background: rgba(26, 26, 26, 0.92);
-      backdrop-filter: blur(8px);
+      background: linear-gradient(180deg, rgba(13, 13, 13, 0.38), rgba(13, 13, 13, 0.18));
     }
     .quiz-progress {
       background: var(--border);
@@ -544,9 +548,9 @@
     }
     .quiz-options { display: flex; flex-direction: column; gap: 0.75rem; }
     .quiz-option {
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      background: rgba(13, 13, 13, 0.62);
+      border: 1px solid rgba(245, 240, 232, 0.12);
+      border-radius: 12px;
       padding: 0.875rem 1.25rem;
       width: 100%;
       text-align: left;
@@ -554,9 +558,9 @@
       font-family: 'Inter', sans-serif;
       font-size: 1rem;
       cursor: pointer;
-      transition: border-color 200ms ease, background 200ms ease;
+      transition: border-color 200ms ease, background 200ms ease, transform 180ms ease;
     }
-    .quiz-option:hover { border-color: var(--accent); }
+    .quiz-option:hover { border-color: var(--accent); transform: translateY(-1px); }
     .quiz-option:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .quiz-option.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
     .quiz-nav { display: flex; gap: 1rem; margin-top: 1.5rem; align-items: center; }
@@ -573,11 +577,12 @@
     }
     .quiz-back:hover { border-color: var(--accent); color: var(--accent); }
     .quiz-result-card {
-      background: var(--bg-primary);
+      background: rgba(13, 13, 13, 0.72);
       border: 2px solid var(--accent);
       border-radius: 12px;
       padding: 2rem;
       text-align: center;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
     .quiz-result-tag {
       color: var(--accent);
@@ -613,7 +618,13 @@
     /* ===== PRODUCTS ===== */
     #products { background: var(--bg-primary); }
     #products .section-header { text-align: center; margin-bottom: 0.75rem; }
-    #products .section-sub { text-align: center; color: var(--text-secondary); margin-bottom: 3rem; }
+    #products .section-sub {
+      max-width: 58ch;
+      margin: 0 auto 3rem;
+      text-align: center;
+      text-wrap: balance;
+      color: var(--text-secondary);
+    }
     .products-grid {
       display: grid;
       gap: 1.5rem;
@@ -632,9 +643,17 @@
       width: 100%;
       aspect-ratio: 5 / 4;
       object-fit: cover;
+      object-position: center;
       border-radius: 12px;
       margin-bottom: 0.25rem;
       background: linear-gradient(180deg, rgba(255, 107, 53, 0.08), rgba(13, 13, 13, 0.08));
+    }
+    .product-img-contained {
+      object-fit: contain;
+      padding: clamp(0.6rem, 2vw, 1rem);
+      background:
+        radial-gradient(circle at top, rgba(255, 107, 53, 0.06), transparent 36%),
+        rgba(13, 13, 13, 0.92);
     }
     .product-kicker,
     .product-label {

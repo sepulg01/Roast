@@ -222,11 +222,11 @@ Espresso · Moka · Prensa francesa · Filtro / pour over · Chemex · AeroPress
 
 ## 10. La colección de productos de Café Roast se compone de los siguientes tuestes.
 
-| Elemento | Se Cayó el Sistema | Modo Avión |
+| Elemento | Downtime | Hiperfoco |
 |---|---|---|
-| Rol en la colección | Pausa / detención / ritual | Intensidad + foco / ejecución |
-| Momento principal de consumo | Cuando todo se detiene y aparece el tiempo | Después de almuerzo, y también para bloques de foco profundo |
-| Descripción interna | No es una falla, es una pausa legitimada. Todo se detiene sin culpa. Nadie exige, nadie corre. Este café existe para ese momento: cuando el tiempo aparece de golpe y se transforma en ritual. No activa ni empuja. **Sostiene la pausa.** | Modo avión no es una hora del día, es una decisión. Funciona especialmente cuando baja la energía, como después de almuerzo, pero no depende de eso. Este café corta la inercia y te mete de vuelta en la tarea. Es intenso, directo y diseñado para sostener foco real. |
+| Rol en la colección | Balance / pausa útil / versatilidad | Intensidad + foco / ejecución |
+| Momento principal de consumo | Cuando bajas un cambio, pero igual quieres una taza amable, redonda y fácil de repetir | Después de almuerzo, y también para bloques de foco profundo |
+| Descripción interna | Downtime no es una falla: es una pausa útil. Baja el ritmo sin apagar la taza. Existe para momentos más lentos o más largos, cuando quieres balance, dulzor y alta tomabilidad sin volver el café un tema. No empuja de más. **Sostiene la pausa sin volverse plano.** | Hiperfoco no es una hora del día, es una decisión. Funciona especialmente cuando baja la energía, como después de almuerzo, pero no depende de eso. Este café corta la inercia y te mete de vuelta en la tarea. Es intenso, directo y diseñado para sostener foco real. |
 | Perfil de tueste | Medio | Italiano / oscuro |
 | Objetivo del tueste | Alta tomabilidad, balance y suavidad | Máximo impacto, cuerpo y solubilidad para espresso |
 | Desarrollo | Balanceado, enfocado en dulzor y redondez | Largo, con alta caramelización y baja acidez percibida |
@@ -244,7 +244,7 @@ Espresso · Moka · Prensa francesa · Filtro / pour over · Chemex · AeroPress
 | Intensidad | Media | Alta |
 | Formato disponible | 250 g / 500 g / 1 kg | 250 g / 500 g / 1 kg |
 | Fecha de tueste | ____ | ____ |
-| Microcopy de etiqueta | “Nada que hacer jefe.” | “Sin señal. Con foco.” |
+| Microcopy de etiqueta | “Productividad a la espera.” | “Foco sin rodeos.” |
 
 
 *Documento de referencia de marca — Cafe Roast · caferoast.cl · Abril 2026*

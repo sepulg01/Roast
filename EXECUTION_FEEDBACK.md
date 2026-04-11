@@ -171,3 +171,12 @@
 - Se mantuvo `Backlog.md` fuera de `sitemap.xml` y sin enlaces desde el website, para que no figure dentro de la navegacion publica ni de los assets SEO declarados.
 - Validacion realizada con `git diff --check`, `rg` para confirmar ausencia de referencias publicas a `Backlog.md`, servidor local `python3 -m http.server` y verificacion HTTP `200` para `/`, `/robots.txt` y `/Backlog.md`.
 - Pendiente/deferido: `robots.txt` evita rastreo, pero no restringe acceso directo; si se requiere privacidad real del backlog, habra que excluir este archivo del deploy publico o bloquear `*.md` desde el hosting.
+
+## 2026-04-11 - Rename de productos, quiz v3 y refresh del home
+
+- Se renombro la narrativa activa del home y de marca: `Se cayó el sistema` pasa a `Downtime` y `Modo Avión` pasa a `Hiperfoco`, actualizando `index.html`, `assets/site.js` y la tabla de colección en `BRAND_CONTEXT.md`.
+- Se rehizo el quiz a 3 preguntas, se elimino la visual lateral y se reemplazo por un contenedor texturizado gris carbon con acentos naranja; la recomendacion ahora define formato, molienda y tueste, incluyendo la opcion `250g de Downtime + 250g de Hiperfoco`.
+- Se incorporo `assets/products/Downtime-website.svg` a la card de `Downtime`, se alineo su copy al eje `balance + versatilidad`, se corrigio el subtitulo de productos y se actualizaron reseñas y articulos para el nuevo recorrido editorial.
+- Validacion realizada con `node --check assets/site.js`, parseo HTML via `python3`, `rg` para residuos de nombres antiguos, servidor local `python3 -m http.server` con respuesta `200` para `/`, las 4 URLs editoriales y los assets de producto, mas revision responsive manual en 375/768/1024/1280.
+- Parcial: `Hiperfoco` sigue reutilizando `assets/products/modo-avion.svg`; el rename visual del segundo producto queda incompleto hasta contar con un arte dedicado.
+- Pendiente/deferido: generar un asset propio para `Hiperfoco` y reevaluar recien ahi si conviene renombrar tambien el archivo fisico `modo-avion.svg`.

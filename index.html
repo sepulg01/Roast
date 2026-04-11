@@ -175,7 +175,7 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
           Pedir por WhatsApp
         </a>
-        <a href="#seo-hub" class="btn btn-secondary hero-cta-secondary" aria-label="Explorar artículos">Explorar artículos</a>
+        <a href="#products" class="btn btn-secondary hero-cta-secondary" aria-label="Ver productos">Ver productos</a>
       </div>
       <ul class="hero-proof" aria-label="Resumen de beneficios">
         <li>Molienda según tu cafetera</li>
@@ -213,13 +213,12 @@
   <section id="quiz" aria-labelledby="quiz-heading">
     <div class="container">
       <div class="section-header fade-in">
-        <h2 id="quiz-heading">¿No sabes si pedir café molido o en grano? Haz el quiz.</h2>
+        <h2 id="quiz-heading">¿No sabes cuál pedir? Haz el quiz.</h2>
       </div>
       <div class="quiz-wrap fade-in">
-        <div class="quiz-visual" role="img" aria-label="Métodos de preparación de café sobre una mesa"></div>
         <div class="quiz-panel">
-          <div class="quiz-progress" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del quiz">
-            <div class="quiz-progress-fill" id="quizProgressFill" style="width: 50%"></div>
+          <div class="quiz-progress" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del quiz">
+            <div class="quiz-progress-fill" id="quizProgressFill" style="width: 25%"></div>
           </div>
           <div class="quiz-step-stack" id="quizStepStack">
             <div class="quiz-step active" id="quizStep1" role="group" aria-labelledby="quizQ1">
@@ -244,7 +243,18 @@
                 <button class="quiz-back" onclick="quizBack(1)" aria-label="Volver a la pregunta anterior">← Volver</button>
               </div>
             </div>
-            <div class="quiz-step" id="quizStep3" aria-live="polite">
+            <div class="quiz-step" id="quizStep3" role="group" aria-labelledby="quizQ3">
+              <p class="quiz-question" id="quizQ3">¿Qué necesitas de esta taza hoy?</p>
+              <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ3">
+                <button class="quiz-option" aria-pressed="false" data-product-choice="downtime" onclick="selectProductChoice(this)">Bajar un cambio</button>
+                <button class="quiz-option" aria-pressed="false" data-product-choice="hiperfoco" onclick="selectProductChoice(this)">Entrar en foco</button>
+                <button class="quiz-option" aria-pressed="false" data-product-choice="ambos_250" onclick="selectProductChoice(this)">Quiero probar ambos</button>
+              </div>
+              <div class="quiz-nav">
+                <button class="quiz-back" onclick="quizBack(2)" aria-label="Volver a la pregunta anterior">← Volver</button>
+              </div>
+            </div>
+            <div class="quiz-step" id="quizStep4" aria-live="polite">
               <div class="quiz-result-card">
                 <p class="quiz-result-tag">Tu recomendación</p>
                 <p class="quiz-result-rec" id="quizResultRec">—</p>
@@ -272,33 +282,33 @@
       <div class="section-header fade-in">
         <h2 id="products-heading">Dos tuestes para dos estados muy distintos del día.</h2>
       </div>
-      <p class="section-sub fade-in">Elige formato y molienda por card. El precio y el mensaje de WhatsApp se actualizan solos.</p>
+      <p class="section-sub fade-in">Dos cafés, dos ritmos. Tú eliges tueste, formato y molienda; el precio y el mensaje de WhatsApp se ajustan solos.</p>
       <div class="products-grid">
-        <article class="card product-card fade-in" aria-label="Se cayó el sistema" data-product-card data-product-id="se-cayo-el-sistema">
-          <img src="/assets/products/se-cayo-el-sistema.svg" alt="Escena oscura y pausada con café y señales de sistema detenido" class="product-img" loading="lazy" width="900" height="675" />
-          <p class="product-kicker">Pausa / ritual</p>
-          <p class="product-title">Se cayó el sistema</p>
-          <p class="product-microcopy">Nada que hacer jefe.</p>
-          <p class="product-story">No activa ni empuja. Está hecho para cuando todo se detiene, aparece el tiempo y la pausa se vuelve parte del plan.</p>
-          <ul class="product-flavor-list" aria-label="Perfil sensorial de Se cayó el sistema">
+        <article class="card product-card fade-in" aria-label="Downtime" data-product-card data-product-id="downtime">
+          <img src="/assets/products/Downtime-website.svg" alt="Pack de Downtime con estética oscura, pausa tecnológica y perfil equilibrado" class="product-img product-img-contained" loading="lazy" width="1152" height="1536" />
+          <p class="product-kicker">Balance / versatilidad</p>
+          <p class="product-title">Downtime</p>
+          <p class="product-microcopy">Productividad a la espera.</p>
+          <p class="product-story">Equilibrado, amable y fácil de repetir. Downtime acompaña cuando bajas un cambio, pero igual quieres una taza redonda, dulce y sin asperezas raras.</p>
+          <ul class="product-flavor-list" aria-label="Perfil sensorial de Downtime">
             <li>Chocolate</li>
             <li>Caramelo</li>
             <li>Frutos secos</li>
           </ul>
-          <div class="product-meta" aria-label="Datos clave de Se cayó el sistema">
+          <div class="product-meta" aria-label="Datos clave de Downtime">
             <div class="product-meta-item">
               <span class="product-meta-label">Tueste</span>
               <span class="product-meta-value">Medio</span>
             </div>
             <div class="product-meta-item">
               <span class="product-meta-label">Ideal para</span>
-              <span class="product-meta-value">Prensa y filtro</span>
+              <span class="product-meta-value">Filtro, prensa y rutina diaria</span>
             </div>
           </div>
           <div class="product-selectors">
             <label class="product-select-group">
               <span class="product-select-label">Formato</span>
-              <select id="sistema-format" data-product-format aria-label="Selecciona formato para Se cayó el sistema">
+              <select id="downtime-format" data-product-format aria-label="Selecciona formato para Downtime">
                 <option value="250g">250g</option>
                 <option value="500g" selected>500g</option>
                 <option value="1kg">1kg</option>
@@ -306,7 +316,7 @@
             </label>
             <label class="product-select-group">
               <span class="product-select-label">Molienda</span>
-              <select id="sistema-grind" data-product-grind aria-label="Selecciona molienda para Se cayó el sistema">
+              <select id="downtime-grind" data-product-grind aria-label="Selecciona molienda para Downtime">
                 <option value="prensa francesa" selected>Prensa francesa</option>
                 <option value="filtro / pour over">Filtro / pour over</option>
                 <option value="moka">Moka</option>
@@ -318,32 +328,32 @@
             </label>
           </div>
           <div class="product-purchase-row">
-            <p class="product-price" id="se-cayo-price" data-product-price>$16.500 <span>CLP</span></p>
-            <a id="se-cayo-wa"
+            <p class="product-price" id="downtime-price" data-product-price>$16.500 <span>CLP</span></p>
+            <a id="downtime-wa"
                href="#"
                class="icon-link icon-link-whatsapp product-cta-icon"
                target="_blank" rel="noopener noreferrer"
-               aria-label="Pedir Se cayó el sistema por WhatsApp"
+               aria-label="Pedir Downtime por WhatsApp"
                data-product-link>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
             </a>
           </div>
         </article>
-        <article class="card product-card card-featured fade-in" aria-label="Modo Avión" data-product-card data-product-id="modo-avion">
+        <article class="card product-card card-featured fade-in" aria-label="Hiperfoco" data-product-card data-product-id="hiperfoco">
           <div class="product-badge-wrap">
             <span class="badge" aria-label="Más intenso">FOCO DIRECTO</span>
           </div>
-          <img src="/assets/products/modo-avion.svg" alt="Escena intensa y enfocada con café oscuro y energía contenida" class="product-img" loading="lazy" width="900" height="675" />
+          <img src="/assets/products/modo-avion.svg" alt="Ilustración de Hiperfoco con energía contenida, foco directo y acento naranja" class="product-img" loading="lazy" width="900" height="675" />
           <p class="product-kicker">Intensidad / foco</p>
-          <p class="product-title">Modo Avión</p>
-          <p class="product-microcopy">Sin señal. Con foco.</p>
-          <p class="product-story">Más oscuro, más directo y más intenso. Sirve para cortar la inercia y volver a la tarea con una taza que sí se hace sentir.</p>
-          <ul class="product-flavor-list" aria-label="Perfil sensorial de Modo Avión">
+          <p class="product-title">Hiperfoco</p>
+          <p class="product-microcopy">Foco sin rodeos.</p>
+          <p class="product-story">Más oscuro, más directo y más intenso. Hiperfoco está hecho para cortar la inercia, ordenar la cabeza y volver a la tarea con una taza que sí se hace sentir.</p>
+          <ul class="product-flavor-list" aria-label="Perfil sensorial de Hiperfoco">
             <li>Chocolate amargo</li>
             <li>Tostado</li>
             <li>Azúcar morena</li>
           </ul>
-          <div class="product-meta" aria-label="Datos clave de Modo Avión">
+          <div class="product-meta" aria-label="Datos clave de Hiperfoco">
             <div class="product-meta-item">
               <span class="product-meta-label">Tueste</span>
               <span class="product-meta-value">Italiano / oscuro</span>
@@ -356,7 +366,7 @@
           <div class="product-selectors">
             <label class="product-select-group">
               <span class="product-select-label">Formato</span>
-              <select id="avion-format" data-product-format aria-label="Selecciona formato para Modo Avión">
+              <select id="hiperfoco-format" data-product-format aria-label="Selecciona formato para Hiperfoco">
                 <option value="250g">250g</option>
                 <option value="500g" selected>500g</option>
                 <option value="1kg">1kg</option>
@@ -364,7 +374,7 @@
             </label>
             <label class="product-select-group">
               <span class="product-select-label">Molienda</span>
-              <select id="avion-grind" data-product-grind aria-label="Selecciona molienda para Modo Avión">
+              <select id="hiperfoco-grind" data-product-grind aria-label="Selecciona molienda para Hiperfoco">
                 <option value="espresso" selected>Espresso</option>
                 <option value="moka">Moka</option>
                 <option value="prensa francesa">Prensa francesa</option>
@@ -376,12 +386,12 @@
             </label>
           </div>
           <div class="product-purchase-row">
-            <p class="product-price" id="modo-avion-price" data-product-price>$16.500 <span>CLP</span></p>
-            <a id="modo-avion-wa"
+            <p class="product-price" id="hiperfoco-price" data-product-price>$16.500 <span>CLP</span></p>
+            <a id="hiperfoco-wa"
                href="#"
                class="icon-link icon-link-whatsapp product-cta-icon"
                target="_blank" rel="noopener noreferrer"
-               aria-label="Pedir Modo Avión por WhatsApp"
+               aria-label="Pedir Hiperfoco por WhatsApp"
                data-product-link>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
             </a>
@@ -410,7 +420,7 @@
           </div>
           <div class="review-card" role="article" aria-label="Reseña de Matías F.">
             <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
-            <p class="review-text">"Le pedí el molido para moka y quedó perfecto desde el primer día. Súper fácil todo."</p>
+            <p class="review-text">"Pedí Downtime para la prensa y salió redondo desde el primer día. Fácil, rico y cero drama."</p>
             <p class="review-author">Matías F.</p>
             <p class="review-location">Las Condes</p>
           </div>
@@ -422,7 +432,7 @@
           </div>
           <div class="review-card" role="article" aria-label="Reseña de Diego P.">
             <div class="review-stars" aria-label="5 estrellas">★★★★★</div>
-            <p class="review-text">"Pensé que el café de especialidad iba a ser complicado. Para nada. Me explicaron todo por WhatsApp en 2 minutos."</p>
+            <p class="review-text">"Hiperfoco me salvó el bajón de después de almuerzo. En moka queda directo y con el empuje justo."</p>
             <p class="review-author">Diego P.</p>
             <p class="review-location">Providencia</p>
           </div>
@@ -578,32 +588,32 @@
   <section id="seo-hub" aria-labelledby="seo-hub-heading">
     <div class="container">
       <div class="section-header fade-in">
-        <h2 id="seo-hub-heading">Artículos para entender el café antes de pedirlo.</h2>
+        <h2 id="seo-hub-heading">Artículos para elegir tu café sin chamullo.</h2>
       </div>
-      <p class="section-sub fade-in">Si quieres elegir mejor, parte por aquí. Son guías cortas, directas y sin palabras de pose.</p>
+      <p class="section-sub fade-in">Si quieres llegar a productos con más claridad, parte por acá. Son guías cortas, directas y útiles para decidir sin darle tantas vueltas.</p>
       <div class="seo-hub-grid">
         <article class="seo-hub-card fade-in">
           <span class="badge">GUÍA</span>
           <h3>Café molido</h3>
-          <p>Qué significa molido a pedido, cómo cambia la taza y cómo elegir la molienda correcta sin adivinar.</p>
+          <p>Qué cambia cuando te lo molemos a pedido y cómo elegir la molienda correcta sin adivinar ni comprarte nada extra.</p>
           <a class="seo-hub-link" href="/cafe-molido/">Leer artículo →</a>
         </article>
         <article class="seo-hub-card fade-in">
           <span class="badge">GUÍA</span>
           <h3>Café en grano</h3>
-          <p>Cuándo conviene comprar grano entero, cuándo no y qué ganas si mueles recién antes de preparar.</p>
+          <p>Cuándo te conviene pedir grano entero y cuándo es mejor dejar que Roast te lo mande listo para tu cafetera.</p>
           <a class="seo-hub-link" href="/cafe-en-grano/">Leer artículo →</a>
         </article>
         <article class="seo-hub-card fade-in">
           <span class="badge">GUÍA</span>
           <h3>Café de especialidad</h3>
-          <p>Una explicación simple de qué significa de verdad, sin convertirlo en una clase gourmet innecesaria.</p>
+          <p>Qué significa de verdad, qué no significa y por qué puedes tomar mejor café sin caer en el discurso gourmet.</p>
           <a class="seo-hub-link" href="/cafe-de-especialidad/">Leer artículo →</a>
         </article>
         <article class="seo-hub-card fade-in">
           <span class="badge">GUÍA</span>
           <h3>Café a domicilio</h3>
-          <p>Qué esperar del despacho en Santiago, cobertura, tiempos y cómo pedir sin complicarte.</p>
+          <p>Cobertura, tiempos en Santiago y la forma más simple de pedir para que el café te llegue listo para entrar en rutina.</p>
           <a class="seo-hub-link" href="/cafe-a-domicilio/">Leer artículo →</a>
         </article>
       </div>
