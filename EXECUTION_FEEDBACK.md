@@ -187,3 +187,10 @@
 - Se rehizo el binding del quiz para no depender de `onclick` inline: los pasos ahora se conectan por listeners en `assets/site.js`, se exponen los handlers en `window` por compatibilidad y la tercera pregunta queda verificada hacia `quizStep4`.
 - Validacion realizada con `node --check assets/site.js`, `git diff --check`, parseo HTML via `python3`, respuesta `200` del home servido localmente y simulacion de DOM con `jsdom` confirmando que al elegir en la pregunta 3 se llena la recomendacion, se activa `quizStep4` y el progreso pasa a `100`.
 - Pendiente/deferido: sigue faltando validacion visual real en navegador para revisar el nuevo alto percibido de la seccion en dispositivos concretos fuera de este entorno.
+
+## 2026-04-11 - Hilo documental e ingreso de backlog
+
+- Se registro `AGENTS.md` en la raiz para dejar explicito que, cuando el usuario marque un hilo como documental e investigacional, no se debe desarrollar codigo ni tocar archivos productivos salvo instruccion explicita.
+- Se actualizo `Backlog.md` con 3 pendientes nuevos: flow para links de pago, configuracion de correo del dominio via Cloudflare con reenvio a Gmail personal y publicacion de `contacto@caferoast.cl` en la web.
+- Validacion realizada con `git diff --check` y lectura puntual de `AGENTS.md` y `Backlog.md`; no se refresco stack local porque esta iteracion fue solo documental y no introdujo cambios ejecutables.
+- Pendiente/deferido: los 3 items agregados permanecen en estado `pendiente` hasta que se definan alcance y ejecucion en un hilo de implementacion.
