@@ -203,3 +203,12 @@
 - Validacion realizada con `node --check assets/site.js`, `git diff --check`, respuesta `200` para `/`, `/cafe-a-domicilio/`, `/cafe-de-especialidad/`, `/cafe-en-grano/`, `/cafe-molido/`, `/assets/products/Downtime-website.svg` y `/assets/products/modo-avion.svg`, mas una corrida Playwright que verifico: ausencia de overflow horizontal, cards balanceadas, controles de formato/molienda con precio y link de WhatsApp correctos, y los 3 caminos del quiz (`Downtime`, `Hiperfoco`, `ambos_250`) con progreso a `100`, resultado valido y `restart/back` operativos.
 - Parcial: la resolucion de dependencias de Chromium quedo hecha a nivel usuario para esta sesion; no se instalaron librerias del sistema global porque el entorno no expone privilegios `sudo`.
 - Pendiente/deferido: `Hiperfoco` sigue apoyandose en `assets/products/modo-avion.svg`; la siguiente mejora visual natural es crear su arte dedicado y volver a correr la misma auditoria con ese asset.
+
+## 2026-04-11 - Reorden total del backlog operativo
+
+- Se refresco el repo con `git pull --ff-only origin main`; `main` ya estaba alineado con `origin/main` antes de editar.
+- Se reescribio `Backlog.md` completo para pasar de una lista corta acumulativa a un backlog ordenado por prioridad con escala `P0` a `P3`.
+- Se dejo registrada la decision operativa vigente: seguir por ahora con `Flow + WhatsApp`, sin e-commerce, usando `Google Sheets` como primera opcion y `Airtable` solo si el plan gratuito alcanza y aporta algo real a la operacion.
+- Se incorporaron y priorizaron las necesidades operativas discutidas para el modelo manual: pedidos estructurados, clientes/direcciones/estados, backoffice diario, links de pago Flow, confirmacion automatica de pago, inventario, despacho, recompra, recuperacion de leads, correo del dominio y suscripciones deferidas.
+- Validacion realizada con `git diff --check`, lectura puntual de `Backlog.md`, `rg` para verificar decision operativa y prioridades, y refresh del stack local mediante `python3 -m http.server` con respuesta `200` para `/`, `/Backlog.md` y `/robots.txt`.
+- Pendiente/deferido: la implementacion sigue en estado documental; el siguiente hilo deberia bajar los items `P0` a un esquema concreto de tablas, vistas y campos para `Google Sheets`, y reevaluar `Airtable` solo si el plan gratuito cubre una ventaja operativa clara.
