@@ -42,6 +42,37 @@ var PRODUCT_NAME_MAP = {
   'hiperfoco': 'Hiperfoco'
 };
 
+function bindQuizControls() {
+  document.querySelectorAll('#quizStep1 [data-cups]').forEach(function(button) {
+    button.addEventListener('click', function() {
+      selectCups(button);
+    });
+  });
+
+  document.querySelectorAll('#quizStep2 [data-method]').forEach(function(button) {
+    button.addEventListener('click', function() {
+      selectMethod(button);
+    });
+  });
+
+  document.querySelectorAll('#quizStep3 [data-product-choice]').forEach(function(button) {
+    button.addEventListener('click', function() {
+      selectProductChoice(button);
+    });
+  });
+
+  document.querySelectorAll('[data-quiz-back]').forEach(function(button) {
+    button.addEventListener('click', function() {
+      quizBack(Number(button.getAttribute('data-quiz-back')));
+    });
+  });
+
+  var restartButton = document.getElementById('quizRestartBtn');
+  if (restartButton) {
+    restartButton.addEventListener('click', quizRestart);
+  }
+}
+
 function syncQuizPanelHeight() {
   var stack = document.getElementById('quizStepStack');
   var resultStep = document.getElementById('quizStep4');
@@ -145,9 +176,9 @@ function selectProductChoice(btn) {
   btn.classList.add('selected');
   btn.setAttribute('aria-pressed', 'true');
   quizProductChoice = btn.getAttribute('data-product-choice');
-  setTimeout(function() {
+  window.setTimeout(function() {
     showQuizResult();
-  }, 200);
+  }, 0);
 }
 
 function getQuizRecommendation() {
@@ -413,5 +444,12 @@ if (document.fonts && document.fonts.ready) {
 }
 
 // ===== INIT =====
+bindQuizControls();
 initProductCards();
 syncQuizPanelHeight();
+
+window.selectCups = selectCups;
+window.selectMethod = selectMethod;
+window.selectProductChoice = selectProductChoice;
+window.quizBack = quizBack;
+window.quizRestart = quizRestart;

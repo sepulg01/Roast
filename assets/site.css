@@ -616,7 +616,11 @@
     }
     .quiz-restart:hover { color: var(--text-secondary); }
     /* ===== PRODUCTS ===== */
-    #products { background: var(--bg-primary); }
+    #products {
+      background: var(--bg-primary);
+      padding-top: clamp(3.25rem, 6vw, 5rem);
+      padding-bottom: clamp(3.25rem, 6vw, 5rem);
+    }
     #products .section-header { text-align: center; margin-bottom: 0.75rem; }
     #products .section-sub {
       max-width: 58ch;
@@ -631,7 +635,7 @@
       grid-template-columns: 1fr;
     }
     @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    .product-card { position: relative; display: flex; flex-direction: column; gap: 0.95rem; }
+    .product-card { position: relative; display: flex; flex-direction: column; gap: 0.8rem; }
     .product-badge-wrap {
       position: absolute;
       top: -0.75rem;
@@ -641,16 +645,16 @@
     }
     .product-img {
       width: 100%;
-      aspect-ratio: 5 / 4;
+      aspect-ratio: 16 / 10;
       object-fit: cover;
       object-position: center;
       border-radius: 12px;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.1rem;
       background: linear-gradient(180deg, rgba(255, 107, 53, 0.08), rgba(13, 13, 13, 0.08));
     }
     .product-img-contained {
       object-fit: contain;
-      padding: clamp(0.6rem, 2vw, 1rem);
+      padding: clamp(0.45rem, 1.4vw, 0.7rem);
       background:
         radial-gradient(circle at top, rgba(255, 107, 53, 0.06), transparent 36%),
         rgba(13, 13, 13, 0.92);
@@ -724,6 +728,14 @@
       font-weight: 600;
     }
     .product-selectors { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
+    @media (min-width: 560px) {
+      .product-selectors {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+    }
     .product-select-group {
       display: flex;
       flex-direction: column;
@@ -773,7 +785,7 @@
     }
     .free-shipping-note {
       text-align: center;
-      margin-top: 2rem;
+      margin-top: 1.5rem;
       color: var(--text-secondary);
       font-size: 0.875rem;
       display: flex;

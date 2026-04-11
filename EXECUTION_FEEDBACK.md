@@ -180,3 +180,10 @@
 - Validacion realizada con `node --check assets/site.js`, parseo HTML via `python3`, `rg` para residuos de nombres antiguos y servidor local `python3 -m http.server` con respuesta `200` para `/`, las 4 URLs editoriales y los assets de producto. Se intento validacion responsive con Playwright en 375/768/1024/1280, pero el entorno no tiene las librerias del sistema requeridas por Chromium (`libnss3`, `libnspr4`, `libgbm1`, `libasound2`), por lo que no se pudo completar inspeccion visual en navegador desde esta sesion.
 - Parcial: `Hiperfoco` sigue reutilizando `assets/products/modo-avion.svg`; el rename visual del segundo producto queda incompleto hasta contar con un arte dedicado.
 - Pendiente/deferido: generar un asset propio para `Hiperfoco` y reevaluar recien ahi si conviene renombrar tambien el archivo fisico `modo-avion.svg`.
+
+## 2026-04-11 - Ajuste de altura en productos y fix de quiz
+
+- Se compacto la seccion de productos reduciendo altura visual de cards, acortando el copy descriptivo, poniendo los selectores en 2 columnas desde `560px` y bajando el padding general de `#products`.
+- Se rehizo el binding del quiz para no depender de `onclick` inline: los pasos ahora se conectan por listeners en `assets/site.js`, se exponen los handlers en `window` por compatibilidad y la tercera pregunta queda verificada hacia `quizStep4`.
+- Validacion realizada con `node --check assets/site.js`, `git diff --check`, parseo HTML via `python3`, respuesta `200` del home servido localmente y simulacion de DOM con `jsdom` confirmando que al elegir en la pregunta 3 se llena la recomendacion, se activa `quizStep4` y el progreso pasa a `100`.
+- Pendiente/deferido: sigue faltando validacion visual real en navegador para revisar el nuevo alto percibido de la seccion en dispositivos concretos fuera de este entorno.

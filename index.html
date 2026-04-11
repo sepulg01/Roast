@@ -224,34 +224,34 @@
             <div class="quiz-step active" id="quizStep1" role="group" aria-labelledby="quizQ1">
               <p class="quiz-question" id="quizQ1">¿Cuántas tazas de café tomas al día?</p>
               <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ1">
-                <button class="quiz-option" aria-pressed="false" data-cups="1_taza" onclick="selectCups(this)">1 taza</button>
-                <button class="quiz-option" aria-pressed="false" data-cups="2_tazas" onclick="selectCups(this)">2 tazas</button>
-                <button class="quiz-option" aria-pressed="false" data-cups="3_o_mas" onclick="selectCups(this)">3 o más</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-cups="1_taza">1 taza</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-cups="2_tazas">2 tazas</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-cups="3_o_mas">3 o más</button>
               </div>
             </div>
             <div class="quiz-step" id="quizStep2" role="group" aria-labelledby="quizQ2">
               <p class="quiz-question" id="quizQ2">¿Cómo preparas tu café?</p>
               <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ2">
-                <button class="quiz-option" aria-pressed="false" data-method="moka" onclick="selectMethod(this)">Cafetera italiana (moka)</button>
-                <button class="quiz-option" aria-pressed="false" data-method="prensa_francesa" onclick="selectMethod(this)">Prensa francesa</button>
-                <button class="quiz-option" aria-pressed="false" data-method="filtro" onclick="selectMethod(this)">Cafetera de filtro</button>
-                <button class="quiz-option" aria-pressed="false" data-method="espresso" onclick="selectMethod(this)">Máquina de espresso</button>
-                <button class="quiz-option" aria-pressed="false" data-method="hervidor" onclick="selectMethod(this)">Solo tengo hervidor</button>
-                <button class="quiz-option" aria-pressed="false" data-method="no_se" onclick="selectMethod(this)">Aún no sé, sorpréndeme</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-method="moka">Cafetera italiana (moka)</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-method="prensa_francesa">Prensa francesa</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-method="filtro">Cafetera de filtro</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-method="espresso">Máquina de espresso</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-method="hervidor">Solo tengo hervidor</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-method="no_se">Aún no sé, sorpréndeme</button>
               </div>
               <div class="quiz-nav">
-                <button class="quiz-back" onclick="quizBack(1)" aria-label="Volver a la pregunta anterior">← Volver</button>
+                <button type="button" class="quiz-back" data-quiz-back="1" aria-label="Volver a la pregunta anterior">← Volver</button>
               </div>
             </div>
             <div class="quiz-step" id="quizStep3" role="group" aria-labelledby="quizQ3">
               <p class="quiz-question" id="quizQ3">¿Qué necesitas de esta taza hoy?</p>
               <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ3">
-                <button class="quiz-option" aria-pressed="false" data-product-choice="downtime" onclick="selectProductChoice(this)">Bajar un cambio</button>
-                <button class="quiz-option" aria-pressed="false" data-product-choice="hiperfoco" onclick="selectProductChoice(this)">Entrar en foco</button>
-                <button class="quiz-option" aria-pressed="false" data-product-choice="ambos_250" onclick="selectProductChoice(this)">Quiero probar ambos</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-product-choice="downtime">Bajar un cambio</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-product-choice="hiperfoco">Entrar en foco</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-product-choice="ambos_250">Quiero probar ambos</button>
               </div>
               <div class="quiz-nav">
-                <button class="quiz-back" onclick="quizBack(2)" aria-label="Volver a la pregunta anterior">← Volver</button>
+                <button type="button" class="quiz-back" data-quiz-back="2" aria-label="Volver a la pregunta anterior">← Volver</button>
               </div>
             </div>
             <div class="quiz-step" id="quizStep4" aria-live="polite">
@@ -268,7 +268,7 @@
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
                   Pedir esto por WhatsApp →
                 </a>
-                <button class="quiz-restart" onclick="quizRestart()" aria-label="Reiniciar el quiz">Volver a empezar</button>
+                <button type="button" class="quiz-restart" id="quizRestartBtn" aria-label="Reiniciar el quiz">Volver a empezar</button>
               </div>
             </div>
           </div>
@@ -289,7 +289,7 @@
           <p class="product-kicker">Balance / versatilidad</p>
           <p class="product-title">Downtime</p>
           <p class="product-microcopy">Productividad a la espera.</p>
-          <p class="product-story">Equilibrado, amable y fácil de repetir. Downtime acompaña cuando bajas un cambio, pero igual quieres una taza redonda, dulce y sin asperezas raras.</p>
+          <p class="product-story">Equilibrado y fácil de repetir: una taza redonda para bajar un cambio sin apagar el día.</p>
           <ul class="product-flavor-list" aria-label="Perfil sensorial de Downtime">
             <li>Chocolate</li>
             <li>Caramelo</li>
@@ -347,7 +347,7 @@
           <p class="product-kicker">Intensidad / foco</p>
           <p class="product-title">Hiperfoco</p>
           <p class="product-microcopy">Foco sin rodeos.</p>
-          <p class="product-story">Más oscuro, más directo y más intenso. Hiperfoco está hecho para cortar la inercia, ordenar la cabeza y volver a la tarea con una taza que sí se hace sentir.</p>
+          <p class="product-story">Más oscuro y más directo: corta la inercia y te devuelve a la tarea con una taza que se hace sentir.</p>
           <ul class="product-flavor-list" aria-label="Perfil sensorial de Hiperfoco">
             <li>Chocolate amargo</li>
             <li>Tostado</li>
