@@ -162,3 +162,12 @@
 - Se reconvirtieron las 4 landings editoriales a una capa SEO mas clara: `cafe-molido/`, `cafe-en-grano/`, `cafe-de-especialidad/` y `cafe-a-domicilio/` ahora declaran `Article` + `BreadcrumbList` + `FAQPage`, mantienen un solo `H1`, agregan interlinking contextual dentro del cuerpo y suman un bloque `Que te conviene pedir ahora?` antes del CTA final.
 - Se corrigio por completo la ortografia y acentuacion de `cafe-a-domicilio/` en `title`, `description`, Open Graph, Twitter, headings, FAQ, body copy y JSON-LD.
 - Validacion realizada con `git diff --check`, parseo HTML via `python3`, inspeccion de tipos JSON-LD, busqueda dirigida para confirmar ausencia de residuos ASCII en `cafe-a-domicilio/`, servidor local `python3 -m http.server` y verificacion HTTP `200` para `/`, las 4 URLs editoriales, `robots.txt`, `sitemap.xml`, los 2 SVG de producto y `assets/logos/roast-wordmark.png`.
+
+## 2026-04-11 - Backlog interno y control de rastreo
+
+- Se refresco el repo con `git pull --ff-only origin main`; `main` ya estaba alineado con `origin/main` antes de editar.
+- Se creo `Backlog.md` en la raiz como documento interno para registrar ideas y pendientes de futuras implementaciones, con estructura minima reutilizable.
+- Se actualizo `robots.txt` para bloquear `/Backlog.md` sin alterar las URLs indexables actuales ni el `Sitemap`.
+- Se mantuvo `Backlog.md` fuera de `sitemap.xml` y sin enlaces desde el website, para que no figure dentro de la navegacion publica ni de los assets SEO declarados.
+- Validacion realizada con `git diff --check`, `rg` para confirmar ausencia de referencias publicas a `Backlog.md`, servidor local `python3 -m http.server` y verificacion HTTP `200` para `/`, `/robots.txt` y `/Backlog.md`.
+- Pendiente/deferido: `robots.txt` evita rastreo, pero no restringe acceso directo; si se requiere privacidad real del backlog, habra que excluir este archivo del deploy publico o bloquear `*.md` desde el hosting.
