@@ -194,3 +194,12 @@
 - Se actualizo `Backlog.md` con 3 pendientes nuevos: flow para links de pago, configuracion de correo del dominio via Cloudflare con reenvio a Gmail personal y publicacion de `contacto@caferoast.cl` en la web.
 - Validacion realizada con `git diff --check` y lectura puntual de `AGENTS.md` y `Backlog.md`; no se refresco stack local porque esta iteracion fue solo documental y no introdujo cambios ejecutables.
 - Pendiente/deferido: los 3 items agregados permanecen en estado `pendiente` hasta que se definan alcance y ejecucion en un hilo de implementacion.
+
+## 2026-04-11 - Compactacion final de productos y auditoria Playwright real
+
+- Se rehizo la composicion superior de ambas cards en `#products` para que imagen y resumen convivan en un layout interno mas compacto; adicionalmente se redujeron paddings, densidad de chips, tipografia auxiliar y se adelantaron los selectores a 2 columnas desde `390px`.
+- Se corrigio el reinicio del quiz en `assets/site.js` para limpiar tambien recomendacion, precio y CTA antes de volver a la pregunta 1.
+- Se habilito auditoria real con Chromium desde Playwright resolviendo las dependencias faltantes en espacio de usuario y se ejecuto revision automatizada sobre `/`, las 4 URLs editoriales y los assets de producto, junto con screenshots y metricas del bloque `#products` en `390`, `540`, `768`, `1024` y `1280`.
+- Validacion realizada con `node --check assets/site.js`, `git diff --check`, respuesta `200` para `/`, `/cafe-a-domicilio/`, `/cafe-de-especialidad/`, `/cafe-en-grano/`, `/cafe-molido/`, `/assets/products/Downtime-website.svg` y `/assets/products/modo-avion.svg`, mas una corrida Playwright que verifico: ausencia de overflow horizontal, cards balanceadas, controles de formato/molienda con precio y link de WhatsApp correctos, y los 3 caminos del quiz (`Downtime`, `Hiperfoco`, `ambos_250`) con progreso a `100`, resultado valido y `restart/back` operativos.
+- Parcial: la resolucion de dependencias de Chromium quedo hecha a nivel usuario para esta sesion; no se instalaron librerias del sistema global porque el entorno no expone privilegios `sudo`.
+- Pendiente/deferido: `Hiperfoco` sigue apoyandose en `assets/products/modo-avion.svg`; la siguiente mejora visual natural es crear su arte dedicado y volver a correr la misma auditoria con ese asset.

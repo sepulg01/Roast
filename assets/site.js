@@ -224,6 +224,12 @@ function quizRestart() {
     button.classList.remove('selected');
     button.setAttribute('aria-pressed', 'false');
   });
+  var resultRec = document.getElementById('quizResultRec');
+  var resultPrice = document.getElementById('quizResultPrice');
+  var resultCta = document.getElementById('quizResultCta');
+  if (resultRec) resultRec.textContent = '—';
+  if (resultPrice) resultPrice.textContent = '—';
+  if (resultCta) resultCta.href = '#';
   showQuizStep(1);
 }
 
