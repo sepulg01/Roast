@@ -212,3 +212,13 @@
 - Se incorporaron y priorizaron las necesidades operativas discutidas para el modelo manual: pedidos estructurados, clientes/direcciones/estados, backoffice diario, links de pago Flow, confirmacion automatica de pago, inventario, despacho, recompra, recuperacion de leads, correo del dominio y suscripciones deferidas.
 - Validacion realizada con `git diff --check`, lectura puntual de `Backlog.md`, `rg` para verificar decision operativa y prioridades, y refresh del stack local mediante `python3 -m http.server` con respuesta `200` para `/`, `/Backlog.md` y `/robots.txt`.
 - Pendiente/deferido: la implementacion sigue en estado documental; el siguiente hilo deberia bajar los items `P0` a un esquema concreto de tablas, vistas y campos para `Google Sheets`, y reevaluar `Airtable` solo si el plan gratuito cubre una ventaja operativa clara.
+
+## 2026-04-13 - Investigacion implementada para Flow links de pago
+
+- Se refresco el repo con `git pull --ff-only origin main`; `main` ya estaba alineado con `origin/main` antes de editar.
+- Se documento la investigacion completa en `FLOW_PAYMENT_LINK_RESEARCH.md`, cubriendo auditoria del funnel actual, evidencia del patron `WhatsApp`, ausencia de backend, comparativa entre link manual, `Flow /payment/create` y cobro por email, contrato minimo recomendado, gaps UX/e-commerce y plan de pruebas.
+- Se bajo la recomendacion operativa a `Backlog.md`, dejando explicitado que la ruta recomendada es `Flow /payment/create + backend ligero + urlConfirmation + urlReturn + /payment/getStatus`, con `Google Sheets` como backoffice inicial y el link manual solo como fallback.
+- Se actualizo `robots.txt` para bloquear el nuevo documento interno `FLOW_PAYMENT_LINK_RESEARCH.md` del rastreo publico.
+- Validacion realizada con `git diff --check`, lectura puntual de `FLOW_PAYMENT_LINK_RESEARCH.md`, `Backlog.md` y `robots.txt`, mas busqueda de infraestructura server-side inexistente en el repo y verificacion documental de Flow/Stripe contra fuentes oficiales.
+- Parcial: la investigacion deja recomendacion y contratos cerrados, pero no implementa aun el backend ligero, la captura minima en sitio ni la sincronizacion real con `Google Sheets`.
+- Pendiente/deferido: definir el runtime exacto del backend, modelar las hojas `orders/customers/payments`, implementar los endpoints propuestos y reemplazar la salida directa a WhatsApp por `captura minima -> Flow -> confirmacion`.

@@ -13,6 +13,7 @@ Documento interno para registrar ideas, decisiones y pendientes de futuras imple
 - Decision: mantener por ahora el modelo minimo `Flow + WhatsApp`, sin migrar a una plataforma e-commerce.
 - Implementacion inicial definida: montar la operacion interna en `Google Sheets` como primera opcion; evaluar `Airtable` solo si el plan gratuito cubre la operacion sin costo y aporta vistas/automatizaciones utiles.
 - Criterio: primero ordenar pedidos, pagos y despacho; despues evaluar una capa e-commerce si el volumen o la complejidad lo justifican.
+- Investigacion 2026-04-13: la ruta recomendada para links de pago es `Flow /payment/create + backend ligero + urlConfirmation + urlReturn + /payment/getStatus`, dejando el link manual solo como fallback operativo. Referencia interna: `FLOW_PAYMENT_LINK_RESEARCH.md`.
 
 ## Escala de prioridad
 
@@ -29,7 +30,7 @@ Documento interno para registrar ideas, decisiones y pendientes de futuras imple
 - Prioridad: P0 critica
 - Estado: pendiente
 - Contexto: Definir y montar la capa operativa minima sin e-commerce. La referencia vigente es `Flow + WhatsApp`, con `Google Sheets` como primera opcion y `Airtable` solo si el plan gratuito alcanza para operar sin costo.
-- Siguiente paso: decidir la herramienta base y modelar una unica fuente de verdad para pedidos, clientes y estados operativos.
+- Siguiente paso: modelar `Google Sheets` como fuente minima de verdad con hojas `orders`, `customers` y `payments`, tomando como contrato base `order_draft`, `payment_record` y estados canonicos definidos en `FLOW_PAYMENT_LINK_RESEARCH.md`.
 
 ### Registrar pedidos de forma estructurada
 
@@ -61,7 +62,7 @@ Documento interno para registrar ideas, decisiones y pendientes de futuras imple
 - Prioridad: P1 alta
 - Estado: pendiente
 - Contexto: El modelo actual pide mantener `Flow` como pasarela de pago dentro del flujo conversacional. El link de pago tiene que integrarse al proceso comercial y quedar asociado a un pedido real.
-- Siguiente paso: definir en que momento se genera el link, quien lo envia, como se referencia contra el pedido y que texto comercial se usara al compartirlo.
+- Siguiente paso: implementar `POST /api/order-drafts` y `POST /api/payment-links` para generar la orden via `Flow /payment/create`, usando `commerceOrder = order_id`, total calculado en backend y `Google Sheets` como backoffice inicial.
 
 ### Confirmar pago automaticamente con webhook/API
 
@@ -69,7 +70,7 @@ Documento interno para registrar ideas, decisiones y pendientes de futuras imple
 - Prioridad: P1 alta
 - Estado: pendiente
 - Contexto: Mientras el volumen sea muy bajo puede revisarse Flow manualmente, pero la confirmacion automatica pasa a ser importante apenas sube la cantidad de pedidos o se quiere evitar conciliacion manual.
-- Siguiente paso: evaluar integracion minima de Flow via webhook/API para actualizar el estado del pedido cuando el pago quede confirmado.
+- Siguiente paso: exponer `urlConfirmation`, responder `HTTP 200` en menos de 15 segundos, consultar `/payment/getStatus`, mapear el resultado a estados internos (`pending_payment`, `paid`, `payment_failed`, `canceled`, `expired`) y sincronizar el cambio en `Google Sheets`.
 
 ### Manejar inventario y quiebres de stock
 
