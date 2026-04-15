@@ -8,18 +8,18 @@ Cafe Roast es una marca chilena de café D2C (directo al consumidor) que vende c
 
 Su razón de existir es una sola: **ser el primer paso para quien quiere dejar el café instantáneo, sin que eso implique aprender nada nuevo ni comprar equipos nuevos.** El cliente no necesita molinillo, no necesita saber de café, no necesita cambiar su rutina. Solo necesita decir cómo prepara su café.
 
-El nombre "Roast" tiene doble sentido intencional: el tostado del café y el acto de hacer roast (burla) al café instantáneo. Ese doble sentido es parte de la identidad de la marca, no un detalle.
+El nombre "Roast" tiene doble sentido intencional: el tostado del café y el acto de hacer roast (burla) al café instantáneo y a quien lo consume. Ese doble sentido es parte de la identidad de la marca, no un detalle, y debe ser explotado en la página y en material de marketing.
 
 ---
 
 ## 2. Visión
 
-Cafe Roast quiere ser una **marca D2C reconocida en redes sociales por su humor y tono**, con volumen de venta competitivo en el mercado chileno del café. No aspira a ser una marca gourmet ni de especialidad de nicho. Aspira a ser la marca que le quitó el instantáneo a miles de personas, y que se hizo conocida por hacerlo con gracia.
+Cafe Roast quiere ser una **marca D2C reconocida en redes sociales por su humor y tono**, con volumen de venta competitivo en el mercado chileno del café. No aspira a ser una marca gourmet ni de especialidad. Aspira a ser la marca que le quitó el instantáneo a miles de personas, y que se hizo conocida por hacerlo con gracia.
 
 El crecimiento se proyecta en tres ejes:
 
-- **Canal:** hoy 100% WhatsApp. Próximamente suscripción recurrente (semanal, quincenal, mensual) como palanca de LTV.
-- **Geografía:** hoy Santiago RM. Próximamente Talca, Chillán, Puerto Varas.
+- **Canal:** hoy 100% WhatsApp y links de pago mediante Flow. Próximamente suscripción recurrente (semanal, quincenal, mensual).
+- **Geografía:** hoy distribuye en Santiago RM. Próximamente desde Talca, Chillán, y Puerto Varas.
 - **Contenido:** redes sociales como canal de awareness y construcción de marca, con humor como vehículo principal.
 
 ---
@@ -28,29 +28,31 @@ El crecimiento se proyecta en tres ejes:
 
 ### Quién es
 
-Adulto urbano, 22–40 años, en Santiago de Chile. Toma café todos los días — una, dos, o tres tazas. Actualmente usa café instantáneo porque es lo que siempre ha tenido en casa, porque es fácil, o simplemente porque nunca nadie le explicó que hay algo mejor igual de fácil.
+Adulto urbano, 22–40 años, en Santiago de Chile. Toma café todos los días. Actualmente usa café instantáneo porque es lo que siempre ha tenido en casa, porque es fácil, o simplemente porque nunca nadie le explicó que hay algo mejor.
 
-No es un entusiasta del café. No le interesa la temperatura del agua ni el ratio de extracción. Le interesa que su café del desayuno sepa bien y lo despierte.
+No es un entusiasta del café. No le interesa la temperatura del agua ni el ratio de extracción. Le interesa que su café del desayuno sepa bien, lo despierte y que sea fácil de preparar.
 
 ### Qué siente
 
-- Que su café sabe a poco. Plano, artificial, predecible.
+- Que su café sabe a poco, igual que siempre, artificial, predecible.
 - Que el café "de verdad" es para gente que tiene tiempo, conocimiento o equipos que él no tiene.
 - Que quizás podría mejorar su café, pero no sabe por dónde empezar y no quiere complicarse.
 
 ### Qué necesita escuchar
 
-Que el salto al café real no requiere nada de lo que cree que requiere. Que Cafe Roast elimina exactamente esa barrera. Que puede seguir usando su cafetera moka, su hervidor, o lo que tenga — y el resultado va a ser completamente distinto.
+Que el salto al café real no requiere nada de lo que cree que requiere. Que Cafe Roast elimina exactamente esa barrera. Que puede orientarse **en simple** con Roast y comenzar con un método simple, como una prensa francesa.
 
-### Equipos que puede tener
+Que el café de tarro (instantáneo) es sucio, de origen dudoso, que no es significativamente más barato.
 
-Cafetera italiana (moka), prensa francesa, cafetera de filtro, máquina de espresso, o solo un hervidor. También puede no tener nada especial. Cafe Roast atiende todos los casos.
+### Equipos que puede tener o considerar adquirir.
+
+Cafetera italiana (moka), prensa francesa, cafetera de filtro, máquina de espresso. También puede no tener nada especial. Cafe Roast atiende todos los casos.
 
 ---
 
 ## 4. Propuesta de valor
 
-**Una frase:** Café recién molido para tu cafetera, sin que tengas que saber nada de café.
+**Una frase:** Café fresco recién molido para tu cafetera, sin que tengas que saber nada de café.
 
 **Los tres argumentos centrales, en orden de impacto:**
 
@@ -58,7 +60,7 @@ Cafetera italiana (moka), prensa francesa, cafetera de filtro, máquina de espre
 
 2. **Más cafeína.** El instantáneo lleva tan poco café de verdad que tres tazas no despiertan a nadie. Cafe Roast es café de verdad — hace lo que se supone que debe hacer.
 
-3. **Sin fricción.** El cliente dice cómo prepara su café. Cafe Roast muele exactamente para eso. Sin molinillo, sin videos de YouTube, sin curva de aprendizaje, sin cambiar la rutina.
+3. **Sin complicaciones.**  Café Roast te da todo listo, explicaciones breves y claras, molido y freso en el instante. Sin necesidad de molinillo, sin videos de YouTube, sin curva de aprendizaje, sin cambiar la rutina.
 
 **Lo que Cafe Roast no es:** no es una marca gourmet, no es para el entendido, no es cara, no es complicada. Es el café que cualquiera puede tomar.
 
@@ -68,7 +70,7 @@ Cafetera italiana (moka), prensa francesa, cafetera de filtro, máquina de espre
 
 ### Descripción
 
-Directo, coloquial, con humor y sarcasmo hacia el café instantáneo. Habla como un amigo que sabe de café pero que no se toma demasiado en serio. No alecciona, no pretende. Se ríe — específicamente del café de tarro, de su sabor, de su falta de cafeína, de todo lo que promete y no cumple.
+Directo, coloquial, con humor y sarcasmo hacia el café instantáneo y sus consumidores. Habla como un amigo que sabe de café pero que no se toma demasiado en serio. No alecciona, no pretende. Se ríe de su sabor, de todo lo que promete y no cumple.
 
 El humor es el núcleo de la identidad expresiva de la marca. No es un recurso ocasional: es la forma habitual de comunicarse.
 
@@ -80,21 +82,22 @@ El humor es el núcleo de la identidad expresiva de la marca. No es un recurso o
 
 **El instantáneo es el villano.** Es el antagonista constante. No con odio — con burla. El instantáneo es el ex mal recuerdo, el compañero de trabajo aburrido, el café que todos tomaron hasta que llegó algo mejor. Se puede nombrar, imitar, caricaturizar.
 
-**Sin pretensión.** Cafe Roast no habla de "notas de cata", "perfiles de tostado", ni términos de especialidad a menos que sea estrictamente necesario y venga acompañado de una explicación simple. El cliente no tiene que entender de café para entender a Cafe Roast.
+**Sin pretensión.** Café Roast no habla de "notas de cata", "perfiles de tostado", ni términos de especialidad a menos que sea estrictamente necesario y venga acompañado de una explicación simple. El cliente no tiene que entender de café para entender a Café Roast.
 
 **Con confianza, sin arrogancia.** La marca sabe que su café es mejor. Lo dice sin disculparse. Pero no mira a nadie por encima del hombro.
 
 ### Ejemplos de tono correcto
 
 - "Tu desayuno merece más que agua tibia con colorante."
-- "Lleva tan poco café de verdad que podrías tomar tres tazas, seguir con sueño... y con acidez."
-- "No. Nosotros molemos el café según tu método de preparación. Solo dinos cómo quieres prepararlo y listo."
+- "Seguro que hoy tomas tres tazas de instantaneo, y vas a seguir con sueño... y con acidez."
+- "Roast llega rápido a tu casa, trabajo o donde lo necesites."
+- "Nosotros molemos el café en el momento de tu compra. Solo dinos cómo quieres prepararlo y listo."
 - "Para los que ya saben lo que quieren." (1kg)
 
-### Lo que NO es el tono de Cafe Roast
+### Lo que NO es el tono de Café Roast
 
 - ❌ "Descubre la experiencia sensorial de nuestros granos de origen único."
-- ❌ "En Cafe Roast nos apasiona el café de especialidad."
+- ❌ "En Café Roast nos apasiona el café de especialidad."
 - ❌ "¡Hola! 😊 Somos una familia apasionada por el café."
 - ❌ Cualquier cosa que suene a marca de café artesanal orgullosa de sí misma.
 
@@ -114,7 +117,7 @@ El humor es el núcleo de la identidad expresiva de la marca. No es un recurso o
 | Texto secundario | `#9A9A9A` | Textos de apoyo, descripciones, subtítulos. |
 | Verde WhatsApp | `#25D366` | Exclusivo para CTAs de WhatsApp. |
 
-**Nota para generación de imágenes:** la paleta es oscura por defecto. El naranja `#FF6B35` es el único color vivo y debe usarse con criterio — es el acento, no el fondo. El negro y el crema son la base.
+**Nota para generación de imágenes:** la paleta es oscura, con grises texturizados por defecto. El naranja `#FF6B35` es el color vivo y debe usarse con criterio: es el acento, no el fondo. El negro, el crema, texturas suaves son la base.
 
 ### Tipografía
 
@@ -129,7 +132,7 @@ Space Grotesk en 700 con tracking negativo (−0.02em) es la voz visual de la ma
 
 La identidad visual actual es oscura, limpia y contrastada. Fondo negro o muy oscuro, tipografía crema, acentos naranjas. El estilo recuerda al de una marca urbana de consumo premium — pero sin la pretensión del mundo gourmet.
 
-No hay un estilo fotográfico cerrado definido. Las imágenes del sitio actual (Unsplash) muestran granos de café en madera, tazas recién preparadas, y sacos de café — un punto de partida realista y cálido. Para generación de imágenes, ver directrices en sección 7.
+No hay un estilo fotográfico cerrado definido. Para generación de imágenes, ver directrices en sección 7.
 
 ### Logotipo
 
@@ -176,18 +179,9 @@ Para bolsa de producto:
 
 ### Catálogo
 
-| Formato | Precio | Perfil de uso |
-|---|---|---|
-| 250g | $9.000 CLP | Primera compra. Para probar. |
-| 500g | $16.500 CLP | El más popular. Rinde 2–4 semanas para 1–2 tazas diarias. |
-| 1kg | $29.000 CLP | Mejor precio por gramo. Para quien ya sabe. |
 
 **Envío gratis** en Santiago RM en compras sobre $36.000 CLP.
 **Tiempo de entrega:** 0 a 2 días hábiles en Santiago.
-
-### Orígenes disponibles
-
-Perú · Brasil · Colombia · Panamá
 
 ### Moliendas disponibles
 
@@ -201,6 +195,8 @@ Espresso · Moka · Prensa francesa · Filtro / pour over · Chemex · AeroPress
 
 - Suscripción recurrente (semanal, quincenal, mensual)
 - Expansión a Talca, Chillán, Puerto Varas
+- Habilitación de link de pago mediante plataforma Flow
+- Formulario de compra simple, para captura de datos mínimos del cliente y envío del link de pago (para clientes que no gustan de conversar)
 
 ---
 
@@ -216,7 +212,7 @@ Espresso · Moka · Prensa francesa · Filtro / pour over · Chemex · AeroPress
 
 5. **La marca habla en español chileno.** Coloquial, sin regionalismos extremos, pero claramente chileno. "Tomar café" no "beber café". "Cafetera" no "máquina". " Café de tarro" para referirse al instantáneo.
 
-6. **El nombre de la marca es "Café Roast"** en textos corridos. El logo usa "Roast." con punto naranja. No "Café Roast" (sin tilde en el nombre oficial).
+6. **El nombre de la marca es "Café Roast"** en textos corridos. El logo usa "Roast." con punto naranja. No "Café Roast" 
 
 ---
 
@@ -226,25 +222,25 @@ Espresso · Moka · Prensa francesa · Filtro / pour over · Chemex · AeroPress
 |---|---|---|
 | Rol en la colección | Balance / pausa útil / versatilidad | Intensidad + foco / ejecución |
 | Momento principal de consumo | Cuando bajas un cambio, pero igual quieres una taza amable, redonda y fácil de repetir | Después de almuerzo, y también para bloques de foco profundo |
-| Descripción interna | Downtime no es una falla: es una pausa útil. Baja el ritmo sin apagar la taza. Existe para momentos más lentos o más largos, cuando quieres balance, dulzor y alta tomabilidad sin volver el café un tema. No empuja de más. **Sostiene la pausa sin volverse plano.** | Hiperfoco no es una hora del día, es una decisión. Funciona especialmente cuando baja la energía, como después de almuerzo, pero no depende de eso. Este café corta la inercia y te mete de vuelta en la tarea. Es intenso, directo y diseñado para sostener foco real. |
-| Perfil de tueste | Medio | Italiano / oscuro |
-| Objetivo del tueste | Alta tomabilidad, balance y suavidad | Máximo impacto, cuerpo y solubilidad para espresso |
-| Desarrollo | Balanceado, enfocado en dulzor y redondez | Largo, con alta caramelización y baja acidez percibida |
-| Perfil sensorial interno | Chocolate, caramelo, frutos secos | Chocolate amargo, tostado, azúcar morena |
+| Descripción interna | Downtime no es una falla: es una pausa legítima. Complementa una baja en el ritmo. Existe para momentos más lentos o más largos, cuando quieres balance, dulzor y alta tomabilidad. | Hiperfoco no es una hora del día, es una decisión. Funciona especialmente cuando baja la energía, como después de almuerzo, pero no depende de eso. Este café corta la inercia y te mete de vuelta en la tarea. Es intenso, directo y diseñado para sostener foco real. |
+| Perfil de tueste | Medio-Oscuro | Italiano |
+| Objetivo del tueste | Alta tomabilidad, balance y suavidad, Acidez controlada | Máximo impacto, cuerpo y solubilidad para espresso |
+| Desarrollo | Balanceado, enfocado en dulzor y redondez | Largo, con alta caramelización y muy baja acidez percibida |
+| Perfil sensorial interno | Chocolate, caramelo, frutos secos | Chocolate bitter, tostado, azúcar morena |
 | Acidez | Media-baja | Baja |
 | Cuerpo | Medio | Alto |
 | Final | Suave, redondo | Largo, intenso |
 | Métodos recomendados | Prensa francesa, filtro (cafetera o V60 simple) | Espresso, moka |
 | Ratio base | 1:15 – 1:17 | Espresso 1:2 |
-| Molienda | Media a gruesa | Fina |
-| Origen | Perú / Colombia (referencia Alto Amazonas) | Perú / Colombia (referencia Alto Amazonas) |
-| Proceso | Lavado | Lavado |
-| Altitud | 1.200 – 1.800 msnm | 1.200 – 1.800 msnm |
-| Varietal | Caturra / Bourbon | Caturra / Bourbon |
+| Molienda Sugerida | Media a gruesa | Fina |
+| Origen | Blend Perú-Colombia | El Salvador |
+| Proceso | Lavado | Natural |
+| Altitud | 1.800 msnm | 1.600 msnm |
+| Varietal | Castillo, Catimor, Bourbon | Bourbon |
 | Intensidad | Media | Alta |
-| Formato disponible | 250 g / 500 g / 1 kg | 250 g / 500 g / 1 kg |
+| Formatos disponibles | 250 g / 500 g / 1 kg | 250 g / 500 g / 1 kg |
 | Fecha de tueste | ____ | ____ |
-| Microcopy de etiqueta | “Productividad a la espera.” | “Foco sin rodeos.” |
+| Microcopy de etiqueta | “La productividad puede esperar.” | “Enfoque máximo.” |
 
 
 *Documento de referencia de marca — Cafe Roast · caferoast.cl · Abril 2026*
