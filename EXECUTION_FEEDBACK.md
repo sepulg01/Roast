@@ -274,3 +274,14 @@
 - Validacion realizada con inspeccion de `git remote -v`, lectura de `worker/wrangler.toml` y posterior cambio del remoto `origin` a SSH antes de empujar el commit pendiente.
 - Completado totalmente: preferencia de `push` via SSH registrada y nombre del Worker alineado al dashboard.
 - Pendiente/deferido: cargar secretos y completar rutas productivas en Cloudflare para activar el deploy real del Worker bajo `caferoast.cl`.
+
+## 2026-04-18 - Backlog tabular y limpieza visual de checkout/productos
+
+- Se reescribio `Backlog.md` a un formato tabular unico, manteniendo `prioridad`, `estado`, `fecha`, `contexto` y `siguiente paso`, eliminando toda referencia a `jaca` y marcando `Cloudflare MX para @caferoast.cl con reenvio a Gmail personal` como `completado`.
+- En `pedido/index.html` se elimino la card superior `Soporte visible`; el pedido web mantiene soporte por correo en la nav, correo + WhatsApp en el resumen lateral y soporte en el footer, sin alterar el flujo de pasos ni la caja `manual_review`.
+- En `index.html` se elimino la tarjeta/stage de video independiente de `#products`, las cards de `Downtime` y `Hiperfoco` quedaron apiladas una debajo de la otra en todos los breakpoints, y el media principal de cada card paso al slot propio del producto.
+- `Downtime` ahora usa `assets/products/Downtime-bagvideo.mp4` dentro de su card; `Hiperfoco` quedo con un placeholder visual `Video de Hiperfoco / Proximamente` en el mismo contenedor y ratio del video real, listo para reemplazarse por un asset futuro sin rehacer el layout.
+- `assets/site.css` se simplifico para retirar estilos exclusivos de `.checkout-support-card`, eliminar las reglas de `.products-stage`, unificar el tratamiento de media de producto y mantener el split interno de cada card solo para `product-media + summary`.
+- Validacion realizada con parseo HTML dirigido sobre `index.html` y `pedido/index.html`, `rg` para verificar ausencia de `jaca` y de `.products-stage`, y `git diff --check`; no se hizo refresh de stacks por instruccion explicita de esta iteracion.
+- Completado totalmente: backlog tabular, retiro del bloque superior de soporte en checkout, eliminacion de la tarjeta de video independiente, productos apilados y adopcion de `video + placeholder` en las cards del home.
+- Pendiente/deferido: reemplazar el placeholder de `Hiperfoco` por un video real cuando ese asset exista en el repo.
