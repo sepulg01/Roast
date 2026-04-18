@@ -1,4 +1,4 @@
-name = "roast-checkout-worker"
+name = "roast"
 main = "src/index.js"
 compatibility_date = "2026-04-17"
 routes = [

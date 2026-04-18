@@ -266,3 +266,11 @@
 - Completado totalmente: refresh UI del landing, reordenamiento real del DOM, nuevo uso del video de Downtime, mejora visual de cards, correccion del footer y hardening del checkout contra respuestas HTML en `/api`.
 - Parcial: se intento descubrir/publicar el Worker con `CI=1 npx wrangler whoami` y `CI=1 npx wrangler deploy`, pero el entorno no tiene autenticacion Cloudflare activa; `whoami` pidio `wrangler login` y `deploy` fallo por falta de `CLOUDFLARE_API_TOKEN`.
 - Pendiente/deferido: desplegar realmente el Worker con credenciales Cloudflare y secretos productivos para que `caferoast.cl/api/*` deje de responder HTML de GitHub Pages y pase a servir el backend transaccional en produccion.
+
+## 2026-04-17 - Ajuste de push por SSH y nombre final del Worker
+
+- Se registro en `AGENTS.md` que todos los `push` a GitHub para este repo deben hacerse via SSH, asumiendo una SSH key valida ya configurada.
+- Se alineo `worker/wrangler.toml` con el nombre real del Worker en Cloudflare, dejando `name = "roast"` para evitar drift entre dashboard y repo.
+- Validacion realizada con inspeccion de `git remote -v`, lectura de `worker/wrangler.toml` y posterior cambio del remoto `origin` a SSH antes de empujar el commit pendiente.
+- Completado totalmente: preferencia de `push` via SSH registrada y nombre del Worker alineado al dashboard.
+- Pendiente/deferido: cargar secretos y completar rutas productivas en Cloudflare para activar el deploy real del Worker bajo `caferoast.cl`.
