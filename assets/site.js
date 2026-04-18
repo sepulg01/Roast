@@ -1,7 +1,9 @@
-// ===== dataLayer init =====
 window.dataLayer = window.dataLayer || [];
 
-// ===== QUIZ STATE =====
+var SUPPORT_EMAIL = 'contacto@caferoast.cl';
+var SUPPORT_WHATSAPP = '+56951172813';
+var SUPPORT_WHATSAPP_URL = 'https://wa.me/56951172813';
+
 var quizCups = null;
 var quizMethod = null;
 var quizProductChoice = null;
@@ -10,14 +12,13 @@ var QUIZ_RESULT_REFERENCE_TEXT = '250g de Downtime + 250g de Hiperfoco, molido p
 var QUIZ_RESULT_REFERENCE_PRICE = '$18.000 CLP';
 
 var PRICE_MAP = {
-  '1_taza': { format: '250g', price: '$9.000' },
-  '2_tazas': { format: '500g', price: '$16.500' },
-  '3_o_mas': { format: '1kg', price: '$29.000' }
+  '1_taza': { format: '250g', price: 9000 },
+  '2_tazas': { format: '500g', price: 16500 },
+  '3_o_mas': { format: '1kg', price: 29000 }
 };
 
-var QUIZ_COMBO_PRICE = '$18.000';
+var QUIZ_COMBO_PRICE = 18000;
 
-// Molienda recomendada según método. Hervidor y no_se → prensa francesa
 var METHOD_GRIND_MAP = {
   'moka': 'molido para moka',
   'prensa_francesa': 'molido grueso para prensa francesa',
@@ -41,6 +42,389 @@ var PRODUCT_NAME_MAP = {
   'downtime': 'Downtime',
   'hiperfoco': 'Hiperfoco'
 };
+
+var PRODUCT_PRICE_MAP = {
+  '250g': 9000,
+  '500g': 16500,
+  '1kg': 29000
+};
+
+function pushDataEvent(eventName, payload) {
+  window.dataLayer.push(Object.assign({ event: eventName }, payload || {}));
+}
+
+function formatCurrency(value) {
+  return new Intl.NumberFormat('es-CL', {
+    style: 'currency',
+    currency: 'CLP',
+    maximumFractionDigits: 0
+  }).format(Number(value || 0));
+}
+
+function encodeDraftPayload(payload) {
+  try {
+    return btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/g, '');
+  } catch (error) {
+    return '';
+  }
+}
+
+function decodeDraftPayload(value) {
+  if (!value) return null;
+
+  try {
+    var normalized = String(value).replace(/-/g, '+').replace(/_/g, '/');
+    var padLength = (4 - (normalized.length % 4)) % 4;
+    var padded = normalized + '='.repeat(padLength);
+    return JSON.parse(decodeURIComponent(escape(atob(padded))));
+  } catch (error) {
+    return null;
+  }
+}
+
+function createItem(productId, format, grind, quantity) {
+  return {
+    product_code: productId,
+    format_code: format,
+    grind: grind,
+    quantity: quantity || 1
+  };
+}
+
+function buildCheckoutUrl(options) {
+  var url = new URL('/pedido/', window.location.origin);
+  var origin = options && options.origin ? options.origin : '';
+  var channel = options && options.channel ? options.channel : '';
+  var draft = options && options.draft ? options.draft : null;
+
+  if (origin) url.searchParams.set('origin', origin);
+  if (channel) url.searchParams.set('channel', channel);
+  if (draft) {
+    url.searchParams.set('draft', encodeDraftPayload(draft));
+  }
+
+  return url.toString();
+}
+
+function buildSupportWhatsAppUrl(message) {
+  return SUPPORT_WHATSAPP_URL + '?text=' + encodeURIComponent(message || 'Hola Roast. Necesito ayuda con mi pedido web.');
+}
+
+function buildSupportMessage(context, orderId) {
+  var orderText = orderId ? ' Mi pedido es ' + orderId + '.' : '';
+  return 'Hola Roast. Necesito ayuda con ' + context + '.' + orderText;
+}
+
+function syncQuizPanelHeight() {
+  var stack = document.getElementById('quizStepStack');
+  var resultStep = document.getElementById('quizStep4');
+  var actualRec = document.getElementById('quizResultRec');
+  var actualPrice = document.getElementById('quizResultPrice');
+
+  if (!stack || !resultStep) return;
+
+  if (window.innerWidth < QUIZ_DESKTOP_BREAKPOINT) {
+    stack.style.minHeight = '';
+    return;
+  }
+
+  if (!stack.clientWidth) return;
+
+  var clone = resultStep.cloneNode(true);
+  var cloneRec = clone.querySelector('.quiz-result-rec');
+  var clonePrice = clone.querySelector('.quiz-result-price');
+  var recText = QUIZ_RESULT_REFERENCE_TEXT;
+  var priceText = QUIZ_RESULT_REFERENCE_PRICE;
+
+  if (actualRec && actualRec.textContent.trim() !== '—' && actualRec.textContent.trim().length > QUIZ_RESULT_REFERENCE_TEXT.length) {
+    recText = actualRec.textContent.trim();
+  }
+
+  if (actualPrice && actualPrice.textContent.trim() !== '—' && actualPrice.textContent.trim().length > QUIZ_RESULT_REFERENCE_PRICE.length) {
+    priceText = actualPrice.textContent.trim();
+  }
+
+  clone.removeAttribute('id');
+  clone.style.display = 'block';
+  clone.style.visibility = 'hidden';
+  clone.style.position = 'absolute';
+  clone.style.top = '0';
+  clone.style.left = '0';
+  clone.style.width = stack.clientWidth + 'px';
+  clone.style.pointerEvents = 'none';
+  clone.setAttribute('aria-hidden', 'true');
+
+  if (cloneRec) cloneRec.textContent = recText;
+  if (clonePrice) clonePrice.textContent = priceText;
+
+  stack.appendChild(clone);
+  stack.style.minHeight = Math.ceil(clone.offsetHeight) + 'px';
+  stack.removeChild(clone);
+}
+
+function showQuizStep(step) {
+  document.querySelectorAll('.quiz-step').forEach(function(section) {
+    section.classList.remove('active');
+  });
+
+  var target = document.getElementById('quizStep' + step);
+  var fill = document.getElementById('quizProgressFill');
+  var progress = document.querySelector('.quiz-progress[role="progressbar"]');
+  var fills = { 1: 25, 2: 50, 3: 75, 4: 100 };
+
+  if (target) target.classList.add('active');
+  if (fill) fill.style.width = fills[step] + '%';
+  if (progress) progress.setAttribute('aria-valuenow', String(fills[step]));
+
+  syncQuizPanelHeight();
+}
+
+function clearQuizSelection(selector) {
+  document.querySelectorAll(selector).forEach(function(button) {
+    button.classList.remove('selected');
+    button.setAttribute('aria-pressed', 'false');
+  });
+}
+
+function selectCups(button) {
+  clearQuizSelection('#quizStep1 .quiz-option');
+  button.classList.add('selected');
+  button.setAttribute('aria-pressed', 'true');
+  quizCups = button.getAttribute('data-cups');
+  quizMethod = null;
+  quizProductChoice = null;
+  clearQuizSelection('#quizStep2 .quiz-option');
+  clearQuizSelection('#quizStep3 .quiz-option');
+  pushDataEvent('quiz_started');
+  setTimeout(function() {
+    showQuizStep(2);
+  }, 200);
+}
+
+function selectMethod(button) {
+  clearQuizSelection('#quizStep2 .quiz-option');
+  button.classList.add('selected');
+  button.setAttribute('aria-pressed', 'true');
+  quizMethod = button.getAttribute('data-method');
+  quizProductChoice = null;
+  clearQuizSelection('#quizStep3 .quiz-option');
+  setTimeout(function() {
+    showQuizStep(3);
+  }, 200);
+}
+
+function selectProductChoice(button) {
+  clearQuizSelection('#quizStep3 .quiz-option');
+  button.classList.add('selected');
+  button.setAttribute('aria-pressed', 'true');
+  quizProductChoice = button.getAttribute('data-product-choice');
+  window.setTimeout(function() {
+    showQuizResult();
+  }, 0);
+}
+
+function getQuizRecommendation() {
+  var formatRecommendation = PRICE_MAP[quizCups] || PRICE_MAP['1_taza'];
+  var grindLabel = METHOD_GRIND_MAP[quizMethod] || 'molido grueso para prensa francesa';
+
+  if (quizProductChoice === 'ambos_250') {
+    return {
+      text: '250g de Downtime + 250g de Hiperfoco, ' + grindLabel,
+      price: formatCurrency(QUIZ_COMBO_PRICE),
+      draft: {
+        origin: 'index_quiz_result',
+        channel: 'site_home_quiz',
+        items: [
+          createItem('downtime', '250g', grindLabel, 1),
+          createItem('hiperfoco', '250g', grindLabel, 1)
+        ]
+      },
+      supportMessage: buildSupportMessage('la recomendación del quiz')
+    };
+  }
+
+  var productName = PRODUCT_NAME_MAP[quizProductChoice] || PRODUCT_NAME_MAP.downtime;
+
+  return {
+    text: productName + ' en ' + formatRecommendation.format + ', ' + grindLabel,
+    price: formatCurrency(formatRecommendation.price),
+    draft: {
+      origin: 'index_quiz_result',
+      channel: 'site_home_quiz',
+      items: [
+        createItem(quizProductChoice, formatRecommendation.format, grindLabel, 1)
+      ]
+    },
+    supportMessage: buildSupportMessage('la recomendación del quiz')
+  };
+}
+
+function showQuizResult() {
+  if (!quizCups || !quizMethod || !quizProductChoice) return;
+
+  var recommendation = getQuizRecommendation();
+  var resultRec = document.getElementById('quizResultRec');
+  var resultPrice = document.getElementById('quizResultPrice');
+  var resultCta = document.getElementById('quizResultCta');
+  var resultSupport = document.getElementById('quizResultSupport');
+
+  if (resultRec) resultRec.textContent = recommendation.text;
+  if (resultPrice) resultPrice.textContent = recommendation.price + ' CLP';
+  if (resultCta) {
+    resultCta.href = buildCheckoutUrl({
+      origin: 'index_quiz_result',
+      channel: 'site_home_quiz',
+      draft: recommendation.draft
+    });
+    resultCta.setAttribute('data-checkout-origin', 'index_quiz_result');
+    resultCta.setAttribute('data-checkout-channel', 'site_home_quiz');
+  }
+  if (resultSupport) {
+    resultSupport.href = buildSupportWhatsAppUrl(recommendation.supportMessage);
+  }
+
+  showQuizStep(4);
+}
+
+function quizBack(step) {
+  showQuizStep(step);
+}
+
+function quizRestart() {
+  quizCups = null;
+  quizMethod = null;
+  quizProductChoice = null;
+  document.querySelectorAll('.quiz-option').forEach(function(button) {
+    button.classList.remove('selected');
+    button.setAttribute('aria-pressed', 'false');
+  });
+
+  var resultRec = document.getElementById('quizResultRec');
+  var resultPrice = document.getElementById('quizResultPrice');
+  var resultCta = document.getElementById('quizResultCta');
+  var resultSupport = document.getElementById('quizResultSupport');
+
+  if (resultRec) resultRec.textContent = '—';
+  if (resultPrice) resultPrice.textContent = '—';
+  if (resultCta) resultCta.href = '/pedido/';
+  if (resultSupport) resultSupport.href = buildSupportWhatsAppUrl(buildSupportMessage('mi recomendación del quiz'));
+
+  showQuizStep(1);
+}
+
+function buildProductDraft(productId, format, grind) {
+  return {
+    origin: 'index_products_' + productId,
+    channel: 'site_home_products',
+    items: [
+      createItem(productId, format, grind, 1)
+    ]
+  };
+}
+
+function updateProductCard(card) {
+  if (!card) return;
+
+  var productId = card.getAttribute('data-product-id') || '';
+  var formatSelect = card.querySelector('[data-product-format]');
+  var grindSelect = card.querySelector('[data-product-grind]');
+  var priceEl = card.querySelector('[data-product-price]');
+  var linkEl = card.querySelector('[data-product-link]');
+  var supportEl = card.querySelector('[data-product-support-link]');
+  var format = formatSelect ? formatSelect.value : '250g';
+  var grind = grindSelect ? grindSelect.value : 'grano entero';
+  var price = PRODUCT_PRICE_MAP[format] || PRODUCT_PRICE_MAP['250g'];
+  var draft = buildProductDraft(productId, format, grind);
+
+  if (priceEl) {
+    priceEl.innerHTML = formatCurrency(price) + ' <span>CLP</span>';
+  }
+
+  if (linkEl) {
+    linkEl.href = buildCheckoutUrl({
+      origin: 'index_products_' + productId,
+      channel: 'site_home_products',
+      draft: draft
+    });
+    linkEl.setAttribute('aria-label', 'Continuar pedido de ' + (PRODUCT_NAME_MAP[productId] || productId));
+    linkEl.setAttribute('data-checkout-origin', 'index_products_' + productId);
+    linkEl.setAttribute('data-checkout-channel', 'site_home_products');
+  }
+
+  if (supportEl) {
+    supportEl.href = buildSupportWhatsAppUrl(buildSupportMessage('elegir ' + (PRODUCT_NAME_MAP[productId] || productId)));
+  }
+}
+
+function initProductCards() {
+  var productCards = document.querySelectorAll('[data-product-card]');
+
+  productCards.forEach(function(card) {
+    var formatSelect = card.querySelector('[data-product-format]');
+    var grindSelect = card.querySelector('[data-product-grind]');
+
+    if (formatSelect) {
+      formatSelect.addEventListener('change', function() {
+        updateProductCard(card);
+      });
+    }
+
+    if (grindSelect) {
+      grindSelect.addEventListener('change', function() {
+        updateProductCard(card);
+      });
+    }
+
+    updateProductCard(card);
+  });
+}
+
+function initCheckoutLinks() {
+  document.querySelectorAll('[data-checkout-link]').forEach(function(link) {
+    if (link.hasAttribute('data-product-link')) return;
+    if (link.id === 'quizResultCta') return;
+
+    var origin = link.getAttribute('data-checkout-origin') || '';
+    var channel = link.getAttribute('data-checkout-channel') || '';
+
+    if (!link.href || link.getAttribute('href') === '/pedido/' || link.getAttribute('href') === '#') {
+      link.href = buildCheckoutUrl({ origin: origin, channel: channel });
+    }
+  });
+}
+
+function initSupportLinks() {
+  document.querySelectorAll('[data-support-whatsapp-link]').forEach(function(link) {
+    if (link.href && link.getAttribute('href') !== '#') return;
+
+    var context = link.getAttribute('data-support-context') || 'mi pedido web';
+    link.href = buildSupportWhatsAppUrl(buildSupportMessage(context));
+  });
+}
+
+function initAnalyticsLinks() {
+  document.querySelectorAll('[data-checkout-link]').forEach(function(link) {
+    link.addEventListener('click', function() {
+      pushDataEvent('order_draft_started', {
+        label: link.getAttribute('data-analytics-label') || '',
+        origin: link.getAttribute('data-checkout-origin') || '',
+        channel: link.getAttribute('data-checkout-channel') || ''
+      });
+    });
+  });
+
+  document.querySelectorAll('[data-support-whatsapp-link]').forEach(function(link) {
+    link.addEventListener('click', function() {
+      pushDataEvent('whatsapp_fallback_clicked', {
+        label: link.getAttribute('data-analytics-label') || '',
+        context: link.getAttribute('data-support-context') || ''
+      });
+    });
+  });
+}
 
 function bindQuizControls() {
   document.querySelectorAll('#quizStep1 [data-cups]').forEach(function(button) {
@@ -73,226 +457,6 @@ function bindQuizControls() {
   }
 }
 
-function syncQuizPanelHeight() {
-  var stack = document.getElementById('quizStepStack');
-  var resultStep = document.getElementById('quizStep4');
-  var actualRec = document.getElementById('quizResultRec');
-  var actualPrice = document.getElementById('quizResultPrice');
-  if (!stack || !resultStep) return;
-
-  if (window.innerWidth < QUIZ_DESKTOP_BREAKPOINT) {
-    stack.style.minHeight = '';
-    return;
-  }
-
-  if (!stack.clientWidth) return;
-
-  var clone = resultStep.cloneNode(true);
-  var cloneRec = clone.querySelector('.quiz-result-rec');
-  var clonePrice = clone.querySelector('.quiz-result-price');
-  var cloneCta = clone.querySelector('a');
-  var recText = QUIZ_RESULT_REFERENCE_TEXT;
-  var priceText = QUIZ_RESULT_REFERENCE_PRICE;
-
-  if (actualRec && actualRec.textContent.trim() !== '—' && actualRec.textContent.trim().length > QUIZ_RESULT_REFERENCE_TEXT.length) {
-    recText = actualRec.textContent.trim();
-  }
-  if (actualPrice && actualPrice.textContent.trim() !== '—' && actualPrice.textContent.trim().length > QUIZ_RESULT_REFERENCE_PRICE.length) {
-    priceText = actualPrice.textContent.trim();
-  }
-
-  clone.removeAttribute('id');
-  clone.style.display = 'block';
-  clone.style.visibility = 'hidden';
-  clone.style.position = 'absolute';
-  clone.style.top = '0';
-  clone.style.left = '0';
-  clone.style.width = stack.clientWidth + 'px';
-  clone.style.pointerEvents = 'none';
-  clone.setAttribute('aria-hidden', 'true');
-
-  if (cloneRec) cloneRec.textContent = recText;
-  if (clonePrice) clonePrice.textContent = priceText;
-  if (cloneCta) cloneCta.href = '#';
-
-  stack.appendChild(clone);
-  stack.style.minHeight = Math.ceil(clone.offsetHeight) + 'px';
-  stack.removeChild(clone);
-}
-
-function showQuizStep(step) {
-  document.querySelectorAll('.quiz-step').forEach(function(s) {
-    s.classList.remove('active');
-  });
-
-  var el = document.getElementById('quizStep' + step);
-  if (el) el.classList.add('active');
-
-  var fills = { 1: 25, 2: 50, 3: 75, 4: 100 };
-  var fill = document.getElementById('quizProgressFill');
-  var progress = document.querySelector('.quiz-progress[role="progressbar"]');
-  if (fill) fill.style.width = fills[step] + '%';
-  if (progress) progress.setAttribute('aria-valuenow', String(fills[step]));
-
-  syncQuizPanelHeight();
-}
-
-function clearQuizSelection(selector) {
-  document.querySelectorAll(selector).forEach(function(button) {
-    button.classList.remove('selected');
-    button.setAttribute('aria-pressed', 'false');
-  });
-}
-
-function selectCups(btn) {
-  clearQuizSelection('#quizStep1 .quiz-option');
-  btn.classList.add('selected');
-  btn.setAttribute('aria-pressed', 'true');
-  quizCups = btn.getAttribute('data-cups');
-  quizMethod = null;
-  quizProductChoice = null;
-  clearQuizSelection('#quizStep2 .quiz-option');
-  clearQuizSelection('#quizStep3 .quiz-option');
-  dataLayer.push({ event: 'quiz_started' });
-  setTimeout(function() {
-    showQuizStep(2);
-  }, 200);
-}
-
-function selectMethod(btn) {
-  clearQuizSelection('#quizStep2 .quiz-option');
-  btn.classList.add('selected');
-  btn.setAttribute('aria-pressed', 'true');
-  quizMethod = btn.getAttribute('data-method');
-  quizProductChoice = null;
-  clearQuizSelection('#quizStep3 .quiz-option');
-  setTimeout(function() {
-    showQuizStep(3);
-  }, 200);
-}
-
-function selectProductChoice(btn) {
-  clearQuizSelection('#quizStep3 .quiz-option');
-  btn.classList.add('selected');
-  btn.setAttribute('aria-pressed', 'true');
-  quizProductChoice = btn.getAttribute('data-product-choice');
-  window.setTimeout(function() {
-    showQuizResult();
-  }, 0);
-}
-
-function getQuizRecommendation() {
-  var formatRec = PRICE_MAP[quizCups] || PRICE_MAP['1_taza'];
-  var grindLabel = METHOD_GRIND_MAP[quizMethod] || 'molido grueso para prensa francesa';
-
-  if (quizProductChoice === 'ambos_250') {
-    return {
-      text: '250g de Downtime + 250g de Hiperfoco, ' + grindLabel,
-      price: QUIZ_COMBO_PRICE + ' CLP',
-      message: 'Hola Café Roast! 👋 El quiz me recomendó:\n• 250g de Downtime\n• 250g de Hiperfoco\n• Molienda: ' + grindLabel + '\n¿Tienen disponibilidad?'
-    };
-  }
-
-  var productName = PRODUCT_NAME_MAP[quizProductChoice] || PRODUCT_NAME_MAP.downtime;
-  return {
-    text: productName + ' en ' + formatRec.format + ', ' + grindLabel,
-    price: formatRec.price + ' CLP',
-    message: 'Hola Café Roast! 👋 El quiz me recomendó:\n• ' + productName + '\n• Formato: ' + formatRec.format + '\n• Molienda: ' + grindLabel + '\n¿Tienen disponibilidad?'
-  };
-}
-
-function showQuizResult() {
-  if (!quizCups || !quizMethod || !quizProductChoice) return;
-
-  var recommendation = getQuizRecommendation();
-  document.getElementById('quizResultRec').textContent = recommendation.text;
-  document.getElementById('quizResultPrice').textContent = recommendation.price;
-  document.getElementById('quizResultCta').href = 'https://wa.me/56951172813?text=' + encodeURIComponent(recommendation.message);
-
-  showQuizStep(4);
-}
-
-function quizBack(step) {
-  showQuizStep(step);
-}
-
-function quizRestart() {
-  quizCups = null;
-  quizMethod = null;
-  quizProductChoice = null;
-  document.querySelectorAll('.quiz-option').forEach(function(button) {
-    button.classList.remove('selected');
-    button.setAttribute('aria-pressed', 'false');
-  });
-  var resultRec = document.getElementById('quizResultRec');
-  var resultPrice = document.getElementById('quizResultPrice');
-  var resultCta = document.getElementById('quizResultCta');
-  if (resultRec) resultRec.textContent = '—';
-  if (resultPrice) resultPrice.textContent = '—';
-  if (resultCta) resultCta.href = '#';
-  showQuizStep(1);
-}
-
-// ===== PRODUCT WHATSAPP LINKS =====
-var PRODUCT_PRICE_MAP = {
-  '250g': '$9.000',
-  '500g': '$16.500',
-  '1kg': '$29.000'
-};
-
-function buildProductMessage(productId, format, grind) {
-  var productName = PRODUCT_NAME_MAP[productId] || productId;
-  var grindText = PRODUCT_GRIND_LABEL_MAP[grind] || grind;
-  return 'Hola Café Roast. Quiero pedir ' + productName + ' en formato ' + format + ' y molienda ' + grindText + '.';
-}
-
-function updateProductCard(card) {
-  if (!card) return;
-
-  var productId = card.getAttribute('data-product-id') || '';
-  var formatSelect = card.querySelector('[data-product-format]');
-  var grindSelect = card.querySelector('[data-product-grind]');
-  var priceEl = card.querySelector('[data-product-price]');
-  var linkEl = card.querySelector('[data-product-link]');
-  var format = formatSelect ? formatSelect.value : '250g';
-  var grind = grindSelect ? grindSelect.value : 'grano entero';
-  var price = PRODUCT_PRICE_MAP[format] || PRODUCT_PRICE_MAP['250g'];
-
-  if (priceEl) {
-    priceEl.innerHTML = price + ' <span>CLP</span>';
-  }
-
-  if (linkEl) {
-    var msg = buildProductMessage(productId, format, grind);
-    linkEl.href = 'https://wa.me/56951172813?text=' + encodeURIComponent(msg);
-    linkEl.setAttribute('aria-label', 'Pedir ' + (PRODUCT_NAME_MAP[productId] || productId) + ' por WhatsApp');
-    linkEl.setAttribute('data-product-format-selected', format);
-    linkEl.setAttribute('data-product-grind-selected', grind);
-  }
-}
-
-function initProductCards() {
-  var productCards = document.querySelectorAll('[data-product-card]');
-  productCards.forEach(function(card) {
-    var formatSelect = card.querySelector('[data-product-format]');
-    var grindSelect = card.querySelector('[data-product-grind]');
-
-    if (formatSelect) {
-      formatSelect.addEventListener('change', function() {
-        updateProductCard(card);
-      });
-    }
-    if (grindSelect) {
-      grindSelect.addEventListener('change', function() {
-        updateProductCard(card);
-      });
-    }
-
-    updateProductCard(card);
-  });
-}
-
-// ===== CAROUSEL =====
 var carouselTrack = document.getElementById('carouselTrack');
 var carouselDotsContainer = document.getElementById('carouselDots');
 var carouselInterval = null;
@@ -302,14 +466,15 @@ var isHovered = false;
 function buildDots() {
   if (!carouselTrack || !carouselDotsContainer) return;
   var cards = carouselTrack.querySelectorAll('.review-card');
-  cards.forEach(function(_, i) {
+
+  cards.forEach(function(_, index) {
     var dot = document.createElement('button');
-    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-    dot.setAttribute('aria-label', 'Ir a reseña ' + (i + 1));
+    dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Ir a reseña ' + (index + 1));
     dot.setAttribute('role', 'tab');
-    dot.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+    dot.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
     dot.addEventListener('click', function() {
-      scrollToCard(i);
+      scrollToCard(index);
     });
     carouselDotsContainer.appendChild(dot);
   });
@@ -326,9 +491,10 @@ function scrollToCard(index) {
 function updateDot(index) {
   currentDot = index;
   var dots = carouselDotsContainer ? carouselDotsContainer.querySelectorAll('.carousel-dot') : [];
-  dots.forEach(function(dot, i) {
-    dot.classList.toggle('active', i === index);
-    dot.setAttribute('aria-selected', i === index ? 'true' : 'false');
+
+  dots.forEach(function(dot, dotIndex) {
+    dot.classList.toggle('active', dotIndex === index);
+    dot.setAttribute('aria-selected', dotIndex === index ? 'true' : 'false');
   });
 }
 
@@ -344,7 +510,9 @@ function startCarousel() {
   carouselInterval = setInterval(autoScroll, 4000);
 }
 
-if (carouselTrack) {
+function initCarousel() {
+  if (!carouselTrack) return;
+
   buildDots();
   startCarousel();
   carouselTrack.addEventListener('mouseenter', function() {
@@ -358,55 +526,64 @@ if (carouselTrack) {
     var scrollLeft = carouselTrack.scrollLeft;
     var closest = 0;
     var minDist = Infinity;
-    cards.forEach(function(card, i) {
-      var dist = Math.abs(card.offsetLeft - scrollLeft);
-      if (dist < minDist) {
-        minDist = dist;
-        closest = i;
+
+    cards.forEach(function(card, index) {
+      var distance = Math.abs(card.offsetLeft - scrollLeft);
+      if (distance < minDist) {
+        minDist = distance;
+        closest = index;
       }
     });
+
     updateDot(closest);
   });
 }
 
-// ===== ACCORDION (one open at a time) =====
-var faqItems = document.querySelectorAll('.faq-item');
-faqItems.forEach(function(item) {
-  var btn = item.querySelector('.faq-btn');
-  var answer = item.querySelector('.faq-answer');
-  if (!btn || !answer) return;
-  btn.addEventListener('click', function() {
-    var isOpen = item.classList.contains('open');
-    faqItems.forEach(function(i) {
-      i.classList.remove('open');
-      var currentButton = i.querySelector('.faq-btn');
-      var currentAnswer = i.querySelector('.faq-answer');
-      if (currentButton) currentButton.setAttribute('aria-expanded', 'false');
-      if (currentAnswer) currentAnswer.style.maxHeight = null;
+function initFaq() {
+  var faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(function(item) {
+    var button = item.querySelector('.faq-btn');
+    var answer = item.querySelector('.faq-answer');
+    if (!button || !answer) return;
+
+    button.addEventListener('click', function() {
+      var isOpen = item.classList.contains('open');
+
+      faqItems.forEach(function(currentItem) {
+        currentItem.classList.remove('open');
+        var currentButton = currentItem.querySelector('.faq-btn');
+        var currentAnswer = currentItem.querySelector('.faq-answer');
+        if (currentButton) currentButton.setAttribute('aria-expanded', 'false');
+        if (currentAnswer) currentAnswer.style.maxHeight = null;
+      });
+
+      if (!isOpen) {
+        item.classList.add('open');
+        button.setAttribute('aria-expanded', 'true');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
     });
-    if (!isOpen) {
-      item.classList.add('open');
-      btn.setAttribute('aria-expanded', 'true');
-      answer.style.maxHeight = answer.scrollHeight + 'px';
-    }
   });
-});
+}
 
-// ===== FADE IN ON SCROLL =====
-var fadeEls = document.querySelectorAll('.fade-in');
-var fadeObserver = new IntersectionObserver(function(entries) {
-  entries.forEach(function(entry) {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      fadeObserver.unobserve(entry.target);
-    }
+function initFadeIn() {
+  var fadeEls = document.querySelectorAll('.fade-in');
+  if (!fadeEls.length) return;
+
+  var fadeObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        fadeObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  fadeEls.forEach(function(element) {
+    fadeObserver.observe(element);
   });
-}, { threshold: 0.12 });
-fadeEls.forEach(function(el) {
-  fadeObserver.observe(el);
-});
+}
 
-// ===== HAMBURGUESA =====
 var hamburger = document.getElementById('navHamburger');
 var drawer = document.getElementById('navDrawer');
 var overlay = document.getElementById('navOverlay');
@@ -435,27 +612,58 @@ function closeDrawer() {
   document.body.classList.remove('menu-open');
 }
 
-if (hamburger) {
-  hamburger.addEventListener('click', function() {
-    drawer.classList.contains('open') ? closeDrawer() : openDrawer();
+function initDrawer() {
+  if (hamburger) {
+    hamburger.addEventListener('click', function() {
+      drawer.classList.contains('open') ? closeDrawer() : openDrawer();
+    });
+  }
+  if (overlay) overlay.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') closeDrawer();
   });
 }
-if (overlay) overlay.addEventListener('click', closeDrawer);
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeDrawer();
-});
-window.addEventListener('resize', syncQuizPanelHeight);
-if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(syncQuizPanelHeight);
+
+function initSite() {
+  bindQuizControls();
+  initProductCards();
+  initCheckoutLinks();
+  initSupportLinks();
+  initAnalyticsLinks();
+  initCarousel();
+  initFaq();
+  initFadeIn();
+  initDrawer();
+  syncQuizPanelHeight();
+
+  window.addEventListener('resize', syncQuizPanelHeight);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(syncQuizPanelHeight);
+  }
 }
 
-// ===== INIT =====
-bindQuizControls();
-initProductCards();
-syncQuizPanelHeight();
+window.RoastShop = {
+  SUPPORT_EMAIL: SUPPORT_EMAIL,
+  SUPPORT_WHATSAPP: SUPPORT_WHATSAPP,
+  SUPPORT_WHATSAPP_URL: SUPPORT_WHATSAPP_URL,
+  PRODUCT_NAME_MAP: PRODUCT_NAME_MAP,
+  PRODUCT_GRIND_LABEL_MAP: PRODUCT_GRIND_LABEL_MAP,
+  PRODUCT_PRICE_MAP: PRODUCT_PRICE_MAP,
+  buildCheckoutUrl: buildCheckoutUrl,
+  buildSupportWhatsAppUrl: buildSupportWhatsAppUrl,
+  buildSupportMessage: buildSupportMessage,
+  decodeDraftPayload: decodeDraftPayload,
+  encodeDraftPayload: encodeDraftPayload,
+  createItem: createItem,
+  formatCurrency: formatCurrency,
+  trackEvent: pushDataEvent
+};
+
+initSite();
 
 window.selectCups = selectCups;
 window.selectMethod = selectMethod;
 window.selectProductChoice = selectProductChoice;
 window.quizBack = quizBack;
 window.quizRestart = quizRestart;
+window.closeDrawer = closeDrawer;

@@ -1,0 +1,601 @@
+(function() {
+  if (!window.RoastShop) return;
+
+  var PRODUCT_OPTIONS = [
+    { value: 'downtime', label: 'Downtime' },
+    { value: 'hiperfoco', label: 'Hiperfoco' }
+  ];
+
+  var FORMAT_OPTIONS = [
+    { value: '250g', label: '250g' },
+    { value: '500g', label: '500g' },
+    { value: '1kg', label: '1kg' }
+  ];
+
+  var GRIND_OPTIONS = [
+    { value: 'espresso', label: 'Molido para espresso' },
+    { value: 'moka', label: 'Molido para moka' },
+    { value: 'prensa francesa', label: 'Molido para prensa francesa' },
+    { value: 'filtro / pour over', label: 'Molido para filtro / pour over' },
+    { value: 'chemex', label: 'Molido para chemex' },
+    { value: 'aeropress', label: 'Molido para aeropress' },
+    { value: 'grano entero', label: 'En grano entero' }
+  ];
+
+  var state = {
+    page: document.body.getAttribute('data-page') || '',
+    origin: '',
+    channel: '',
+    items: [],
+    order: null
+  };
+
+  function getQueryParams() {
+    return new URLSearchParams(window.location.search);
+  }
+
+  function normalizeIncomingGrind(value) {
+    var raw = String(value || '').trim().toLowerCase();
+    var map = {
+      'molido para espresso': 'espresso',
+      'molido fino para espresso': 'espresso',
+      'molido para moka': 'moka',
+      'molido grueso para prensa francesa': 'prensa francesa',
+      'molido para prensa francesa': 'prensa francesa',
+      'molido medio para filtro': 'filtro / pour over',
+      'molido para filtro / pour over': 'filtro / pour over',
+      'molido para filtro': 'filtro / pour over',
+      'molido para chemex': 'chemex',
+      'molido para aeropress': 'aeropress',
+      'en grano entero': 'grano entero'
+    };
+
+    return map[raw] || value || 'prensa francesa';
+  }
+
+  function getGrindLabel(value) {
+    var option = GRIND_OPTIONS.find(function(item) {
+      return item.value === value;
+    });
+
+    return option ? option.label : value;
+  }
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function setInlineError(fieldId, message) {
+    var field = document.getElementById(fieldId);
+    var error = document.querySelector('[data-error-for="' + fieldId + '"]');
+
+    if (field) field.setAttribute('aria-invalid', message ? 'true' : 'false');
+    if (error) error.textContent = message || '';
+  }
+
+  function clearInlineErrors() {
+    document.querySelectorAll('[data-error-for]').forEach(function(node) {
+      node.textContent = '';
+    });
+    document.querySelectorAll('.checkout-field input, .checkout-field textarea').forEach(function(field) {
+      field.setAttribute('aria-invalid', 'false');
+    });
+  }
+
+  function setGlobalStatus(message, tone) {
+    var box = document.getElementById('checkoutStatus');
+    if (!box) return;
+
+    box.textContent = message || '';
+    box.classList.remove('status-box-visible', 'status-box-error', 'status-box-success', 'status-box-info');
+
+    if (message) {
+      box.classList.add('status-box-visible');
+      box.classList.add('status-box-' + (tone || 'info'));
+    }
+  }
+
+  function setButtonLoading(button, loadingLabel, isLoading) {
+    if (!button) return;
+    if (!button.dataset.originalLabel) {
+      button.dataset.originalLabel = button.textContent;
+    }
+
+    button.disabled = Boolean(isLoading);
+    button.textContent = isLoading ? loadingLabel : button.dataset.originalLabel;
+  }
+
+  function getInitialItems() {
+    var params = getQueryParams();
+    var decodedDraft = window.RoastShop.decodeDraftPayload(params.get('draft'));
+    var items = decodedDraft && Array.isArray(decodedDraft.items) ? decodedDraft.items : [];
+
+    state.origin = params.get('origin') || (decodedDraft && decodedDraft.origin) || 'pedido_page';
+    state.channel = params.get('channel') || (decodedDraft && decodedDraft.channel) || 'site_checkout';
+
+    if (!items.length) {
+      return [window.RoastShop.createItem('downtime', '250g', 'prensa francesa', 1)];
+    }
+
+    return items.map(function(item) {
+      return {
+        product_code: item.product_code || item.product || 'downtime',
+        format_code: item.format_code || item.format || '250g',
+        grind: normalizeIncomingGrind(item.grind),
+        quantity: Number(item.quantity || 1)
+      };
+    });
+  }
+
+  function renderItemsEditor() {
+    var container = document.getElementById('checkoutItems');
+    if (!container) return;
+
+    container.innerHTML = state.items.map(function(item, index) {
+      return [
+        '<article class="checkout-item-card">',
+        '  <div class="checkout-item-grid">',
+        '    <label class="checkout-field">',
+        '      <span class="checkout-label">Producto</span>',
+        '      <select data-item-field="product_code" data-item-index="' + index + '">',
+        PRODUCT_OPTIONS.map(function(option) {
+          return '        <option value="' + option.value + '"' + (option.value === item.product_code ? ' selected' : '') + '>' + option.label + '</option>';
+        }).join(''),
+        '      </select>',
+        '    </label>',
+        '    <label class="checkout-field">',
+        '      <span class="checkout-label">Formato</span>',
+        '      <select data-item-field="format_code" data-item-index="' + index + '">',
+        FORMAT_OPTIONS.map(function(option) {
+          return '        <option value="' + option.value + '"' + (option.value === item.format_code ? ' selected' : '') + '>' + option.label + '</option>';
+        }).join(''),
+        '      </select>',
+        '    </label>',
+        '    <label class="checkout-field">',
+        '      <span class="checkout-label">Molienda</span>',
+        '      <select data-item-field="grind" data-item-index="' + index + '">',
+        GRIND_OPTIONS.map(function(option) {
+          return '        <option value="' + option.value + '"' + (option.value === item.grind ? ' selected' : '') + '>' + option.label + '</option>';
+        }).join(''),
+        '      </select>',
+        '    </label>',
+        '    <label class="checkout-field">',
+        '      <span class="checkout-label">Cantidad</span>',
+        '      <input type="number" min="1" step="1" value="' + Number(item.quantity || 1) + '" data-item-field="quantity" data-item-index="' + index + '" />',
+        '    </label>',
+        '  </div>',
+        state.items.length > 1 ? '  <button type="button" class="checkout-remove-item" data-remove-item="' + index + '">Eliminar item</button>' : '',
+        '</article>'
+      ].join('\n');
+    }).join('');
+
+    container.querySelectorAll('[data-item-field]').forEach(function(input) {
+      input.addEventListener('change', function() {
+        var field = input.getAttribute('data-item-field');
+        var index = Number(input.getAttribute('data-item-index'));
+        state.items[index][field] = field === 'quantity' ? Math.max(Number(input.value || 1), 1) : input.value;
+        renderLiveSummary();
+      });
+    });
+
+    container.querySelectorAll('[data-remove-item]').forEach(function(button) {
+      button.addEventListener('click', function() {
+        var index = Number(button.getAttribute('data-remove-item'));
+        state.items.splice(index, 1);
+        renderItemsEditor();
+        renderLiveSummary();
+      });
+    });
+  }
+
+  function renderLiveSummary() {
+    var container = document.getElementById('checkoutSummaryItems');
+    if (!container) return;
+
+    container.innerHTML = state.items.map(function(item) {
+      var productLabel = window.RoastShop.PRODUCT_NAME_MAP[item.product_code] || item.product_code;
+      return '<li>' + escapeHtml(productLabel + ' · ' + item.format_code + ' · ' + getGrindLabel(item.grind)) + '</li>';
+    }).join('');
+  }
+
+  function collectCustomerData() {
+    return {
+      customer_name: document.getElementById('customer_name').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      commune: document.getElementById('commune').value.trim(),
+      address: document.getElementById('address').value.trim(),
+      address_ref: document.getElementById('address_ref').value.trim(),
+      notes: document.getElementById('notes').value.trim()
+    };
+  }
+
+  function validateItems() {
+    return state.items.every(function(item) {
+      return item.product_code && item.format_code && item.grind && Number(item.quantity || 0) > 0;
+    });
+  }
+
+  function validateCustomerData() {
+    clearInlineErrors();
+    var data = collectCustomerData();
+    var valid = true;
+
+    if (!data.customer_name) {
+      setInlineError('customer_name', 'Ingresa tu nombre.');
+      valid = false;
+    }
+    if (!data.email) {
+      setInlineError('email', 'Ingresa un email válido.');
+      valid = false;
+    }
+    if (!data.phone) {
+      setInlineError('phone', 'Ingresa un teléfono.');
+      valid = false;
+    }
+    if (!data.commune) {
+      setInlineError('commune', 'Ingresa tu comuna.');
+      valid = false;
+    }
+    if (!data.address) {
+      setInlineError('address', 'Ingresa tu dirección.');
+      valid = false;
+    }
+
+    return valid ? data : null;
+  }
+
+  function setStep(stepNumber) {
+    document.querySelectorAll('[data-checkout-step]').forEach(function(step) {
+      step.classList.toggle('checkout-step-active', step.getAttribute('data-checkout-step') === String(stepNumber));
+    });
+    document.querySelectorAll('[data-step-indicator]').forEach(function(step) {
+      step.classList.toggle('checkout-step-indicator-active', step.getAttribute('data-step-indicator') === String(stepNumber));
+    });
+    var stepCounter = document.getElementById('checkoutStepLabel');
+    if (stepCounter) stepCounter.textContent = 'Paso ' + stepNumber + ' de 3';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function bindFieldValidation() {
+    ['customer_name', 'email', 'phone', 'commune', 'address'].forEach(function(fieldId) {
+      var field = document.getElementById(fieldId);
+      if (!field) return;
+
+      field.addEventListener('blur', function() {
+        validateCustomerData();
+      });
+    });
+  }
+
+  function updateSupportLinks(orderId) {
+    var message = window.RoastShop.buildSupportMessage('mi pedido web', orderId);
+    document.querySelectorAll('[data-checkout-support-link]').forEach(function(link) {
+      link.href = window.RoastShop.buildSupportWhatsAppUrl(message);
+    });
+    document.querySelectorAll('[data-support-email-link]').forEach(function(link) {
+      link.href = 'mailto:' + window.RoastShop.SUPPORT_EMAIL;
+      link.textContent = window.RoastShop.SUPPORT_EMAIL;
+    });
+  }
+
+  async function createDraft() {
+    var customerData = validateCustomerData();
+    var nextButton = document.getElementById('checkoutStep2Next');
+
+    if (!customerData) return;
+
+    setGlobalStatus('', 'info');
+    setButtonLoading(nextButton, 'Calculando total...', true);
+
+    try {
+      var response = await fetch('/api/order-drafts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          origin: state.origin,
+          channel: state.channel,
+          items: state.items,
+          customer_name: customerData.customer_name,
+          email: customerData.email,
+          phone: customerData.phone,
+          commune: customerData.commune,
+          address: customerData.address,
+          address_ref: customerData.address_ref,
+          notes: customerData.notes
+        })
+      });
+      var payload = await response.json();
+
+      if (!response.ok || !payload.ok) {
+        throw new Error(payload.error || 'No se pudo crear el borrador del pedido.');
+      }
+
+      state.order = payload;
+      updateSupportLinks(payload.order_id);
+      renderReview();
+      window.RoastShop.trackEvent('order_draft_created', {
+        origin: state.origin,
+        channel: state.channel,
+        order_id: payload.order_id,
+        total_clp: payload.total_clp
+      });
+      setStep(3);
+    } catch (error) {
+      setGlobalStatus(error.message || 'No pudimos calcular tu pedido.', 'error');
+      window.RoastShop.trackEvent('order_draft_failed', {
+        origin: state.origin,
+        channel: state.channel
+      });
+    } finally {
+      setButtonLoading(nextButton, 'Continuar a revisión', false);
+    }
+  }
+
+  function renderReview() {
+    if (!state.order) return;
+
+    var subtotal = document.getElementById('reviewSubtotal');
+    var shipping = document.getElementById('reviewShipping');
+    var total = document.getElementById('reviewTotal');
+    var itemsLabel = document.getElementById('reviewItemsLabel');
+    var orderIdNode = document.getElementById('reviewOrderId');
+    var payButton = document.getElementById('checkoutPayButton');
+    var manualReviewBox = document.getElementById('manualReviewBox');
+
+    if (subtotal) subtotal.textContent = window.RoastShop.formatCurrency(state.order.subtotal_clp);
+    if (shipping) shipping.textContent = state.order.shipping_clp === 0 ? 'Gratis / por confirmar' : window.RoastShop.formatCurrency(state.order.shipping_clp);
+    if (total) total.textContent = window.RoastShop.formatCurrency(state.order.total_clp);
+    if (itemsLabel) itemsLabel.textContent = state.order.items_label || 'Pedido web Roast';
+    if (orderIdNode) orderIdNode.textContent = state.order.order_id;
+
+    if (state.order.internal_status === 'manual_review') {
+      if (manualReviewBox) manualReviewBox.hidden = false;
+      if (payButton) payButton.disabled = true;
+      setGlobalStatus('Tu comuna quedó en revisión manual. Escríbenos y cerramos despacho + pago contigo.', 'info');
+    } else {
+      if (manualReviewBox) manualReviewBox.hidden = true;
+      if (payButton) payButton.disabled = false;
+      setGlobalStatus('', 'info');
+    }
+  }
+
+  async function createPaymentLink() {
+    var payButton = document.getElementById('checkoutPayButton');
+    var acceptedTotal = document.getElementById('accept_total');
+    var acceptedTerms = document.getElementById('accept_terms');
+
+    if (!state.order || !state.order.order_id) {
+      setGlobalStatus('Primero necesitamos calcular tu pedido.', 'error');
+      return;
+    }
+
+    if (state.order.internal_status === 'manual_review') {
+      setGlobalStatus('Este pedido necesita revisión manual antes de generar el link de pago.', 'info');
+      return;
+    }
+
+    if (!acceptedTotal.checked || !acceptedTerms.checked) {
+      setGlobalStatus('Necesitas aceptar el total y los términos antes de generar el link.', 'error');
+      return;
+    }
+
+    setButtonLoading(payButton, 'Generando link...', true);
+
+    try {
+      var response = await fetch('/api/payment-links', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          order_id: state.order.order_id,
+          accept_total: true,
+          accept_terms: true
+        })
+      });
+      var payload = await response.json();
+
+      if (!response.ok || !payload.ok) {
+        throw new Error(payload.error || 'No se pudo generar el link de Flow.');
+      }
+
+      window.RoastShop.trackEvent('payment_link_created', {
+        order_id: state.order.order_id,
+        total_clp: state.order.total_clp
+      });
+      window.RoastShop.trackEvent('payment_redirected', {
+        order_id: state.order.order_id
+      });
+      window.location.href = payload.checkout_url;
+    } catch (error) {
+      setGlobalStatus(error.message || 'No pudimos generar el link de pago.', 'error');
+    } finally {
+      setButtonLoading(payButton, 'Generar link de pago', false);
+    }
+  }
+
+  function bindCheckoutFlow() {
+    var addItemButton = document.getElementById('addCheckoutItem');
+    var step1Next = document.getElementById('checkoutStep1Next');
+    var step2Back = document.getElementById('checkoutStep2Back');
+    var step2Next = document.getElementById('checkoutStep2Next');
+    var step3Back = document.getElementById('checkoutStep3Back');
+    var payButton = document.getElementById('checkoutPayButton');
+
+    state.items = getInitialItems();
+    renderItemsEditor();
+    renderLiveSummary();
+    updateSupportLinks();
+    bindFieldValidation();
+
+    if (addItemButton) {
+      addItemButton.addEventListener('click', function() {
+        state.items.push(window.RoastShop.createItem('downtime', '250g', 'prensa francesa', 1));
+        renderItemsEditor();
+        renderLiveSummary();
+      });
+    }
+
+    if (step1Next) {
+      step1Next.addEventListener('click', function() {
+        if (!validateItems()) {
+          setGlobalStatus('Completa producto, formato, molienda y cantidad antes de continuar.', 'error');
+          return;
+        }
+        setGlobalStatus('', 'info');
+        setStep(2);
+      });
+    }
+
+    if (step2Back) {
+      step2Back.addEventListener('click', function() {
+        setStep(1);
+      });
+    }
+
+    if (step2Next) {
+      step2Next.addEventListener('click', createDraft);
+    }
+
+    if (step3Back) {
+      step3Back.addEventListener('click', function() {
+        setStep(2);
+      });
+    }
+
+    if (payButton) {
+      payButton.addEventListener('click', createPaymentLink);
+    }
+  }
+
+  function getStatusConfig(status) {
+    var normalized = String(status || '').toLowerCase();
+    var map = {
+      paid: {
+        title: 'Pago recibido',
+        copy: 'Tu pago quedó confirmado y el pedido ya está registrado en Roast.',
+        tone: 'success'
+      },
+      pending_payment: {
+        title: 'Pago pendiente',
+        copy: 'Flow todavía no confirma el pago. Si pagaste con un medio asíncrono, espera unos minutos y vuelve a revisar.',
+        tone: 'info'
+      },
+      link_sent: {
+        title: 'Link generado',
+        copy: 'Tu link de pago sigue activo. Puedes retomarlo cuando quieras.',
+        tone: 'info'
+      },
+      payment_failed: {
+        title: 'Pago no completado',
+        copy: 'Flow informó un intento fallido. Puedes volver a abrir el link o escribirnos para cerrar el pedido contigo.',
+        tone: 'error'
+      },
+      canceled: {
+        title: 'Pago cancelado',
+        copy: 'El pago fue cancelado. Si quieres retomarlo, abre nuevamente el link o escríbenos.',
+        tone: 'error'
+      },
+      expired: {
+        title: 'Link expirado',
+        copy: 'El link de pago venció. Si todavía quieres el pedido, escríbenos y lo reactivamos.',
+        tone: 'error'
+      },
+      manual_review: {
+        title: 'Pedido en revisión manual',
+        copy: 'Tu comuna necesita confirmación manual antes de cerrar despacho y pago.',
+        tone: 'info'
+      }
+    };
+
+    return map[normalized] || {
+      title: 'Estado del pedido',
+      copy: 'Estamos revisando tu pedido. Si tienes dudas, escríbenos y lo vemos contigo.',
+      tone: 'info'
+    };
+  }
+
+  async function loadPaymentResult() {
+    var params = getQueryParams();
+    var orderId = params.get('order_id');
+    var title = document.getElementById('paymentResultTitle');
+    var copy = document.getElementById('paymentResultCopy');
+    var orderNode = document.getElementById('paymentResultOrder');
+    var total = document.getElementById('paymentResultTotal');
+    var items = document.getElementById('paymentResultItems');
+    var resumeLink = document.getElementById('paymentResumeLink');
+    var statusPill = document.getElementById('paymentResultPill');
+
+    if (!orderId) {
+      if (title) title.textContent = 'No encontramos el pedido';
+      if (copy) copy.textContent = 'Llegaste aquí sin un order_id válido. Escríbenos y lo revisamos contigo.';
+      return;
+    }
+
+    updateSupportLinks(orderId);
+
+    try {
+      var response = await fetch('/api/orders/' + encodeURIComponent(orderId));
+      var payload = await response.json();
+
+      if (!response.ok || !payload.ok) {
+        throw new Error(payload.error || 'No pudimos cargar el estado del pedido.');
+      }
+
+      var config = getStatusConfig(payload.internal_status);
+
+      if (title) title.textContent = config.title;
+      if (copy) copy.textContent = config.copy;
+      if (orderNode) orderNode.textContent = payload.order_id;
+      if (total) total.textContent = window.RoastShop.formatCurrency(payload.total_clp);
+      if (items) items.textContent = payload.items_label;
+      if (statusPill) {
+        statusPill.textContent = payload.internal_status;
+        statusPill.className = 'result-pill result-pill-' + config.tone;
+      }
+
+      if (resumeLink && payload.flow_checkout_url && ['pending_payment', 'link_sent'].includes(payload.internal_status)) {
+        resumeLink.href = payload.flow_checkout_url;
+        resumeLink.hidden = false;
+      }
+
+      if (payload.internal_status === 'paid') {
+        window.RoastShop.trackEvent('payment_confirmed', {
+          order_id: payload.order_id
+        });
+      } else if (payload.internal_status === 'pending_payment' || payload.internal_status === 'link_sent') {
+        window.RoastShop.trackEvent('payment_pending', {
+          order_id: payload.order_id
+        });
+      } else if (payload.internal_status === 'payment_failed' || payload.internal_status === 'canceled' || payload.internal_status === 'expired') {
+        window.RoastShop.trackEvent('payment_failed', {
+          order_id: payload.order_id,
+          status: payload.internal_status
+        });
+      }
+    } catch (error) {
+      if (title) title.textContent = 'No pudimos cargar el resultado';
+      if (copy) copy.textContent = error.message || 'Intenta nuevamente o escríbenos por soporte.';
+    }
+  }
+
+  function init() {
+    if (state.page === 'checkout') {
+      bindCheckoutFlow();
+    }
+
+    if (state.page === 'payment-result') {
+      loadPaymentResult();
+    }
+  }
+
+  init();
+}());
