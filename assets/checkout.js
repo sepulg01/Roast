@@ -29,9 +29,62 @@
     items: [],
     order: null
   };
+  var apiBase = normalizeApiBase(document.body.getAttribute('data-api-base') || window.ROAST_API_BASE || '');
 
   function getQueryParams() {
     return new URLSearchParams(window.location.search);
+  }
+
+  function normalizeApiBase(value) {
+    return String(value || '').trim().replace(/\/+$/, '');
+  }
+
+  function buildApiUrl(path) {
+    var normalizedPath = String(path || '');
+
+    if (normalizedPath.charAt(0) !== '/') {
+      normalizedPath = '/' + normalizedPath;
+    }
+
+    return apiBase ? apiBase + normalizedPath : normalizedPath;
+  }
+
+  function buildBackendRouteMessage() {
+    var target = apiBase ? apiBase + '/api' : '/api';
+    return 'El backend del checkout no está respondiendo en ' + target + '. El dominio está devolviendo HTML del hosting estático o falta configurar data-api-base hacia el Worker.';
+  }
+
+  async function fetchJsonOrThrow(path, options, fallbackMessage) {
+    var response = await fetch(buildApiUrl(path), options);
+    var contentType = String(response.headers.get('content-type') || '').toLowerCase();
+    var raw = await response.text();
+    var payload = {};
+
+    if (!raw) {
+      if (!response.ok) {
+        throw new Error(fallbackMessage || 'La API del checkout no respondió como esperábamos.');
+      }
+      return payload;
+    }
+
+    if (contentType.indexOf('text/html') !== -1 || /^\s*</.test(raw)) {
+      throw new Error(buildBackendRouteMessage());
+    }
+
+    try {
+      payload = JSON.parse(raw);
+    } catch (error) {
+      if (contentType.indexOf('application/json') !== -1) {
+        throw new Error('La API del checkout respondió con JSON inválido.');
+      }
+      throw new Error('La API del checkout respondió en un formato inesperado.');
+    }
+
+    if (!response.ok || payload.ok === false) {
+      throw new Error(payload.error || fallbackMessage || 'La API del checkout devolvió un error.');
+    }
+
+    return payload;
   }
 
   function normalizeIncomingGrind(value) {
@@ -294,9 +347,10 @@
     setButtonLoading(nextButton, 'Calculando total...', true);
 
     try {
-      var response = await fetch('/api/order-drafts', {
+      var payload = await fetchJsonOrThrow('/api/order-drafts', {
         method: 'POST',
         headers: {
+          'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -311,12 +365,7 @@
           address_ref: customerData.address_ref,
           notes: customerData.notes
         })
-      });
-      var payload = await response.json();
-
-      if (!response.ok || !payload.ok) {
-        throw new Error(payload.error || 'No se pudo crear el borrador del pedido.');
-      }
+      }, 'No se pudo crear el borrador del pedido.');
 
       state.order = payload;
       updateSupportLinks(payload.order_id);
@@ -390,9 +439,10 @@
     setButtonLoading(payButton, 'Generando link...', true);
 
     try {
-      var response = await fetch('/api/payment-links', {
+      var payload = await fetchJsonOrThrow('/api/payment-links', {
         method: 'POST',
         headers: {
+          'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -400,12 +450,7 @@
           accept_total: true,
           accept_terms: true
         })
-      });
-      var payload = await response.json();
-
-      if (!response.ok || !payload.ok) {
-        throw new Error(payload.error || 'No se pudo generar el link de Flow.');
-      }
+      }, 'No se pudo generar el link de Flow.');
 
       window.RoastShop.trackEvent('payment_link_created', {
         order_id: state.order.order_id,
@@ -543,12 +588,11 @@
     updateSupportLinks(orderId);
 
     try {
-      var response = await fetch('/api/orders/' + encodeURIComponent(orderId));
-      var payload = await response.json();
-
-      if (!response.ok || !payload.ok) {
-        throw new Error(payload.error || 'No pudimos cargar el estado del pedido.');
-      }
+      var payload = await fetchJsonOrThrow('/api/orders/' + encodeURIComponent(orderId), {
+        headers: {
+          'Accept': 'application/json'
+        }
+      }, 'No pudimos cargar el estado del pedido.');
 
       var config = getStatusConfig(payload.internal_status);
 

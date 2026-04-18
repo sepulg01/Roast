@@ -153,9 +153,9 @@
   <a href="/cafe-a-domicilio/" onclick="closeDrawer()">Café a domicilio</a>
   <div class="drawer-section">Home</div>
   <a href="#hero" onclick="closeDrawer()">Inicio</a>
-  <a href="#seo-hub" onclick="closeDrawer()">Artículos</a>
-  <a href="#quiz" onclick="closeDrawer()">Quiz</a>
   <a href="#products" onclick="closeDrawer()">Productos y precios</a>
+  <a href="#quiz" onclick="closeDrawer()">Quiz</a>
+  <a href="#seo-hub" onclick="closeDrawer()">Artículos</a>
   <a href="#faq" onclick="closeDrawer()">Preguntas frecuentes</a>
   <a href="#final-cta" onclick="closeDrawer()">Pedido web</a>
 </nav>
@@ -166,7 +166,7 @@
     <div class="hero-content">
       <span class="hero-eyebrow">Tu primer café real.</span>
       <h1 class="hero-headline">Tu desayuno merece más que agua tibia con colorante.</h1>
-      <p class="hero-sub">Roast es el paso para dejar el café instantáneo: eliges formato, defines molienda o grano entero, confirmas el total en la web y pagas con Flow sin transformar esto en un checkout eterno.</p>
+      <p class="hero-sub">Café Roast es el paso para dejar el café instantáneo: solo tienes que elegir cuál de nuestros tuestes te acomoda más y contarnos cómo lo quieres tomar. Luego nosotros te enviamos a casa tu café en grano, o recién molido.</p>
       <div class="hero-ctas">
         <a href="/pedido/"
            class="btn btn-primary"
@@ -187,7 +187,6 @@
           WhatsApp de soporte
         </a>
       </div>
-      <p class="hero-contact-note">Si prefieres escribirnos antes de pagar, soporte por <a href="mailto:contacto@caferoast.cl">contacto@caferoast.cl</a> o WhatsApp.</p>
       <ul class="hero-proof" aria-label="Resumen de beneficios">
         <li>Molienda según tu cafetera</li>
         <li>Despacho en Santiago</li>
@@ -205,12 +204,12 @@
         <div class="card pain-card fade-in" aria-label="Problema: Sabor plano">
           <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/><path d="M9 14s0-2 2-2 2 2 2 2" stroke-linecap="round"/><path d="M8 11h.01M16 11h.01" stroke-linecap="round"/></svg>
           <h3>Sabe a poco</h3>
-          <p>El café instantáneo te deja una taza plana. Roast parte de grano real, no de un polvo resignado a existir.</p>
+          <p>El café instantáneo solo te da un caldo fome, plano. Con Café Roast te olvidas de ese polvo de dudosa procedencia. Grano recién molido, tostado fresco.</p>
         </div>
         <div class="card pain-card fade-in" aria-label="Problema: No despierta">
           <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <h3>No te mueve la aguja</h3>
-          <p>Tres tazas y sigues bostezando. Acá el café sí se siente, sin necesidad de volverlo un hobby técnico.</p>
+          <p>Tres tazas y sigues bostezando. Acá el café sí se siente, sin necesidad de arriesgarte a la acidez.</p>
         </div>
         <div class="card pain-card fade-in" aria-label="Solución: Café simple">
           <svg class="pain-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -221,79 +220,29 @@
     </div>
   </section>
 
-  <section id="quiz" aria-labelledby="quiz-heading">
-    <div class="container">
-      <div class="section-header fade-in">
-        <h2 id="quiz-heading">¿No sabes cuál pedir? Haz el quiz.</h2>
-      </div>
-      <div class="quiz-wrap fade-in">
-        <div class="quiz-panel">
-          <div class="quiz-progress" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del quiz">
-            <div class="quiz-progress-fill" id="quizProgressFill" style="width: 25%"></div>
-          </div>
-          <div class="quiz-step-stack" id="quizStepStack">
-            <div class="quiz-step active" id="quizStep1" role="group" aria-labelledby="quizQ1">
-              <p class="quiz-question" id="quizQ1">¿Cuántas tazas de café tomas al día?</p>
-              <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ1">
-                <button type="button" class="quiz-option" aria-pressed="false" data-cups="1_taza">1 taza</button>
-                <button type="button" class="quiz-option" aria-pressed="false" data-cups="2_tazas">2 tazas</button>
-                <button type="button" class="quiz-option" aria-pressed="false" data-cups="3_o_mas">3 o más</button>
-              </div>
-            </div>
-            <div class="quiz-step" id="quizStep2" role="group" aria-labelledby="quizQ2">
-              <p class="quiz-question" id="quizQ2">¿Cómo preparas tu café?</p>
-              <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ2">
-                <button type="button" class="quiz-option" aria-pressed="false" data-method="moka">Cafetera italiana (moka)</button>
-                <button type="button" class="quiz-option" aria-pressed="false" data-method="prensa_francesa">Prensa francesa</button>
-                <button type="button" class="quiz-option" aria-pressed="false" data-method="filtro">Cafetera de filtro</button>
-                <button type="button" class="quiz-option" aria-pressed="false" data-method="espresso">Máquina de espresso</button>
-                <button type="button" class="quiz-option" aria-pressed="false" data-method="hervidor">Solo tengo hervidor</button>
-                <button type="button" class="quiz-option" aria-pressed="false" data-method="no_se">Aún no sé, sorpréndeme</button>
-              </div>
-              <div class="quiz-nav">
-                <button type="button" class="quiz-back" data-quiz-back="1" aria-label="Volver a la pregunta anterior">← Volver</button>
-              </div>
-            </div>
-            <div class="quiz-step" id="quizStep3" role="group" aria-labelledby="quizQ3">
-              <p class="quiz-question" id="quizQ3">¿Qué necesitas de esta taza hoy?</p>
-              <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ3">
-                <button type="button" class="quiz-option" aria-pressed="false" data-product-choice="downtime">Bajar un cambio</button>
-                <button type="button" class="quiz-option" aria-pressed="false" data-product-choice="hiperfoco">Entrar en foco</button>
-                <button type="button" class="quiz-option" aria-pressed="false" data-product-choice="ambos_250">Quiero probar ambos</button>
-              </div>
-              <div class="quiz-nav">
-                <button type="button" class="quiz-back" data-quiz-back="2" aria-label="Volver a la pregunta anterior">← Volver</button>
-              </div>
-            </div>
-            <div class="quiz-step" id="quizStep4" aria-live="polite">
-              <div class="quiz-result-card">
-                <p class="quiz-result-tag">Tu recomendación</p>
-                <p class="quiz-result-rec" id="quizResultRec">—</p>
-                <p class="quiz-result-price" id="quizResultPrice">—</p>
-                <a id="quizResultCta"
-                   href="/pedido/"
-                   class="btn btn-primary btn-full"
-                   aria-label="Continuar al pedido web según recomendación"
-                   data-checkout-link
-                   data-analytics-label="quiz_result_primary">
-                  Continuar con este pedido
-                </a>
-                <p class="quiz-result-support">Si quieres confirmarlo antes, <a id="quizResultSupport" href="https://wa.me/56951172813?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." data-support-whatsapp-link data-support-context="la recomendación del quiz" data-analytics-label="quiz_support">habla con soporte por WhatsApp</a>.</p>
-                <button type="button" class="quiz-restart" id="quizRestartBtn" aria-label="Reiniciar el quiz">Volver a empezar</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section id="products" aria-labelledby="products-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="products-heading">Dos tuestes para dos estados muy distintos del día.</h2>
       </div>
-      <p class="section-sub fade-in">Dos cafés, dos ritmos. Tú eliges tueste, formato y molienda; el pedido web prellena el contexto, recalcula el total y te deja pagar por Flow cuando todo está claro.</p>
+      <p class="section-sub fade-in">Solo tienes que elegir cuál te acompaña mejor. Nosotros te lo mandamos en grano o recién molido, listo para entrar a la rutina.</p>
+      <div class="products-stage fade-in">
+        <div class="products-stage-media">
+          <div class="products-video-frame">
+            <video class="products-stage-video" src="/assets/products/Downtime-bagvideo.mp4" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
+          </div>
+        </div>
+        <div class="products-stage-copy">
+          <p class="products-stage-kicker">Tostado fresco / despacho rápido</p>
+          <h3>Así se ve el café que te llega a la puerta, no el que se resigna meses en una repisa.</h3>
+          <p>Downtime sale con tu molienda definida al momento del despacho. Hiperfoco entra con más intensidad y una visual propia que por fin se luce como corresponde.</p>
+          <ul class="products-stage-points" aria-label="Beneficios del pedido de Roast">
+            <li>Llega rápido a Santiago</li>
+            <li>Molienda hecha justo antes del envío</li>
+            <li>Dos perfiles claros para elegir sin chamullo</li>
+          </ul>
+        </div>
+      </div>
       <div class="products-grid">
         <article class="card product-card fade-in" aria-label="Downtime" data-product-card data-product-id="downtime">
           <div class="product-overview">
@@ -369,11 +318,11 @@
         </article>
         <article class="card product-card card-featured fade-in" aria-label="Hiperfoco" data-product-card data-product-id="hiperfoco">
           <div class="product-badge-wrap">
-            <span class="badge" aria-label="Más intenso">FOCO DIRECTO</span>
+            <span class="badge" aria-label="Más vendido">Más vendido</span>
           </div>
           <div class="product-overview">
             <div class="product-media">
-              <img src="/assets/products/modo-avion.svg" alt="Ilustración de Hiperfoco con energía contenida, foco directo y acento naranja" class="product-img" loading="lazy" width="900" height="675" />
+              <img src="/assets/products/Hiperfoco%20%289%20x%2012%20cm%29.svg" alt="Bolsa de Hiperfoco con perfil intenso y acentos naranjos" class="product-img" loading="lazy" width="1080" height="1440" />
             </div>
             <div class="product-summary">
               <p class="product-kicker">Intensidad / foco</p>
@@ -447,6 +396,73 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         Envío gratis en Santiago en compras mayores a $36.000 CLP
       </p>
+    </div>
+  </section>
+
+  <section id="quiz" aria-labelledby="quiz-heading">
+    <div class="container">
+      <div class="section-header fade-in">
+        <h2 id="quiz-heading">¿No sabes cuál pedir? Haz el quiz.</h2>
+      </div>
+      <div class="quiz-wrap fade-in">
+        <div class="quiz-panel">
+          <div class="quiz-progress" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" aria-label="Progreso del quiz">
+            <div class="quiz-progress-fill" id="quizProgressFill" style="width: 25%"></div>
+          </div>
+          <div class="quiz-step-stack" id="quizStepStack">
+            <div class="quiz-step active" id="quizStep1" role="group" aria-labelledby="quizQ1">
+              <p class="quiz-question" id="quizQ1">¿Cuántas tazas de café tomas al día?</p>
+              <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ1">
+                <button type="button" class="quiz-option" aria-pressed="false" data-cups="1_taza">1 taza</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-cups="2_tazas">2 tazas</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-cups="3_o_mas">3 o más</button>
+              </div>
+            </div>
+            <div class="quiz-step" id="quizStep2" role="group" aria-labelledby="quizQ2">
+              <p class="quiz-question" id="quizQ2">¿Cómo preparas tu café?</p>
+              <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ2">
+                <button type="button" class="quiz-option" aria-pressed="false" data-method="moka">Cafetera italiana (moka)</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-method="prensa_francesa">Prensa francesa</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-method="filtro">Cafetera de filtro</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-method="espresso">Máquina de espresso</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-method="hervidor">Solo tengo hervidor</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-method="no_se">Aún no sé, sorpréndeme</button>
+              </div>
+              <div class="quiz-nav">
+                <button type="button" class="quiz-back" data-quiz-back="1" aria-label="Volver a la pregunta anterior">← Volver</button>
+              </div>
+            </div>
+            <div class="quiz-step" id="quizStep3" role="group" aria-labelledby="quizQ3">
+              <p class="quiz-question" id="quizQ3">¿Qué necesitas de esta taza hoy?</p>
+              <div class="quiz-options" role="radiogroup" aria-labelledby="quizQ3">
+                <button type="button" class="quiz-option" aria-pressed="false" data-product-choice="downtime">Bajar un cambio</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-product-choice="hiperfoco">Entrar en foco</button>
+                <button type="button" class="quiz-option" aria-pressed="false" data-product-choice="ambos_250">Quiero probar ambos</button>
+              </div>
+              <div class="quiz-nav">
+                <button type="button" class="quiz-back" data-quiz-back="2" aria-label="Volver a la pregunta anterior">← Volver</button>
+              </div>
+            </div>
+            <div class="quiz-step" id="quizStep4" aria-live="polite">
+              <div class="quiz-result-card">
+                <p class="quiz-result-tag">Tu recomendación</p>
+                <p class="quiz-result-rec" id="quizResultRec">—</p>
+                <p class="quiz-result-price" id="quizResultPrice">—</p>
+                <a id="quizResultCta"
+                   href="/pedido/"
+                   class="btn btn-primary btn-full"
+                   aria-label="Continuar al pedido web según recomendación"
+                   data-checkout-link
+                   data-analytics-label="quiz_result_primary">
+                  Continuar con este pedido
+                </a>
+                <p class="quiz-result-support">Si quieres confirmarlo antes, <a id="quizResultSupport" href="https://wa.me/56951172813?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." data-support-whatsapp-link data-support-context="la recomendación del quiz" data-analytics-label="quiz_support">habla con soporte por WhatsApp</a>.</p>
+                <button type="button" class="quiz-restart" id="quizRestartBtn" aria-label="Reiniciar el quiz">Volver a empezar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -667,7 +683,7 @@
 
   <section id="final-cta" aria-labelledby="final-heading">
     <h2 id="final-heading">Arma tu pedido web y paga con Flow.</h2>
-    <p class="final-sub">Despacho rápido en Santiago. Molienda según tu cafetera. WhatsApp y correo visibles si necesitas destrabar algo.</p>
+    <p class="final-sub">Llegamos rápido a todo Santiago. Molienda hecha en el instante de tu despacho. Estamos 24/7 en WhatsApp y correo si necesitas destrabar algo.</p>
     <div class="final-cta-actions">
       <a href="/pedido/"
          class="btn btn-final"
@@ -696,7 +712,7 @@
       <span class="footer-logo-wordmark">Roast<span>.</span></span>
     </div>
     <div class="footer-meta">
-      <p class="footer-tagline">Café molido a pedido, en grano y a domicilio en Santiago.</p>
+      <p class="footer-tagline">Café en grano o molido, a pedido a domicilio en Santiago.</p>
       <p class="footer-site">caferoast.cl · Santiago, Chile</p>
     </div>
     <div class="footer-explore">

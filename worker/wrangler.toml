@@ -1,6 +1,10 @@
 name = "roast-checkout-worker"
 main = "src/index.js"
 compatibility_date = "2026-04-17"
+routes = [
+  { pattern = "caferoast.cl/api/*", zone_name = "caferoast.cl" },
+  { pattern = "caferoast.cl/pago/retorno", zone_name = "caferoast.cl" },
+]
 
 [observability.logs]
 enabled = true
