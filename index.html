@@ -228,10 +228,7 @@
       <p class="section-sub fade-in">Solo tienes que elegir cuál te acompaña mejor. Nosotros te lo mandamos en grano o recién molido, listo para entrar a la rutina.</p>
       <div class="products-grid">
         <article class="card product-card fade-in" aria-label="Downtime" data-product-card data-product-id="downtime">
-          <div class="product-overview">
-            <div class="product-media">
-              <video class="product-media-video" src="/assets/products/Downtime-bagvideo.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Video del pack de Downtime"></video>
-            </div>
+          <div class="product-card-content">
             <div class="product-summary">
               <p class="product-kicker">Balance / versatilidad</p>
               <p class="product-title">Downtime</p>
@@ -243,73 +240,68 @@
                 <li>Frutos secos</li>
               </ul>
             </div>
-          </div>
-          <div class="product-meta" aria-label="Datos clave de Downtime">
-            <div class="product-meta-item">
-              <span class="product-meta-label">Tueste</span>
-              <span class="product-meta-value">Medio</span>
+            <div class="product-config-stack" aria-label="Configuración de Downtime">
+              <div class="product-config-item product-meta-item">
+                <span class="product-meta-label">Tueste</span>
+                <span class="product-meta-value">Medio</span>
+              </div>
+              <label class="product-config-item product-select-group">
+                <span class="product-select-label">Formato</span>
+                <select id="downtime-format" data-product-format aria-label="Selecciona formato para Downtime">
+                  <option value="250g">250g</option>
+                  <option value="500g" selected>500g</option>
+                  <option value="1kg">1kg</option>
+                </select>
+              </label>
+              <label class="product-config-item product-select-group">
+                <span class="product-select-label">Molienda</span>
+                <select id="downtime-grind" data-product-grind aria-label="Selecciona molienda para Downtime">
+                  <option value="prensa francesa" selected>Prensa francesa</option>
+                  <option value="filtro / pour over">Filtro / pour over</option>
+                  <option value="moka">Moka</option>
+                  <option value="espresso">Espresso</option>
+                  <option value="chemex">Chemex</option>
+                  <option value="aeropress">AeroPress</option>
+                  <option value="grano entero">Grano entero</option>
+                </select>
+              </label>
+              <div class="product-config-item product-meta-item">
+                <span class="product-meta-label">Ideal para</span>
+                <span class="product-meta-value">Filtro, prensa y rutina diaria</span>
+              </div>
             </div>
-            <div class="product-meta-item">
-              <span class="product-meta-label">Ideal para</span>
-              <span class="product-meta-value">Filtro, prensa y rutina diaria</span>
+            <div class="product-purchase-row">
+              <p class="product-price" id="downtime-price" data-product-price>$16.500 <span>CLP</span></p>
+              <div class="product-purchase-actions">
+                <a id="downtime-wa"
+                   href="/pedido/"
+                   class="btn btn-primary product-cta-button"
+                   aria-label="Continuar pedido de Downtime"
+                   data-product-link
+                   data-checkout-link
+                   data-analytics-label="downtime_primary">
+                  Continuar pedido
+                </a>
+                <a href="#"
+                   class="product-support-link"
+                   data-product-support-link
+                   data-support-whatsapp-link
+                   data-support-context="elegir Downtime"
+                   data-analytics-label="downtime_support">
+                  Consultar por WhatsApp
+                </a>
+              </div>
             </div>
           </div>
-          <div class="product-selectors">
-            <label class="product-select-group">
-              <span class="product-select-label">Formato</span>
-              <select id="downtime-format" data-product-format aria-label="Selecciona formato para Downtime">
-                <option value="250g">250g</option>
-                <option value="500g" selected>500g</option>
-                <option value="1kg">1kg</option>
-              </select>
-            </label>
-            <label class="product-select-group">
-              <span class="product-select-label">Molienda</span>
-              <select id="downtime-grind" data-product-grind aria-label="Selecciona molienda para Downtime">
-                <option value="prensa francesa" selected>Prensa francesa</option>
-                <option value="filtro / pour over">Filtro / pour over</option>
-                <option value="moka">Moka</option>
-                <option value="espresso">Espresso</option>
-                <option value="chemex">Chemex</option>
-                <option value="aeropress">AeroPress</option>
-                <option value="grano entero">Grano entero</option>
-              </select>
-            </label>
-          </div>
-          <div class="product-purchase-row">
-            <p class="product-price" id="downtime-price" data-product-price>$16.500 <span>CLP</span></p>
-            <div class="product-purchase-actions">
-              <a id="downtime-wa"
-                 href="/pedido/"
-                 class="btn btn-primary product-cta-button"
-                 aria-label="Continuar pedido de Downtime"
-                 data-product-link
-                 data-checkout-link
-                 data-analytics-label="downtime_primary">
-                Continuar pedido
-              </a>
-              <a href="#"
-                 class="product-support-link"
-                 data-product-support-link
-                 data-support-whatsapp-link
-                 data-support-context="elegir Downtime"
-                 data-analytics-label="downtime_support">
-                Consultar por WhatsApp
-              </a>
-            </div>
+          <div class="product-media">
+            <video class="product-media-video" src="/assets/products/Downtime-bagvideo.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Video del pack de Downtime"></video>
           </div>
         </article>
         <article class="card product-card card-featured fade-in" aria-label="Hiperfoco" data-product-card data-product-id="hiperfoco">
           <div class="product-badge-wrap">
             <span class="badge" aria-label="Más vendido">Más vendido</span>
           </div>
-          <div class="product-overview">
-            <div class="product-media">
-              <div class="product-media-placeholder" role="img" aria-label="Video de Hiperfoco próximamente">
-                <span class="product-media-placeholder-kicker">Video de Hiperfoco</span>
-                <strong>Próximamente</strong>
-              </div>
-            </div>
+          <div class="product-card-content">
             <div class="product-summary">
               <p class="product-kicker">Intensidad / foco</p>
               <p class="product-title">Hiperfoco</p>
@@ -321,59 +313,63 @@
                 <li>Azúcar morena</li>
               </ul>
             </div>
-          </div>
-          <div class="product-meta" aria-label="Datos clave de Hiperfoco">
-            <div class="product-meta-item">
-              <span class="product-meta-label">Tueste</span>
-              <span class="product-meta-value">Italiano / oscuro</span>
+            <div class="product-config-stack" aria-label="Configuración de Hiperfoco">
+              <div class="product-config-item product-meta-item">
+                <span class="product-meta-label">Tueste</span>
+                <span class="product-meta-value">Italiano / oscuro</span>
+              </div>
+              <label class="product-config-item product-select-group">
+                <span class="product-select-label">Formato</span>
+                <select id="hiperfoco-format" data-product-format aria-label="Selecciona formato para Hiperfoco">
+                  <option value="250g">250g</option>
+                  <option value="500g" selected>500g</option>
+                  <option value="1kg">1kg</option>
+                </select>
+              </label>
+              <label class="product-config-item product-select-group">
+                <span class="product-select-label">Molienda</span>
+                <select id="hiperfoco-grind" data-product-grind aria-label="Selecciona molienda para Hiperfoco">
+                  <option value="espresso" selected>Espresso</option>
+                  <option value="moka">Moka</option>
+                  <option value="prensa francesa">Prensa francesa</option>
+                  <option value="filtro / pour over">Filtro / pour over</option>
+                  <option value="chemex">Chemex</option>
+                  <option value="aeropress">AeroPress</option>
+                  <option value="grano entero">Grano entero</option>
+                </select>
+              </label>
+              <div class="product-config-item product-meta-item">
+                <span class="product-meta-label">Ideal para</span>
+                <span class="product-meta-value">Espresso y moka</span>
+              </div>
             </div>
-            <div class="product-meta-item">
-              <span class="product-meta-label">Ideal para</span>
-              <span class="product-meta-value">Espresso y moka</span>
+            <div class="product-purchase-row">
+              <p class="product-price" id="hiperfoco-price" data-product-price>$16.500 <span>CLP</span></p>
+              <div class="product-purchase-actions">
+                <a id="hiperfoco-wa"
+                   href="/pedido/"
+                   class="btn btn-primary product-cta-button"
+                   aria-label="Continuar pedido de Hiperfoco"
+                   data-product-link
+                   data-checkout-link
+                   data-analytics-label="hiperfoco_primary">
+                  Continuar pedido
+                </a>
+                <a href="#"
+                   class="product-support-link"
+                   data-product-support-link
+                   data-support-whatsapp-link
+                   data-support-context="elegir Hiperfoco"
+                   data-analytics-label="hiperfoco_support">
+                  Consultar por WhatsApp
+                </a>
+              </div>
             </div>
           </div>
-          <div class="product-selectors">
-            <label class="product-select-group">
-              <span class="product-select-label">Formato</span>
-              <select id="hiperfoco-format" data-product-format aria-label="Selecciona formato para Hiperfoco">
-                <option value="250g">250g</option>
-                <option value="500g" selected>500g</option>
-                <option value="1kg">1kg</option>
-              </select>
-            </label>
-            <label class="product-select-group">
-              <span class="product-select-label">Molienda</span>
-              <select id="hiperfoco-grind" data-product-grind aria-label="Selecciona molienda para Hiperfoco">
-                <option value="espresso" selected>Espresso</option>
-                <option value="moka">Moka</option>
-                <option value="prensa francesa">Prensa francesa</option>
-                <option value="filtro / pour over">Filtro / pour over</option>
-                <option value="chemex">Chemex</option>
-                <option value="aeropress">AeroPress</option>
-                <option value="grano entero">Grano entero</option>
-              </select>
-            </label>
-          </div>
-          <div class="product-purchase-row">
-            <p class="product-price" id="hiperfoco-price" data-product-price>$16.500 <span>CLP</span></p>
-            <div class="product-purchase-actions">
-              <a id="hiperfoco-wa"
-                 href="/pedido/"
-                 class="btn btn-primary product-cta-button"
-                 aria-label="Continuar pedido de Hiperfoco"
-                 data-product-link
-                 data-checkout-link
-                 data-analytics-label="hiperfoco_primary">
-                Continuar pedido
-              </a>
-              <a href="#"
-                 class="product-support-link"
-                 data-product-support-link
-                 data-support-whatsapp-link
-                 data-support-context="elegir Hiperfoco"
-                 data-analytics-label="hiperfoco_support">
-                Consultar por WhatsApp
-              </a>
+          <div class="product-media">
+            <div class="product-media-placeholder" role="img" aria-label="Video de Hiperfoco próximamente">
+              <span class="product-media-placeholder-kicker">Video de Hiperfoco</span>
+              <strong>Próximamente</strong>
             </div>
           </div>
         </article>

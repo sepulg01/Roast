@@ -285,3 +285,12 @@
 - Validacion realizada con parseo HTML dirigido sobre `index.html` y `pedido/index.html`, `rg` para verificar ausencia de `jaca` y de `.products-stage`, y `git diff --check`; no se hizo refresh de stacks por instruccion explicita de esta iteracion.
 - Completado totalmente: backlog tabular, retiro del bloque superior de soporte en checkout, eliminacion de la tarjeta de video independiente, productos apilados y adopcion de `video + placeholder` en las cards del home.
 - Pendiente/deferido: reemplazar el placeholder de `Hiperfoco` por un video real cuando ese asset exista en el repo.
+
+## 2026-04-20 - Rebalanceo interno de cards de producto
+
+- Se reorganizaron las cards de `Downtime` y `Hiperfoco` en `index.html` para dejar una columna de contenido a la izquierda y el media a la derecha en desktop.
+- El video de `Downtime` y el placeholder de `Hiperfoco` ahora ocupan todo el alto disponible de la tarjeta en el layout ancho, en lugar de quedar restringidos a un bloque superior mas bajo.
+- Los elementos `Tueste`, `Formato`, `Molienda` e `Ideal para` se movieron debajo de las notas de sabor y quedaron apilados verticalmente en la columna izquierda, siguiendo el orden pedido.
+- `assets/site.css` se ajusto para soportar la nueva estructura `product-card-content + product-media`, corregir el estilo de los `select` en la nueva ubicacion y mantener el comportamiento responsivo sin refresh de stacks.
+- Validacion realizada con parseo HTML de `index.html` y `git diff --check`; no se hizo refresh de stacks por instruccion explicita (`none`).
+- Completado totalmente: reubicacion de controles/datos de producto y expansion del media al alto completo de la tarjeta en desktop.
