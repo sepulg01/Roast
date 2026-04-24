@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resultado del pago | Roast</title>
+  <meta name="description" content="Revisa el estado de tu pedido Roast y retoma el pago si todavía está pendiente." />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="canonical" href="https://caferoast.cl/pago/resultado/" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/site.css" />
+</head>
+<body data-page="payment-result" data-api-base="">
+<nav class="site-nav" aria-label="Navegación principal">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo" aria-label="Roast - volver al inicio">
+      <span class="nav-logo-wordmark">Roast<span>.</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="mailto:contacto@caferoast.cl" class="btn btn-secondary checkout-nav-link" data-support-email-link>contacto@caferoast.cl</a>
+    </div>
+  </div>
+</nav>
+
+<main class="result-shell">
+  <section class="result-main">
+    <div class="container">
+      <article class="result-card">
+        <p class="page-eyebrow">Resultado del pedido</p>
+        <span class="result-pill result-pill-info" id="paymentResultPill">cargando</span>
+        <h1 id="paymentResultTitle">Revisando tu pedido</h1>
+        <p class="result-copy" id="paymentResultCopy">Estamos consultando el estado actualizado en la operación de Roast.</p>
+
+        <div class="result-detail-grid">
+          <div class="result-detail">
+            <span class="result-detail-label">Order ID</span>
+            <strong id="paymentResultOrder">—</strong>
+          </div>
+          <div class="result-detail">
+            <span class="result-detail-label">Total</span>
+            <strong id="paymentResultTotal">—</strong>
+          </div>
+          <div class="result-detail result-detail-full">
+            <span class="result-detail-label">Pedido</span>
+            <strong id="paymentResultItems">—</strong>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <a href="#" id="paymentResumeLink" class="btn btn-primary" hidden>Retomar pago</a>
+          <a href="/" class="btn btn-secondary">Volver al inicio</a>
+          <a href="https://wa.me/56951172813?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary" data-checkout-support-link data-support-whatsapp-link data-support-context="mi pago pendiente" data-analytics-label="payment_result_support">Escribir por WhatsApp</a>
+        </div>
+
+        <div class="result-support-card">
+          <p class="result-support-kicker">Soporte Roast</p>
+          <a href="mailto:contacto@caferoast.cl" class="result-support-email" data-support-email-link>contacto@caferoast.cl</a>
+          <p class="result-support-copy">Si ves un estado pendiente, fallido o expirado, este es el canal para reactivar el pedido sin perder el contexto.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="footer-logo-wordmark">Roast<span>.</span></span>
+    </div>
+    <div class="footer-meta">
+      <p class="footer-tagline">Pago resuelto en Flow, estado visible en Roast.</p>
+      <p class="footer-site">caferoast.cl · Santiago, Chile</p>
+    </div>
+    <div class="footer-explore">
+      <p class="footer-explore-label">Explorar</p>
+      <div class="footer-policies" aria-label="Links de exploración">
+        <a href="/cafe-molido/">Café molido</a>
+        <a href="/cafe-en-grano/">Café en grano</a>
+        <a href="/cafe-de-especialidad/">Café de especialidad</a>
+        <a href="/cafe-a-domicilio/">Café a domicilio</a>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <p class="footer-legal-label">Legales</p>
+      <div class="footer-policies" aria-label="Links legales">
+        <a href="/policies/terminos-y-condiciones.html">Términos y condiciones</a>
+        <a href="/policies/politica-de-privacidad.html">Política de privacidad</a>
+        <a href="/policies/politica-de-reembolso.html">Política de reembolso</a>
+      </div>
+    </div>
+    <div class="footer-contact">
+      <p class="footer-social-label">Soporte</p>
+      <div class="footer-contact-copy">
+        <a href="mailto:contacto@caferoast.cl" class="footer-email-link" data-support-email-link>contacto@caferoast.cl</a>
+        <p class="footer-contact-note">WhatsApp sigue disponible para destrabar pagos pendientes o vencidos.</p>
+      </div>
+      <div class="footer-socials" aria-label="Canales de soporte">
+        <a href="https://wa.me/56951172813?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="icon-link icon-link-whatsapp" data-checkout-support-link data-support-whatsapp-link data-support-context="mi pago web" data-analytics-label="payment_footer_support" aria-label="Abrir conversación por WhatsApp con Cafe Roast">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Cafe Roast. Todos los derechos reservados.</div>
+</footer>
+
+<script src="/assets/site.js"></script>
+<script src="/assets/checkout.js"></script>
+</body>
+</html>

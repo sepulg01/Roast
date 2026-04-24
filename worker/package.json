@@ -1,0 +1,13 @@
+{
+  "name": "roast-checkout-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev src/index.js",
+    "deploy": "wrangler deploy",
+    "check": "node --check src/index.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.11.1"
+  }
+}

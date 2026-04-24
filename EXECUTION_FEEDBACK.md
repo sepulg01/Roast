@@ -222,3 +222,75 @@
 - Validacion realizada con `git diff --check`, lectura puntual de `FLOW_PAYMENT_LINK_RESEARCH.md`, `Backlog.md` y `robots.txt`, mas busqueda de infraestructura server-side inexistente en el repo y verificacion documental de Flow/Stripe contra fuentes oficiales.
 - Parcial: la investigacion deja recomendacion y contratos cerrados, pero no implementa aun el backend ligero, la captura minima en sitio ni la sincronizacion real con `Google Sheets`.
 - Pendiente/deferido: definir el runtime exacto del backend, modelar las hojas `orders/customers/payments`, implementar los endpoints propuestos y reemplazar la salida directa a WhatsApp por `captura minima -> Flow -> confirmacion`.
+
+## 2026-04-17 - Integracion operativa directa en `Roast_Control_Costos`
+
+- Se implemento directamente en la planilla `Roast_Control_Costos` la capa operativa base sobre la estructura financiera existente, sin tocar archivos productivos del website ni refrescar stacks porque la instruccion final fue `none`.
+- Se mantuvieron `Resumen`, `Costos por SKU`, `Gastos`, `Café` y se extendio `Gastos Fijos` con `Cloudflare Worker`, `Email Routing`, `Apps Script / Automatización` y `Otros operativos`, recalculando `% del total` y costo semanal con formulas derramadas.
+- Se crearon y poblaron las hojas nuevas `Config`, `Clientes`, `Ventas`, `Lineas_Pedido`, `Pagos_Flow`, `Eventos` y `Operacion`, dejando headers, mapeos y formulas base para soportar captura de clientes, ventas, lineas, pagos Flow y trazabilidad operativa.
+- En `Config` se dejaron las 4 secciones `SETTINGS`, `COMMUNES`, `CATALOG` y `STATUS_MAP`, incluyendo `contacto@caferoast.cl`, regla de despacho base, umbral de envio gratis, timeout Flow y catalogo inicial apoyado en `Costos por SKU`.
+- `Pedidos` se convirtio en vista semanal derivada: `B3` ahora usa `week_key`, `E3` calcula fecha de inicio, `A4:J4` expone el layout operativo nuevo y `A5` consulta `Ventas` + `Lineas_Pedido` + `Pagos_Flow` para mostrar la semana seleccionada sin carga manual.
+- `Flujo de Caja` paso a leer desde `Ventas`, `Lineas_Pedido` y `Pagos_Flow`, generando semanas dinamicas, ingresos por bucket `250g/500g/1kg`, costos variables, gastos fijos, resultado, acumulado, ticket promedio y margen promedio; tambien se ajusto la formula de margen semanal para no dejar `#DIV/0!` cuando no hay datos.
+- `Resumen` quedo actualizado para leer el nuevo total de `Gastos Fijos` y sumar un bloque `OPERACIÓN ACTUAL` con conteos de `draft`, `manual_review`, `link_sent`, `pending_payment`, `paid`, `preparing` y `dispatched`.
+- `Ventas` requirio expansion fisica de columnas por la derecha para alcanzar `AA:AH`; se insertaron columnas nuevas en la hoja y luego se completaron `flow_token`, `flow_checkout_url`, `flow_link_created_at`, `paid_at`, `preparing_at`, `dispatched_at`, `delivered_at` y `canceled_at`. Despues de esa expansion se reescribio `Operacion` para que volviera a leer `AB` y `AD` correctos.
+- Validacion realizada exportando repetidamente la planilla a `.xlsx` y revisando headers, formulas y derrames en todas las hojas afectadas; no se implemento aun el Worker, los endpoints Flow ni el Apps Script de notificaciones en este paso.
+- Parcial: la planilla ya soporta la estructura y vistas del plan, pero la automatizacion transaccional real sigue pendiente de backend y de la escritura efectiva desde `Cloudflare Worker` / Apps Script.
+- Pendiente/deferido: conectar `POST /api/order-drafts`, `POST /api/payment-links`, `POST /api/flow/confirmation`, `POST /pago/retorno`, `GET /api/orders/:order_id`, persistencia hacia Google Sheets y notificaciones a `contacto@caferoast.cl`.
+
+## 2026-04-17 - Ola completa v1: pedido web + Flow + Google Sheets
+
+- Se implemento la ola completa del flujo transaccional en el repo productivo: se agrego el modulo `worker/` para `Cloudflare Worker` con endpoints `POST /api/order-drafts`, `POST /api/payment-links`, `POST /api/flow/confirmation`, `POST /pago/retorno` y `GET /api/orders/:order_id`, mas lectura/escritura operativa hacia Google Sheets, integracion Flow, notificaciones Apps Script y redireccion al resultado del pago.
+- Se agrego `apps-script/` con el webhook minimo para notificaciones operativas por correo a `contacto@caferoast.cl`, con validacion por secreto compartido y ejecucion no bloqueante desde el Worker.
+- Se creo el frontend transaccional nuevo: `pedido/index.html`, `pago/resultado/index.html` y `assets/checkout.js`; ademas `assets/site.css` se amplio con toda la capa visual del checkout, revision y resultado de pago para mobile y desktop.
+- `assets/site.js` se reescribio para que el website deje de usar WhatsApp como accion primaria de compra: ahora serializa `drafts` hacia `/pedido/`, mantiene `WhatsApp` como fallback visible, actualiza tracking de `order_draft_started` / `whatsapp_fallback_clicked` y conserva compatibilidad con el quiz y las cards de producto.
+- Se alineo el sitio publico con el nuevo funnel en `index.html`, `cafe-molido/`, `cafe-en-grano/`, `cafe-de-especialidad/` y `cafe-a-domicilio/`: los CTAs principales ahora llevan al pedido web, el copy deja de prometer cierre por WhatsApp, y el correo `contacto@caferoast.cl` queda visible como soporte en hero, footer o ambos segun contexto.
+- Se actualizo el schema del home para incluir el email de contacto y se mantuvieron WhatsApp y telefono como soporte secundario.
+- Se corrigieron los links de soporte para no depender de `href="#"`: incluso sin JavaScript cargado, los CTAs principales siguen llevando a `/pedido/` y los accesos de soporte conservan un destino generico funcional hacia WhatsApp.
+- Se ajustaron los legales en `policies/terminos-y-condiciones.html`, `policies/politica-de-privacidad.html` y `policies/politica-de-reembolso.html` para declarar formulario web, Flow, Google Sheets, correo de contacto y WhatsApp como canal opcional de soporte.
+- Se actualizo `sitemap.xml` para incluir `/pedido/` como URL indexable; `/pago/resultado/` y `/pago/retorno` quedaron fuera del sitemap y con proteccion `noindex` por `meta robots` y `X-Robots-Tag`.
+- Validacion realizada con `node --check` sobre `assets/site.js`, `assets/checkout.js` y todos los JS de `worker/src`, parseo HTML via `python3` sobre home, landings, checkout, resultado y legales, `git diff --check`, servidor local `python3 -m http.server` y verificaciones HTTP `200` para `/`, `/pedido/`, `/pago/resultado/`, `/sitemap.xml` y `/robots.txt`.
+- Completado totalmente: modulo Worker, Apps Script base, nuevas rutas publicas, rewire de CTAs, actualizacion de copy/SEO/legales, indexacion de `/pedido/` y soporte visible por correo + WhatsApp.
+- Parcial: se dejo implementado el contrato completo con Flow y Google Sheets, pero no se pudo ejecutar una prueba end-to-end real contra servicios externos porque esta sesion no tiene secretos productivos ni credenciales de despliegue para Cloudflare / Flow / Google.
+- Parcial: se refresco el stack `local` mediante servidor HTTP y verificacion directa de las rutas nuevas. Se intento localizar un mecanismo de refresh para `jaca`, pero no existe un comando, script ni ruta visible en este entorno para ejecutarlo de forma responsable.
+- Pendiente/deferido: desplegar el Worker con secretos reales, conectar el Apps Script a sus `Script Properties`, probar el ciclo real `draft -> Flow -> webhook -> resultado`, y definir fuera de esta sesion como se refresca realmente `jaca`.
+
+## 2026-04-17 - Refresh visual del home + hardening del checkout
+
+- Se actualizo el home en `index.html` y `assets/site.css`: nuevo copy principal para dejar el cafe instantaneo, nuevos mensajes en los 2 pain points, `quiz` reubicado debajo de `products`, badge de `Hiperfoco` cambiado a `Más vendido`, CTA final reescrito y tagline del footer cambiado a `Café en grano o molido, a pedido a domicilio en Santiago`.
+- Se mejoro la presentacion de productos con una vitrina superior que usa `assets/products/Downtime-bagvideo.mp4`, se elimino el video viejo `assets/products/freepik_3second-smooth-cinematic-_2770662398.mp4`, se hizo mas protagonista el arte de `Downtime` y `Hiperfoco` paso a usar el SVG dedicado `assets/products/Hiperfoco (9 x 12 cm).svg`.
+- Se corrigio la alineacion del bloque `Soporte` en el footer compartido para home, checkout y resultado, dejando label, correo e iconos alineados a la izquierda tanto en mobile como en desktop.
+- Se reforzo `assets/checkout.js` para que `POST /api/order-drafts`, `POST /api/payment-links` y `GET /api/orders/:order_id` no hagan `response.json()` a ciegas: ahora detectan HTML, JSON invalido y formatos inesperados, mostrando un mensaje explicito cuando `/api` devuelve hosting estatico en lugar del Worker.
+- Se eliminaron el copy `Este flujo deja el pedido...` en `pedido/index.html` y el checkout/resultado quedaron preparados para una base de API configurable mediante `data-api-base`, manteniendo `same-origin` como default.
+- Se dejo `worker/wrangler.toml` con rutas declaradas para `caferoast.cl/api/*` y `caferoast.cl/pago/retorno`, alineando el wiring esperado del Worker con el dominio productivo.
+- Validacion realizada con `node --check assets/checkout.js`, parseo HTML via `python3` sobre `index.html`, `pedido/index.html` y `pago/resultado/index.html`, `git diff --check`, servidor local `python3 -m http.server` con respuesta `200` para `/`, `/pedido/`, `/pago/resultado/`, `assets/products/Downtime-bagvideo.mp4` y `assets/products/Hiperfoco%20%289%20x%2012%20cm%29.svg`, mas revision dirigida por `rg` sobre copys reemplazados.
+- Completado totalmente: refresh UI del landing, reordenamiento real del DOM, nuevo uso del video de Downtime, mejora visual de cards, correccion del footer y hardening del checkout contra respuestas HTML en `/api`.
+- Parcial: se intento descubrir/publicar el Worker con `CI=1 npx wrangler whoami` y `CI=1 npx wrangler deploy`, pero el entorno no tiene autenticacion Cloudflare activa; `whoami` pidio `wrangler login` y `deploy` fallo por falta de `CLOUDFLARE_API_TOKEN`.
+- Pendiente/deferido: desplegar realmente el Worker con credenciales Cloudflare y secretos productivos para que `caferoast.cl/api/*` deje de responder HTML de GitHub Pages y pase a servir el backend transaccional en produccion.
+
+## 2026-04-17 - Ajuste de push por SSH y nombre final del Worker
+
+- Se registro en `AGENTS.md` que todos los `push` a GitHub para este repo deben hacerse via SSH, asumiendo una SSH key valida ya configurada.
+- Se alineo `worker/wrangler.toml` con el nombre real del Worker en Cloudflare, dejando `name = "roast"` para evitar drift entre dashboard y repo.
+- Validacion realizada con inspeccion de `git remote -v`, lectura de `worker/wrangler.toml` y posterior cambio del remoto `origin` a SSH antes de empujar el commit pendiente.
+- Completado totalmente: preferencia de `push` via SSH registrada y nombre del Worker alineado al dashboard.
+- Pendiente/deferido: cargar secretos y completar rutas productivas en Cloudflare para activar el deploy real del Worker bajo `caferoast.cl`.
+
+## 2026-04-18 - Backlog tabular y limpieza visual de checkout/productos
+
+- Se reescribio `Backlog.md` a un formato tabular unico, manteniendo `prioridad`, `estado`, `fecha`, `contexto` y `siguiente paso`, eliminando toda referencia a `jaca` y marcando `Cloudflare MX para @caferoast.cl con reenvio a Gmail personal` como `completado`.
+- En `pedido/index.html` se elimino la card superior `Soporte visible`; el pedido web mantiene soporte por correo en la nav, correo + WhatsApp en el resumen lateral y soporte en el footer, sin alterar el flujo de pasos ni la caja `manual_review`.
+- En `index.html` se elimino la tarjeta/stage de video independiente de `#products`, las cards de `Downtime` y `Hiperfoco` quedaron apiladas una debajo de la otra en todos los breakpoints, y el media principal de cada card paso al slot propio del producto.
+- `Downtime` ahora usa `assets/products/Downtime-bagvideo.mp4` dentro de su card; `Hiperfoco` quedo con un placeholder visual `Video de Hiperfoco / Proximamente` en el mismo contenedor y ratio del video real, listo para reemplazarse por un asset futuro sin rehacer el layout.
+- `assets/site.css` se simplifico para retirar estilos exclusivos de `.checkout-support-card`, eliminar las reglas de `.products-stage`, unificar el tratamiento de media de producto y mantener el split interno de cada card solo para `product-media + summary`.
+- Validacion realizada con parseo HTML dirigido sobre `index.html` y `pedido/index.html`, `rg` para verificar ausencia de `jaca` y de `.products-stage`, y `git diff --check`; no se hizo refresh de stacks por instruccion explicita de esta iteracion.
+- Completado totalmente: backlog tabular, retiro del bloque superior de soporte en checkout, eliminacion de la tarjeta de video independiente, productos apilados y adopcion de `video + placeholder` en las cards del home.
+- Pendiente/deferido: reemplazar el placeholder de `Hiperfoco` por un video real cuando ese asset exista en el repo.
+
+## 2026-04-20 - Rebalanceo interno de cards de producto
+
+- Se reorganizaron las cards de `Downtime` y `Hiperfoco` en `index.html` para dejar una columna de contenido a la izquierda y el media a la derecha en desktop.
+- El video de `Downtime` y el placeholder de `Hiperfoco` ahora ocupan todo el alto disponible de la tarjeta en el layout ancho, en lugar de quedar restringidos a un bloque superior mas bajo.
+- Los elementos `Tueste`, `Formato`, `Molienda` e `Ideal para` se movieron debajo de las notas de sabor y quedaron apilados verticalmente en la columna izquierda, siguiendo el orden pedido.
+- `assets/site.css` se ajusto para soportar la nueva estructura `product-card-content + product-media`, corregir el estilo de los `select` en la nueva ubicacion y mantener el comportamiento responsivo sin refresh de stacks.
+- Validacion realizada con parseo HTML de `index.html` y `git diff --check`; no se hizo refresh de stacks por instruccion explicita (`none`).
+- Completado totalmente: reubicacion de controles/datos de producto y expansion del media al alto completo de la tarjeta en desktop.

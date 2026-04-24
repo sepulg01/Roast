@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pedido web de café Roast | Pago con Flow</title>
+  <meta name="description" content="Arma tu pedido de Roast, deja tus datos y genera tu link de pago con Flow en pocos pasos." />
+  <link rel="canonical" href="https://caferoast.cl/pedido/" />
+  <meta property="og:locale" content="es_CL" />
+  <meta property="og:title" content="Pedido web de café Roast | Pago con Flow" />
+  <meta property="og:description" content="Arma tu pedido de Roast, deja tus datos y genera tu link de pago con Flow en pocos pasos." />
+  <meta property="og:url" content="https://caferoast.cl/pedido/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pedido web de café Roast | Pago con Flow" />
+  <meta name="twitter:description" content="Pide tu café Roast desde la web, confirma tu total y genera tu link de pago con Flow." />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/site.css" />
+</head>
+<body data-page="checkout" data-api-base="">
+<nav class="site-nav" aria-label="Navegación principal">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo" aria-label="Roast - volver al inicio">
+      <span class="nav-logo-wordmark">Roast<span>.</span></span>
+    </a>
+    <div class="nav-right">
+      <a href="mailto:contacto@caferoast.cl" class="btn btn-secondary checkout-nav-link" data-support-email-link>contacto@caferoast.cl</a>
+    </div>
+  </div>
+</nav>
+
+<main class="checkout-shell">
+  <section class="checkout-hero">
+    <div class="container checkout-hero-inner">
+      <div>
+        <span class="page-eyebrow">Pedido web Roast</span>
+        <h1>Arma tu pedido, confirma el total y paga con Flow.</h1>
+      </div>
+    </div>
+  </section>
+
+  <section class="checkout-main">
+    <div class="container">
+      <div class="checkout-layout">
+        <div class="checkout-primary">
+          <div class="checkout-step-head">
+            <p class="checkout-step-label" id="checkoutStepLabel">Paso 1 de 3</p>
+            <ol class="checkout-step-indicators" aria-label="Progreso del pedido">
+              <li class="checkout-step-indicator checkout-step-indicator-active" data-step-indicator="1">Pedido</li>
+              <li class="checkout-step-indicator" data-step-indicator="2">Datos</li>
+              <li class="checkout-step-indicator" data-step-indicator="3">Pago</li>
+            </ol>
+          </div>
+
+          <div class="status-box" id="checkoutStatus" aria-live="polite"></div>
+
+          <section class="checkout-step-block checkout-step-active" data-checkout-step="1">
+            <div class="checkout-step-copy">
+              <h2>1. Resume qué quieres pedir</h2>
+              <p>Si llegaste desde el home o desde el quiz, tu pedido ya viene prellenado. Si no, parte aquí con un selector simple.</p>
+            </div>
+            <div id="checkoutItems"></div>
+            <div class="checkout-step-actions">
+              <button type="button" class="btn btn-secondary" id="addCheckoutItem">Agregar otro item</button>
+              <button type="button" class="btn btn-primary" id="checkoutStep1Next">Continuar con datos</button>
+            </div>
+          </section>
+
+          <section class="checkout-step-block" data-checkout-step="2">
+            <div class="checkout-step-copy">
+              <h2>2. Tus datos y despacho</h2>
+              <p>Necesitamos estos datos para calcular el total, revisar cobertura y dejar la venta documentada en la operación de Roast.</p>
+            </div>
+            <div class="checkout-fields-grid">
+              <label class="checkout-field">
+                <span class="checkout-label">Nombre y apellido</span>
+                <input id="customer_name" name="customer_name" type="text" autocomplete="name" />
+                <span class="checkout-error" data-error-for="customer_name"></span>
+              </label>
+              <label class="checkout-field">
+                <span class="checkout-label">Email</span>
+                <input id="email" name="email" type="email" autocomplete="email" />
+                <span class="checkout-error" data-error-for="email"></span>
+              </label>
+              <label class="checkout-field">
+                <span class="checkout-label">Teléfono</span>
+                <input id="phone" name="phone" type="tel" autocomplete="tel" />
+                <span class="checkout-error" data-error-for="phone"></span>
+              </label>
+              <label class="checkout-field">
+                <span class="checkout-label">Comuna</span>
+                <input id="commune" name="commune" type="text" autocomplete="address-level2" />
+                <span class="checkout-error" data-error-for="commune"></span>
+              </label>
+              <label class="checkout-field checkout-field-full">
+                <span class="checkout-label">Dirección</span>
+                <input id="address" name="address" type="text" autocomplete="street-address" />
+                <span class="checkout-error" data-error-for="address"></span>
+              </label>
+              <label class="checkout-field checkout-field-full">
+                <span class="checkout-label">Referencia de entrega</span>
+                <input id="address_ref" name="address_ref" type="text" autocomplete="off" placeholder="Depto, conserjería, punto de referencia" />
+                <span class="checkout-helper">Opcional. Úsalo si ayuda a ubicar la entrega.</span>
+              </label>
+              <label class="checkout-field checkout-field-full">
+                <span class="checkout-label">Notas del pedido</span>
+                <textarea id="notes" name="notes" rows="4" placeholder="Algo que Roast deba considerar para este pedido"></textarea>
+              </label>
+            </div>
+            <div class="checkout-step-actions">
+              <button type="button" class="btn btn-secondary" id="checkoutStep2Back">Volver</button>
+              <button type="button" class="btn btn-primary" id="checkoutStep2Next">Continuar a revisión</button>
+            </div>
+          </section>
+
+          <section class="checkout-step-block" data-checkout-step="3">
+            <div class="checkout-step-copy">
+              <h2>3. Revisa el total y genera el link</h2>
+              <p>El monto final siempre lo recalcula el backend con la configuración operativa vigente en Roast.</p>
+            </div>
+
+            <article class="checkout-review-card">
+              <p class="checkout-review-kicker">Pedido</p>
+              <p class="checkout-review-items" id="reviewItemsLabel">—</p>
+              <p class="checkout-review-order">Order ID: <strong id="reviewOrderId">—</strong></p>
+              <div class="checkout-review-rows">
+                <div class="checkout-review-row">
+                  <span>Subtotal</span>
+                  <strong id="reviewSubtotal">—</strong>
+                </div>
+                <div class="checkout-review-row">
+                  <span>Despacho</span>
+                  <strong id="reviewShipping">—</strong>
+                </div>
+                <div class="checkout-review-row checkout-review-row-total">
+                  <span>Total</span>
+                  <strong id="reviewTotal">—</strong>
+                </div>
+              </div>
+            </article>
+
+            <div class="checkout-review-checks">
+              <label class="checkout-checkbox">
+                <input type="checkbox" id="accept_total" />
+                <span>Acepto el total calculado y entiendo que Flow procesará el pago.</span>
+              </label>
+              <label class="checkout-checkbox">
+                <input type="checkbox" id="accept_terms" />
+                <span>Acepto los <a href="/policies/terminos-y-condiciones.html">términos y condiciones</a> y la <a href="/policies/politica-de-privacidad.html">política de privacidad</a>.</span>
+              </label>
+            </div>
+
+            <div class="manual-review-box" id="manualReviewBox" hidden>
+              <h3>Pedido en revisión manual</h3>
+              <p>Tu comuna quedó fuera de cobertura automática. Escríbenos por WhatsApp o a <a href="mailto:contacto@caferoast.cl" data-support-email-link>contacto@caferoast.cl</a> y cerramos despacho + pago contigo.</p>
+            </div>
+
+            <div class="checkout-step-actions">
+              <button type="button" class="btn btn-secondary" id="checkoutStep3Back">Volver</button>
+              <button type="button" class="btn btn-primary" id="checkoutPayButton">Generar link de pago</button>
+            </div>
+          </section>
+        </div>
+
+        <aside class="checkout-summary-card">
+          <p class="checkout-summary-kicker">Resumen en vivo</p>
+          <h2>Lo que llevas</h2>
+          <ul class="checkout-summary-list" id="checkoutSummaryItems"></ul>
+          <p class="checkout-summary-note">El total final se confirma al pasar al paso 3. Si tu comuna queda fuera de cobertura automática, el pedido pasa a revisión manual.</p>
+          <div class="checkout-summary-support">
+            <a href="mailto:contacto@caferoast.cl" class="checkout-summary-email" data-support-email-link>contacto@caferoast.cl</a>
+            <a href="https://wa.me/56951172813?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="checkout-summary-whatsapp" data-checkout-support-link data-support-whatsapp-link data-support-context="mi pedido web" data-analytics-label="checkout_sidebar_support">WhatsApp de soporte</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="footer-logo-wordmark">Roast<span>.</span></span>
+    </div>
+    <div class="footer-meta">
+      <p class="footer-tagline">Pedido web simple, pago con Flow y soporte visible.</p>
+      <p class="footer-site">caferoast.cl · Santiago, Chile</p>
+    </div>
+    <div class="footer-explore">
+      <p class="footer-explore-label">Explorar</p>
+      <div class="footer-policies" aria-label="Links de exploración">
+        <a href="/cafe-molido/">Café molido</a>
+        <a href="/cafe-en-grano/">Café en grano</a>
+        <a href="/cafe-de-especialidad/">Café de especialidad</a>
+        <a href="/cafe-a-domicilio/">Café a domicilio</a>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <p class="footer-legal-label">Legales</p>
+      <div class="footer-policies" aria-label="Links legales">
+        <a href="/policies/terminos-y-condiciones.html">Términos y condiciones</a>
+        <a href="/policies/politica-de-privacidad.html">Política de privacidad</a>
+        <a href="/policies/politica-de-reembolso.html">Política de reembolso</a>
+      </div>
+    </div>
+    <div class="footer-contact">
+      <p class="footer-social-label">Soporte</p>
+      <div class="footer-contact-copy">
+        <a href="mailto:contacto@caferoast.cl" class="footer-email-link" data-support-email-link>contacto@caferoast.cl</a>
+        <p class="footer-contact-note">WhatsApp queda disponible como rescate si necesitas ayuda con el pedido o el pago.</p>
+      </div>
+      <div class="footer-socials" aria-label="Canales de soporte">
+        <a href="https://wa.me/56951172813?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="icon-link icon-link-whatsapp" data-checkout-support-link data-support-whatsapp-link data-support-context="mi pedido web" data-analytics-label="checkout_footer_support" aria-label="Abrir conversación por WhatsApp con Cafe Roast">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Cafe Roast. Todos los derechos reservados.</div>
+</footer>
+
+<script src="/assets/site.js"></script>
+<script src="/assets/checkout.js"></script>
+</body>
+</html>
