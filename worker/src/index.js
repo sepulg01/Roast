@@ -1,4 +1,4 @@
-import { createOrderDraft, createPaymentLink, getPublicOrder, syncPaymentStatus } from './lib/orders.js';
+import { createOrderDraft, createPaymentLink, getPublicCatalog, getPublicOrder, syncPaymentStatus } from './lib/orders.js';
 import {
   errorResponse,
   getPublicBaseUrl,
@@ -58,6 +58,15 @@ async function handlePublicOrder(orderId, env) {
   return jsonResponse(result);
 }
 
+async function handlePublicCatalog(env) {
+  const result = await getPublicCatalog(env);
+  return jsonResponse(result, {
+    headers: {
+      'Cache-Control': 'public, max-age=60, stale-while-revalidate=300'
+    }
+  });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -74,6 +83,10 @@ export default {
 
       if (request.method === 'POST' && url.pathname === '/api/payment-links') {
         return handlePaymentLink(request, env, publicBaseUrl);
+      }
+
+      if (request.method === 'GET' && url.pathname === '/api/public-catalog') {
+        return handlePublicCatalog(env);
       }
 
       if (request.method === 'POST' && url.pathname === '/api/flow/confirmation') {

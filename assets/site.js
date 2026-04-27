@@ -3,6 +3,7 @@ window.dataLayer = window.dataLayer || [];
 var SUPPORT_EMAIL = 'contacto@caferoast.cl';
 var SUPPORT_WHATSAPP = '+56951172813';
 var SUPPORT_WHATSAPP_URL = 'https://wa.me/56951172813';
+var PUBLIC_CATALOG_ENDPOINT = '/api/public-catalog';
 
 var quizCups = null;
 var quizMethod = null;
@@ -49,6 +50,12 @@ var PRODUCT_PRICE_MAP = {
   '1kg': 29000
 };
 
+var publicCatalogState = {
+  loaded: false,
+  productPrices: {},
+  freeShippingThreshold: null
+};
+
 var PRODUCT_MEDIA_KIND_LABEL_MAP = {
   'mockup': 'Mockup',
   'hold': 'Hold',
@@ -81,6 +88,52 @@ function formatCurrency(value) {
     currency: 'CLP',
     maximumFractionDigits: 0
   }).format(Number(value || 0));
+}
+
+function normalizeApiBase(value) {
+  return String(value || '').trim().replace(/\/+$/, '');
+}
+
+function buildApiUrl(path) {
+  var apiBase = normalizeApiBase(document.body.getAttribute('data-api-base') || window.ROAST_API_BASE || '');
+  var normalizedPath = String(path || '');
+
+  if (normalizedPath.charAt(0) !== '/') {
+    normalizedPath = '/' + normalizedPath;
+  }
+
+  return apiBase ? apiBase + normalizedPath : normalizedPath;
+}
+
+function normalizeCatalogToken(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function buildCatalogPriceKey(productId, format) {
+  return normalizeCatalogToken(productId) + '::' + normalizeCatalogToken(format);
+}
+
+function hasCatalogPrice(productId, format) {
+  return Object.prototype.hasOwnProperty.call(publicCatalogState.productPrices, buildCatalogPriceKey(productId, format));
+}
+
+function getProductPrice(productId, format, fallbackPrice) {
+  var key = buildCatalogPriceKey(productId, format);
+  var fallback = Number(fallbackPrice || PRODUCT_PRICE_MAP[format] || PRODUCT_PRICE_MAP['250g'] || 0);
+
+  if (hasCatalogPrice(productId, format)) {
+    return publicCatalogState.productPrices[key];
+  }
+
+  return fallback;
+}
+
+function getQuizComboPrice() {
+  if (hasCatalogPrice('downtime', '250g') && hasCatalogPrice('hiperfoco', '250g')) {
+    return getProductPrice('downtime', '250g') + getProductPrice('hiperfoco', '250g');
+  }
+
+  return QUIZ_COMBO_PRICE;
 }
 
 function encodeDraftPayload(payload) {
@@ -255,7 +308,7 @@ function getQuizRecommendation() {
   if (quizProductChoice === 'ambos_250') {
     return {
       text: '250g de Downtime + 250g de Hiperfoco, ' + grindLabel,
-      price: formatCurrency(QUIZ_COMBO_PRICE),
+      price: formatCurrency(getQuizComboPrice()),
       draft: {
         origin: 'index_quiz_result',
         channel: 'site_home_quiz',
@@ -268,16 +321,18 @@ function getQuizRecommendation() {
     };
   }
 
-  var productName = PRODUCT_NAME_MAP[quizProductChoice] || PRODUCT_NAME_MAP.downtime;
+  var productId = PRODUCT_NAME_MAP[quizProductChoice] ? quizProductChoice : 'downtime';
+  var productName = PRODUCT_NAME_MAP[productId] || PRODUCT_NAME_MAP.downtime;
+  var price = getProductPrice(productId, formatRecommendation.format, formatRecommendation.price);
 
   return {
     text: productName + ' en ' + formatRecommendation.format + ', ' + grindLabel,
-    price: formatCurrency(formatRecommendation.price),
+    price: formatCurrency(price),
     draft: {
       origin: 'index_quiz_result',
       channel: 'site_home_quiz',
       items: [
-        createItem(quizProductChoice, formatRecommendation.format, grindLabel, 1)
+        createItem(productId, formatRecommendation.format, grindLabel, 1)
       ]
     },
     supportMessage: buildSupportMessage('la recomendación del quiz')
@@ -358,10 +413,11 @@ function updateProductCard(card) {
   var supportEl = card.querySelector('[data-product-support-link]');
   var format = formatSelect ? formatSelect.value : '250g';
   var grind = grindSelect ? grindSelect.value : 'grano entero';
-  var price = PRODUCT_PRICE_MAP[format] || PRODUCT_PRICE_MAP['250g'];
+  var price = getProductPrice(productId, format);
   var draft = buildProductDraft(productId, format, grind);
 
   if (priceEl) {
+    priceEl.setAttribute('aria-live', 'polite');
     priceEl.innerHTML = formatCurrency(price) + ' <span>CLP</span>';
   }
 
@@ -379,6 +435,120 @@ function updateProductCard(card) {
   if (supportEl) {
     supportEl.href = buildSupportWhatsAppUrl(buildSupportMessage('elegir ' + (PRODUCT_NAME_MAP[productId] || productId)));
   }
+}
+
+function hydratePublicCatalog(payload) {
+  if (!payload || !Array.isArray(payload.catalog)) return false;
+
+  var nextProductPrices = {};
+  var nextFormatPrices = {};
+
+  payload.catalog.forEach(function(item) {
+    var productId = normalizeCatalogToken(item.product_code);
+    var formatCode = normalizeCatalogToken(item.format_code);
+    var productName = String(item.product_name || '').trim();
+    var price = Number(item.price_clp || 0);
+
+    if (!productId || !formatCode || !Number.isFinite(price) || price <= 0) return;
+
+    nextProductPrices[buildCatalogPriceKey(productId, formatCode)] = price;
+
+    if (!Object.prototype.hasOwnProperty.call(nextFormatPrices, formatCode)) {
+      nextFormatPrices[formatCode] = price;
+    }
+
+    if (productName) {
+      PRODUCT_NAME_MAP[productId] = productName;
+    }
+  });
+
+  if (!Object.keys(nextProductPrices).length) return false;
+
+  publicCatalogState.loaded = true;
+  publicCatalogState.productPrices = nextProductPrices;
+
+  Object.keys(nextFormatPrices).forEach(function(formatCode) {
+    PRODUCT_PRICE_MAP[formatCode] = nextFormatPrices[formatCode];
+  });
+
+  Object.keys(PRICE_MAP).forEach(function(key) {
+    var format = normalizeCatalogToken(PRICE_MAP[key].format);
+    if (Object.prototype.hasOwnProperty.call(nextFormatPrices, format)) {
+      PRICE_MAP[key].price = nextFormatPrices[format];
+    }
+  });
+
+  var freeShippingThreshold = Number(payload.free_shipping_threshold_clp || 0);
+  if (Number.isFinite(freeShippingThreshold) && freeShippingThreshold > 0) {
+    publicCatalogState.freeShippingThreshold = freeShippingThreshold;
+  }
+
+  QUIZ_RESULT_REFERENCE_PRICE = formatCurrency(getQuizComboPrice()) + ' CLP';
+
+  return true;
+}
+
+function updateFreeShippingThresholdText() {
+  if (!publicCatalogState.freeShippingThreshold) return;
+
+  var thresholdText = formatCurrency(publicCatalogState.freeShippingThreshold) + ' CLP';
+
+  document.querySelectorAll('[data-free-shipping-threshold]').forEach(function(node) {
+    node.textContent = thresholdText;
+  });
+}
+
+function refreshPublicCatalogUi() {
+  document.querySelectorAll('[data-product-card]').forEach(function(card) {
+    updateProductCard(card);
+  });
+
+  if (quizCups && quizMethod && quizProductChoice) {
+    showQuizResult();
+  }
+
+  updateFreeShippingThresholdText();
+  syncQuizPanelHeight();
+}
+
+function markPublicCatalogFallback() {
+  document.querySelectorAll('[data-product-price]').forEach(function(priceEl) {
+    priceEl.setAttribute('title', 'Precio referencial; se confirma en checkout.');
+  });
+}
+
+async function fetchPublicCatalog() {
+  var response = await fetch(buildApiUrl(PUBLIC_CATALOG_ENDPOINT), {
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+  var contentType = String(response.headers.get('content-type') || '').toLowerCase();
+  var raw = await response.text();
+
+  if (contentType.indexOf('text/html') !== -1 || /^\s*</.test(raw)) {
+    throw new Error('Public catalog endpoint returned HTML');
+  }
+
+  if (!response.ok) {
+    throw new Error('Public catalog request failed');
+  }
+
+  return raw ? JSON.parse(raw) : {};
+}
+
+function initPublicCatalog() {
+  fetchPublicCatalog()
+    .then(function(payload) {
+      if (!hydratePublicCatalog(payload)) {
+        throw new Error('Public catalog payload is empty');
+      }
+
+      refreshPublicCatalogUi();
+    })
+    .catch(function() {
+      markPublicCatalogFallback();
+    });
 }
 
 function getProductMediaKindLabel(kind) {
@@ -849,6 +1019,7 @@ function initDrawer() {
 function initSite() {
   bindQuizControls();
   initProductCards();
+  initPublicCatalog();
   initProductMediaSliders();
   initCheckoutLinks();
   initSupportLinks();

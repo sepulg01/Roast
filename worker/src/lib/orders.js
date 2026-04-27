@@ -238,6 +238,24 @@ export async function loadOperationalConfig(env) {
   return config;
 }
 
+export async function getPublicCatalog(env) {
+  const config = await loadOperationalConfig(env);
+
+  return {
+    ok: true,
+    currency: 'CLP',
+    generated_at: new Date().toISOString(),
+    free_shipping_threshold_clp: config.settings.free_shipping_threshold_clp,
+    catalog: config.catalog.map(item => ({
+      product_code: item.product_code,
+      product_name: item.product_name,
+      format_code: item.format_code,
+      format_label: item.format_label,
+      price_clp: item.price_clp
+    }))
+  };
+}
+
 function validateItems(items) {
   if (!Array.isArray(items) || !items.length) {
     throw new Error('At least one item is required');

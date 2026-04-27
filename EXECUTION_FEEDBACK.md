@@ -306,3 +306,13 @@
 - Completado totalmente: slider manual por producto, manifiesto de assets, flechas overlay, reproduccion condicionada del video activo y fallback contextual por slide.
 - Parcial: la validacion visual end-to-end en navegador no pudo completarse en este entorno porque el Chromium headless disponible falla al iniciar por dependencia del sistema faltante (`libnspr4.so`), asi que la inspeccion visual real desktop/mobile queda pendiente de correr en una maquina con browser operativo.
 - Pendiente/deferido: confirmar visualmente en navegador el encuadre final de cada asset y, si hace falta, ajustar `object-fit`, padding del stage o posicion exacta de las flechas con una pasada UI ya sobre browser funcional.
+
+## 2026-04-27 - Sincronizacion de precios visibles con Google Sheets
+
+- Se agrego el endpoint publico read-only `GET /api/public-catalog` en el Worker, reutilizando la configuracion operativa `Config!A:Z` y exponiendo solo campos seguros del catalogo activo: producto, formato, precio, moneda, umbral de envio gratis y timestamp de generacion.
+- `assets/site.js` ahora hidrata progresivamente los precios visibles desde `/api/public-catalog`, mantiene los precios estaticos como fallback si `/api` no responde JSON, recalcula cards por producto/formato y calcula el combo del quiz como suma de `Downtime 250g + Hiperfoco 250g` cuando ambas filas existen en Sheets.
+- `index.html` quedo preparado para actualizar en runtime el umbral visible de envio gratis en la nota de productos y en la FAQ, sin convertir Sheets en CMS completo ni tocar la definicion estatica de productos/formatos.
+- Validacion realizada con `node --check assets/site.js`, `node --check assets/checkout.js`, `npm --prefix worker run check`, `find worker/src -name '*.js' -print -exec node --check {} \;`, parseo HTML simple de `index.html` y `git diff --check`.
+- Completado totalmente: endpoint publico sanitizado, cache HTTP corto, hidratacion progresiva de precios visibles, fallback seguro y actualizacion del copy visible de envio gratis.
+- Parcial: no se pudo verificar `GET /api/public-catalog` con `wrangler dev` contra Google Sheets porque este entorno no tiene `worker/.dev.vars` ni secretos reales de Google cargados.
+- Pendiente/deferido: probar el endpoint con secretos reales, cambiar un precio en Sheets y confirmar que `/api/public-catalog`, home, quiz, review del checkout y registros en `Ventas` / `Lineas_Pedido` coinciden.
