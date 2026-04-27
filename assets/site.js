@@ -683,10 +683,11 @@ function setProductMediaSlide(slider, slides, index) {
   if (!track) return;
 
   slider.setAttribute('data-current-index', String(nextIndex));
-  track.style.transform = 'translateX(-' + (nextIndex * 100) + '%)';
+  track.style.transform = '';
 
   slider.querySelectorAll('[data-product-slider-slide]').forEach(function(slideEl, slideIndex) {
     var isActive = slideIndex === nextIndex;
+    slideEl.classList.toggle('is-active', isActive);
     slideEl.setAttribute('aria-hidden', isActive ? 'false' : 'true');
   });
 

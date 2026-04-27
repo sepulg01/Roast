@@ -307,6 +307,15 @@
 - Parcial: la validacion visual end-to-end en navegador no pudo completarse en este entorno porque el Chromium headless disponible falla al iniciar por dependencia del sistema faltante (`libnspr4.so`), asi que la inspeccion visual real desktop/mobile queda pendiente de correr en una maquina con browser operativo.
 - Pendiente/deferido: confirmar visualmente en navegador el encuadre final de cada asset y, si hace falta, ajustar `object-fit`, padding del stage o posicion exacta de las flechas con una pasada UI ya sobre browser funcional.
 
+## 2026-04-27 - Correccion de visibilidad del slider de productos
+
+- Se corrigio el slider interno de productos para que las slides queden superpuestas en el mismo stage, usando solo una slide `.is-active` visible a la vez, en lugar de una pista horizontal que permitia ver parcialmente la siguiente imagen.
+- `assets/site.css` ahora posiciona el track como capa absoluta con slides absolutas, opacidad controlada y `pointer-events` solo en la slide activa.
+- `assets/site.js` dejo de desplazar el track con `translateX` y ahora alterna la clase `is-active` junto con `aria-hidden`, manteniendo la navegacion por flechas y la pausa/reproduccion de video existente.
+- Validacion realizada con `node --check assets/site.js`, `git diff --check` y Chrome headless de Windows contra servidor local `python3 -m http.server 4173`; el harness de validacion confirmo para `Downtime` y `Hiperfoco` `totalSlides: 4`, `activeSlides: 1`, `visibleSlides: 1`, `trackPosition: absolute` y `trackTransform: none` tanto al cargar como despues de avanzar una slide.
+- Completado totalmente: ya no se muestran slides vecinas dentro del media de producto.
+- Pendiente/deferido: una revision visual manual final en navegador normal sigue siendo recomendable para ajustar encuadre fino, pero la regresion reportada quedo cubierta por validacion automatizada de estado visible.
+
 ## 2026-04-27 - Sincronizacion de precios visibles con Google Sheets
 
 - Se agrego el endpoint publico read-only `GET /api/public-catalog` en el Worker, reutilizando la configuracion operativa `Config!A:Z` y exponiendo solo campos seguros del catalogo activo: producto, formato, precio, moneda, umbral de envio gratis y timestamp de generacion.
