@@ -293,8 +293,26 @@
               </div>
             </div>
           </div>
-          <div class="product-media">
-            <video class="product-media-video" src="/assets/products/Downtime-bagvideo.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Video del pack de Downtime"></video>
+          <div class="product-media" data-product-slider role="region" aria-label="Slider de media de Downtime">
+            <div class="product-media-track" data-product-slider-track></div>
+            <button type="button"
+                    class="product-media-nav product-media-nav-prev"
+                    data-product-slider-prev
+                    aria-label="Ver media anterior de Downtime"
+                    disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"></path>
+              </svg>
+            </button>
+            <button type="button"
+                    class="product-media-nav product-media-nav-next"
+                    data-product-slider-next
+                    aria-label="Ver media siguiente de Downtime">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </button>
+            <p class="sr-only" data-product-slider-status aria-live="polite"></p>
           </div>
         </article>
         <article class="card product-card card-featured fade-in" aria-label="Hiperfoco" data-product-card data-product-id="hiperfoco">
@@ -366,11 +384,26 @@
               </div>
             </div>
           </div>
-          <div class="product-media">
-            <div class="product-media-placeholder" role="img" aria-label="Video de Hiperfoco próximamente">
-              <span class="product-media-placeholder-kicker">Video de Hiperfoco</span>
-              <strong>Próximamente</strong>
-            </div>
+          <div class="product-media" data-product-slider role="region" aria-label="Slider de media de Hiperfoco">
+            <div class="product-media-track" data-product-slider-track></div>
+            <button type="button"
+                    class="product-media-nav product-media-nav-prev"
+                    data-product-slider-prev
+                    aria-label="Ver media anterior de Hiperfoco"
+                    disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"></path>
+              </svg>
+            </button>
+            <button type="button"
+                    class="product-media-nav product-media-nav-next"
+                    data-product-slider-next
+                    aria-label="Ver media siguiente de Hiperfoco">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </button>
+            <p class="sr-only" data-product-slider-status aria-live="polite"></p>
           </div>
         </article>
       </div>

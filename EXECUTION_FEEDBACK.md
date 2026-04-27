@@ -294,3 +294,15 @@
 - `assets/site.css` se ajusto para soportar la nueva estructura `product-card-content + product-media`, corregir el estilo de los `select` en la nueva ubicacion y mantener el comportamiento responsivo sin refresh de stacks.
 - Validacion realizada con parseo HTML de `index.html` y `git diff --check`; no se hizo refresh de stacks por instruccion explicita (`none`).
 - Completado totalmente: reubicacion de controles/datos de producto y expansion del media al alto completo de la tarjeta en desktop.
+
+## 2026-04-24 - Slider interno de media para cards de producto
+
+- Se reemplazo el media fijo de `Downtime` y el placeholder estatico de `Hiperfoco` por un slider interno en `index.html`, manteniendo la estructura general de cada card y limitando el cambio al bloque `.product-media`.
+- `assets/site.js` ahora declara un manifiesto de slides por producto y construye 4 slots por card en el orden definido: `mockup`, `hold`, `video`, `etiqueta`, con navegacion manual por flechas, estado accesible y pausa/reproduccion de video segun la slide activa.
+- `assets/site.css` se amplio para soportar track interno, slides estables con mezcla de imagen/video, flechas semitransparentes overlay y placeholders por slot sin alterar el alto ni el fondo de las cards.
+- Se dejo fallback por slide: si un asset falla en carga, el slot reemplaza ese media por `Mockup proximamente`, `Hold proximamente`, `Video proximamente` o `Etiqueta proximamente`, conservando navegacion y layout.
+- Se excluyeron de este slider `assets/products/Downtime-bagvideo.mp4`, `assets/products/Downtime/downtime_mockup_bolsa.png` y `assets/products/Downtime/Downtime-website.svg` para respetar la secuencia exacta pedida en esta iteracion.
+- Validacion realizada con `node --check assets/site.js`, `git diff --check`, parseo HTML de `index.html`, servidor local `python3 -m http.server 4173`, y una prueba automatizada preparada para verificar cantidad de slides, avance manual, activacion de video y fallback forzado.
+- Completado totalmente: slider manual por producto, manifiesto de assets, flechas overlay, reproduccion condicionada del video activo y fallback contextual por slide.
+- Parcial: la validacion visual end-to-end en navegador no pudo completarse en este entorno porque el Chromium headless disponible falla al iniciar por dependencia del sistema faltante (`libnspr4.so`), asi que la inspeccion visual real desktop/mobile queda pendiente de correr en una maquina con browser operativo.
+- Pendiente/deferido: confirmar visualmente en navegador el encuadre final de cada asset y, si hace falta, ajustar `object-fit`, padding del stage o posicion exacta de las flechas con una pasada UI ya sobre browser funcional.
