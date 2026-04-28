@@ -2,8 +2,8 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 export const SUPPORT_EMAIL = 'contacto@caferoast.cl';
-export const SUPPORT_WHATSAPP = '+56951172813';
-export const SUPPORT_WHATSAPP_URL = 'https://wa.me/56951172813';
+export const SUPPORT_WHATSAPP = '+56991746361';
+export const SUPPORT_WHATSAPP_URL = 'https://wa.me/56991746361';
 export const CHILE_TIMEZONE = 'America/Santiago';
 
 export function buildCorsHeaders(extraHeaders = {}) {

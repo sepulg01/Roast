@@ -325,3 +325,16 @@
 - Completado totalmente: endpoint publico sanitizado, cache HTTP corto, hidratacion progresiva de precios visibles, fallback seguro y actualizacion del copy visible de envio gratis.
 - Parcial: no se pudo verificar `GET /api/public-catalog` con `wrangler dev` contra Google Sheets porque este entorno no tiene `worker/.dev.vars` ni secretos reales de Google cargados.
 - Pendiente/deferido: probar el endpoint con secretos reales, cambiar un precio en Sheets y confirmar que `/api/public-catalog`, home, quiz, review del checkout y registros en `Ventas` / `Lineas_Pedido` coinciden.
+
+## 2026-04-28 - README en Sheets, WhatsApp nuevo y Playwright funcional
+
+- Se agrego `scripts/sync-sheet-readme.mjs` para crear o actualizar la pestana `README` de la planilla operativa mediante Google Sheets API, usando `GOOGLE_SERVICE_ACCOUNT_JSON` y `GOOGLE_SHEET_ID`, sin versionar secretos ni formulas obligatorias.
+- `README.md` paso de placeholder a documentacion operativa del stack `Website -> Cloudflare Worker -> Google Sheets + Flow + Apps Script`, incluyendo rutas publicas, override de API, hojas reales, variables, secretos y comandos de validacion.
+- Se actualizo el WhatsApp de soporte a `+56 9 9174 6361` / `https://wa.me/56991746361` en home, paginas editoriales, checkout, resultado de pago, terminos, `BRAND_CONTEXT.md`, `assets/site.js` y `worker/src/lib/utils.js`.
+- `assets/site.js` ahora rehidrata todos los `[data-support-whatsapp-link]` con el mensaje contextual, aunque el HTML traiga un fallback funcional, preservando contextos y soporte con `order_id` desde checkout/resultado.
+- Se agrego un arnes Playwright raiz separado del Worker con `package.json`, `package-lock.json`, `playwright.config.js`, `.gitignore` y specs funcionales para rutas publicas, WhatsApp con/sin JavaScript, overflow responsive, slider, quiz, catalogo publico, checkout y resultado de pago.
+- Validacion realizada con `npm install`, `npm run test:static`, `npx playwright install chromium`, `LD_LIBRARY_PATH="$PWD/.playwright-local-libs/usr/lib/x86_64-linux-gnu" npm run test:functional -- --reporter=line`, `rg "56951172813|\\+56951172813|\\+56 9 5117 2813|wa\\.me/56951172813" --glob '!EXECUTION_FEEDBACK.md'` y verificacion de ausencia de `GOOGLE_SERVICE_ACCOUNT_JSON` / `GOOGLE_SHEET_ID` locales.
+- Completado totalmente: documentacion operativa versionada, script de sincronizacion validado por sintaxis, numero de WhatsApp nuevo en superficies productivas, fallback HTML funcional para soporte y suite funcional Playwright con 52 pruebas pasando en desktop/mobile.
+- Parcial: no se ejecuto `npm run sheets:readme` contra Google Sheets porque el entorno no tiene `GOOGLE_SERVICE_ACCOUNT_JSON` ni `GOOGLE_SHEET_ID` exportados.
+- Parcial: Chromium bundled fallo inicialmente por dependencias Linux faltantes (`libnspr4`, `libnss3`, `libgbm`, `libasound`, `libwayland-server`); se valido la suite con librerias descargadas localmente en `.playwright-local-libs/`, carpeta ignorada por Git.
+- Pendiente/deferido: ejecutar `npm run sheets:readme` con secretos reales para crear/actualizar la pestana en la planilla y, en otra maquina/CI, instalar dependencias del navegador con `npx playwright install --with-deps chromium` o equivalente del sistema.

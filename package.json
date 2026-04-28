@@ -1,0 +1,17 @@
+{
+  "name": "roast-site-functional",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "npm run test:static",
+    "serve:static": "http-server . -p 4173 -a 127.0.0.1 -c-1 --silent",
+    "sheets:readme": "node scripts/sync-sheet-readme.mjs",
+    "test:static": "node --check assets/site.js assets/checkout.js scripts/sync-sheet-readme.mjs scripts/run-playwright.mjs playwright.config.js && find worker/src -name \"*.js\" -print -exec node --check {} \\; && npm --prefix worker run check && git diff --check",
+    "test:functional": "node scripts/run-playwright.mjs",
+    "test:functional:list": "node scripts/run-playwright.mjs --list"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.51.1",
+    "http-server": "^14.1.1"
+  }
+}

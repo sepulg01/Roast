@@ -1,8 +1,8 @@
 window.dataLayer = window.dataLayer || [];
 
 var SUPPORT_EMAIL = 'contacto@caferoast.cl';
-var SUPPORT_WHATSAPP = '+56951172813';
-var SUPPORT_WHATSAPP_URL = 'https://wa.me/56951172813';
+var SUPPORT_WHATSAPP = '+56991746361';
+var SUPPORT_WHATSAPP_URL = 'https://wa.me/56991746361';
 var PUBLIC_CATALOG_ENDPOINT = '/api/public-catalog';
 
 var quizCups = null;
@@ -791,8 +791,6 @@ function initCheckoutLinks() {
 
 function initSupportLinks() {
   document.querySelectorAll('[data-support-whatsapp-link]').forEach(function(link) {
-    if (link.href && link.getAttribute('href') !== '#') return;
-
     var context = link.getAttribute('data-support-context') || 'mi pedido web';
     link.href = buildSupportWhatsAppUrl(buildSupportMessage(context));
   });
