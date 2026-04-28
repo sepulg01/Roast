@@ -28,6 +28,43 @@ const quizScenarios = [
   }
 ];
 
+async function getActiveProductMediaState(slider) {
+  return slider.locator('[data-product-slider-slide].is-active').evaluate((slide) => {
+    const children = Array.from(slide.children).map((element) => {
+      const rect = element.getBoundingClientRect();
+      const styles = window.getComputedStyle(element);
+
+      return {
+        className: String(element.className),
+        display: styles.display,
+        hidden: element.hidden,
+        height: rect.height,
+        visibility: styles.visibility,
+        width: rect.width
+      };
+    });
+
+    const renderedChildren = children.filter((child) => (
+      child.display !== 'none'
+      && child.visibility !== 'hidden'
+      && child.width > 0
+      && child.height > 0
+    ));
+
+    return { children, renderedChildren };
+  });
+}
+
+function findMediaChild(state, className) {
+  return state.children.find((child) => child.className.includes(className));
+}
+
+async function expectSingleRenderedMediaChild(slider) {
+  const state = await getActiveProductMediaState(slider);
+  expect(state.renderedChildren).toHaveLength(1);
+  return state;
+}
+
 test.describe('home catalog, media, and quiz', () => {
   test('hydrates catalog prices from /api/public-catalog', async ({ page }) => {
     await installMockWorkerApi(page);
@@ -61,7 +98,78 @@ test.describe('home catalog, media, and quiz', () => {
       const slider = sliders.nth(index);
       await expect(slider.locator('[data-product-slider-slide].is-active')).toHaveCount(1);
       await expect(slider.locator('[data-product-slider-slide][aria-hidden="false"]')).toHaveCount(1);
+
+      const state = await expectSingleRenderedMediaChild(slider);
+      const asset = findMediaChild(state, 'product-media-asset');
+      const placeholder = findMediaChild(state, 'product-media-placeholder');
+
+      expect(asset?.hidden).toBe(false);
+      expect(asset?.display).not.toBe('none');
+      expect(placeholder?.hidden).toBe(true);
+      expect(placeholder?.display).toBe('none');
     }
+  });
+
+  test('product media fallback shows only the placeholder when the active image fails', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.route('**/assets/products/Downtime/downtime_mockup_bolsa2.png', async (route) => {
+      await route.fulfill({
+        body: '',
+        contentType: 'image/png',
+        status: 404
+      });
+    });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    const slider = page.locator('[data-product-card][data-product-id="downtime"] [data-product-slider]');
+    await expect(slider).toHaveAttribute('data-slider-ready', 'true');
+    await expect(slider.locator('[data-product-slider-slide].is-active')).toHaveAttribute('data-media-fallback', 'true');
+
+    const state = await expectSingleRenderedMediaChild(slider);
+    const asset = findMediaChild(state, 'product-media-asset');
+    const placeholder = findMediaChild(state, 'product-media-placeholder');
+
+    expect(asset?.hidden).toBe(true);
+    expect(asset?.display).toBe('none');
+    expect(placeholder?.hidden).toBe(false);
+    expect(placeholder?.display).not.toBe('none');
+  });
+
+  test('product media navigation changes one closed slide at a time', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    const slider = page.locator('[data-product-card][data-product-id="downtime"] [data-product-slider]');
+    const previous = slider.locator('[data-product-slider-prev]');
+    const next = slider.locator('[data-product-slider-next]');
+
+    await expect(slider).toHaveAttribute('data-current-index', '0');
+    await expect(previous).toBeDisabled();
+    await expect(next).toBeEnabled();
+    await expectSingleRenderedMediaChild(slider);
+
+    await next.click();
+    await expect(slider).toHaveAttribute('data-current-index', '1');
+    await expect(slider.locator('[data-product-slider-slide].is-active')).toHaveAttribute('data-slide-index', '1');
+    await expect(slider.locator('[data-product-slider-slide][aria-hidden="false"]')).toHaveCount(1);
+    await expect(previous).toBeEnabled();
+    await expect(next).toBeEnabled();
+    await expectSingleRenderedMediaChild(slider);
+
+    await previous.click();
+    await expect(slider).toHaveAttribute('data-current-index', '0');
+    await expect(previous).toBeDisabled();
+    await expect(next).toBeEnabled();
+    await expectSingleRenderedMediaChild(slider);
+
+    await next.click();
+    await next.click();
+    await next.click();
+    await expect(slider).toHaveAttribute('data-current-index', '3');
+    await expect(slider.locator('[data-product-slider-slide].is-active')).toHaveAttribute('data-slide-index', '3');
+    await expect(next).toBeDisabled();
+    await expect(previous).toBeEnabled();
+    await expectSingleRenderedMediaChild(slider);
   });
 
   for (const scenario of quizScenarios) {

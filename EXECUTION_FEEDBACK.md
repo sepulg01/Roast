@@ -338,3 +338,13 @@
 - Parcial: no se ejecuto `npm run sheets:readme` contra Google Sheets porque el entorno no tiene `GOOGLE_SERVICE_ACCOUNT_JSON` ni `GOOGLE_SHEET_ID` exportados.
 - Parcial: Chromium bundled fallo inicialmente por dependencias Linux faltantes (`libnspr4`, `libnss3`, `libgbm`, `libasound`, `libwayland-server`); se valido la suite con librerias descargadas localmente en `.playwright-local-libs/`, carpeta ignorada por Git.
 - Pendiente/deferido: ejecutar `npm run sheets:readme` con secretos reales para crear/actualizar la pestana en la planilla y, en otra maquina/CI, instalar dependencias del navegador con `npx playwright install --with-deps chromium` o equivalente del sistema.
+
+## 2026-04-28 - Correccion final de doble render del slider de productos
+
+- Se confirmo con TDD que el slider podia renderizar simultaneamente el asset y su placeholder: las clases `.product-media-asset` y `.product-media-placeholder` declaraban `display: block/flex`, anulando el ocultamiento visual esperado del atributo `hidden`.
+- `assets/site.css` ahora usa grid superpuesto en `.product-media-slide`, asigna el mismo `grid-area` al asset y placeholder, y fuerza `display: none` para `.product-media-asset[hidden]` y `.product-media-placeholder[hidden]`.
+- Se amplio `tests/functional/catalog-and-home.spec.js` para verificar una sola slide activa, un solo hijo visual renderizado, placeholder realmente oculto cuando el asset carga, fallback inverso cuando el primer mockup falla y navegacion prev/next sin exponer vecinos.
+- Validacion dirigida realizada primero en rojo con `npm run test:functional -- tests/functional/catalog-and-home.spec.js --project=chromium --reporter=line`, fallando con `Received length: 2` para los hijos renderizados; luego, tras el CSS, el mismo comando paso con `8 passed`.
+- Validacion completa realizada con `npm run test:static`, `npm run test:functional -- --reporter=line`, `git diff --check` y `git status --short`.
+- Completado totalmente: el slider queda cerrado sobre una sola pieza visible por vez, manteniendo `aria-hidden`, botones de navegacion, foco visible, targets tactiles y comportamiento sin wrap.
+- Pendiente/deferido: hacer una revision visual manual fina en navegador normal si se desea ajustar encuadre de assets, sin necesidad de cambiar el contrato funcional del slider.
