@@ -110,9 +110,52 @@ test.describe('home catalog, media, and quiz', () => {
     }
   });
 
+  test('product media sliders initialize in the planned storytelling order', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    for (const productId of ['downtime', 'hiperfoco']) {
+      const slider = page.locator(`[data-product-card][data-product-id="${productId}"] [data-product-slider]`);
+      await expect(slider).toHaveAttribute('data-slider-ready', 'true');
+
+      const slideKinds = await slider.locator('[data-product-slider-slide]').evaluateAll(slides =>
+        slides.map(slide => slide.getAttribute('data-slide-kind'))
+      );
+
+      expect(slideKinds).toEqual(['hold', 'video', 'etiqueta', 'mockup']);
+    }
+  });
+
+  test('final home CTA opens an empty checkout draft that blocks continuation until an item is added', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    await page.locator('#final-cta [data-checkout-link]').click();
+    await page.waitForURL('**/pedido/**');
+
+    await expect(page.locator('.checkout-item-card')).toHaveCount(1);
+    await expect(page.locator('#checkoutSummaryItems li')).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Continuar con datos' }).click();
+
+    await expect(page.locator('[data-checkout-step="1"]')).toHaveClass(/checkout-step-active/);
+    await expect(page.locator('#checkoutStatus')).toContainText(/agrega|item|producto/i);
+  });
+
+  test('product card draft pre-fills exactly one live summary item in checkout', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    await page.locator('[data-product-card][data-product-id="hiperfoco"] [data-product-link]').click();
+    await page.waitForURL(/\/pedido\/\?(.+&)?draft=/);
+
+    await expect(page.locator('#checkoutSummaryItems li')).toHaveCount(1);
+    await expect(page.locator('#checkoutSummaryItems')).toContainText(/Hiperfoco.*500g.*espresso/i);
+  });
+
   test('product media fallback shows only the placeholder when the active image fails', async ({ page }) => {
     await installMockWorkerApi(page);
-    await page.route('**/assets/products/Downtime/downtime_mockup_bolsa2.png', async (route) => {
+    await page.route('**/assets/products/Downtime/downtime_mockup_hold.png', async (route) => {
       await route.fulfill({
         body: '',
         contentType: 'image/png',

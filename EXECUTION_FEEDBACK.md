@@ -348,3 +348,25 @@
 - Validacion completa realizada con `npm run test:static`, `npm run test:functional -- --reporter=line`, `git diff --check` y `git status --short`.
 - Completado totalmente: el slider queda cerrado sobre una sola pieza visible por vez, manteniendo `aria-hidden`, botones de navegacion, foco visible, targets tactiles y comportamiento sin wrap.
 - Pendiente/deferido: hacer una revision visual manual fina en navegador normal si se desea ajustar encuadre de assets, sin necesidad de cambiar el contrato funcional del slider.
+
+## 2026-04-28 - Actualizacion documental de backlog tras ultimos commits
+
+- Se actualizo `Backlog.md` con fecha `2026-04-28` para reflejar los commits posteriores al ultimo ajuste tabular del backlog, incluyendo `GET /api/public-catalog`, hidratacion progresiva de precios desde Google Sheets, sliders de media por producto, README operativo versionado, `npm run sheets:readme` y suite funcional Playwright.
+- Se mantuvieron como pendientes reales el despliegue del `Cloudflare Worker` con secretos, la conexion productiva de `Apps Script`, la prueba end-to-end `draft -> Flow -> webhook -> resultado -> Sheets` y la validacion real de precios cambiando datos en `Config.catalog`.
+- Se agregaron pendientes operativos para ejecutar el README dentro de Google Sheets con secretos reales, decidir dependencias/CI para Playwright y hacer una revision visual fina opcional del slider de productos.
+- Validacion realizada para esta iteracion documental: `git diff --check`, lectura directa de `Backlog.md` y busqueda dirigida del termino eliminado en `Backlog.md` / diff documental.
+- Completado totalmente: actualizacion documental del backlog y registro de ejecucion, sin tocar archivos productivos del website ni configuraciones de infraestructura.
+- Parcial: no se ejecutaron stacks ni pruebas funcionales completas porque el plan aprobado definio esta tarea como documental.
+- Pendiente/deferido: ejecutar los pendientes productivos descritos en `Backlog.md`; no se hizo commit, push ni refresh de stacks por alcance explicito de esta iteracion.
+
+## 2026-04-28 - Ajustes UI, checkout, SEO y articulos
+
+- Completado totalmente: se reordeno el slider de productos a `hold -> video -> etiqueta -> mockup`, manteniendo una sola slide activa y fallback por asset.
+- Completado totalmente: los CTAs genericos del home hacia `/pedido/`, incluido `index_final_cta`, abren un checkout vacio; los drafts de producto y quiz siguen precargando items reales.
+- Completado totalmente: el checkout ahora usa una sola tarjeta selectora, agrega items al `Resumen en vivo`, permite eliminarlos desde el resumen y muestra alerta de envio gratis que cambia a estado verde al superar el minimo.
+- Completado totalmente: los CTAs de WhatsApp abren en nueva pestana, el footer de checkout/resultado incluye Instagram naranja con hover mas intenso, el hover de WhatsApp queda visible y el texto del footer del checkout paso a `Tu primer cafe real`.
+- Completado totalmente: las cuatro paginas de articulos usan un shell editorial propio con hero compacto, contenido SEO critico, FAQ visible, relacionados, CTA final, canonical, `Article`, `BreadcrumbList`, `FAQPage` y un solo `H1`.
+- Completado totalmente: `Backlog.md` incorpora pendientes SEO/analytics para `og-image`, `dateModified`/`sitemap lastmod`, validaciones automaticas, GA4/GTM, Meta Pixel, eventos, posible Conversions API y revision legal/privacidad antes de tracking.
+- Validacion realizada: `npm run test:static`, `npm run test:functional -- tests/functional/catalog-and-home.spec.js --reporter=line`, `npm run test:functional -- tests/functional/checkout.spec.js --reporter=line`, `npm run test:functional -- tests/functional/static-routes.spec.js --reporter=line` y `PLAYWRIGHT_BASE_URL=http://127.0.0.1:4173 npm run test:functional -- --reporter=line` con 96 pruebas pasando.
+- Parcial: la suite completa con arranque automatico del `webServer` agoto el timeout de 30s en este entorno; se valido completa apuntando a un servidor local iniciado manualmente en el mismo puerto.
+- Pendiente/deferido: no se instalo Meta Pixel ni tags nuevos; quedan sujetos a definicion de medicion, consentimiento y actualizacion legal. Tambien queda opcional una pasada visual manual fina sobre articulos y checkout en navegador real.

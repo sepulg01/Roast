@@ -4,6 +4,7 @@ var SUPPORT_EMAIL = 'contacto@caferoast.cl';
 var SUPPORT_WHATSAPP = '+56991746361';
 var SUPPORT_WHATSAPP_URL = 'https://wa.me/56991746361';
 var PUBLIC_CATALOG_ENDPOINT = '/api/public-catalog';
+var DEFAULT_FREE_SHIPPING_THRESHOLD = 36000;
 
 var quizCups = null;
 var quizMethod = null;
@@ -65,16 +66,16 @@ var PRODUCT_MEDIA_KIND_LABEL_MAP = {
 
 var PRODUCT_MEDIA_MANIFEST = {
   'downtime': [
-    { kind: 'mockup', type: 'image', src: '/assets/products/Downtime/downtime_mockup_bolsa2.png', alt: 'Mockup de Downtime' },
     { kind: 'hold', type: 'image', src: '/assets/products/Downtime/downtime_mockup_hold.png', alt: 'Downtime sostenido en manos' },
     { kind: 'video', type: 'video', src: '/assets/products/Downtime/downtime_mockup_video.mp4', alt: 'Video de Downtime' },
-    { kind: 'etiqueta', type: 'image', src: '/assets/products/Downtime/Downtime-etiqueta.png', alt: 'Etiqueta de Downtime' }
+    { kind: 'etiqueta', type: 'image', src: '/assets/products/Downtime/Downtime-etiqueta.png', alt: 'Etiqueta de Downtime' },
+    { kind: 'mockup', type: 'image', src: '/assets/products/Downtime/downtime_mockup_bolsa2.png', alt: 'Mockup de bolsa Downtime' }
   ],
   'hiperfoco': [
-    { kind: 'mockup', type: 'image', src: '/assets/products/Hiperfoco/Hiperfoco-mockup (9 x 12 cm).png', alt: 'Mockup de Hiperfoco' },
     { kind: 'hold', type: 'image', src: '/assets/products/Hiperfoco/Hiperfoco-hold.png', alt: 'Hiperfoco sostenido en manos' },
     { kind: 'video', type: 'video', src: '/assets/products/Hiperfoco/Hiperfoco-Video.mp4', alt: 'Video de Hiperfoco' },
-    { kind: 'etiqueta', type: 'image', src: '/assets/products/Hiperfoco/Hiperfoco (9 x 12 cm).png', alt: 'Etiqueta de Hiperfoco' }
+    { kind: 'etiqueta', type: 'image', src: '/assets/products/Hiperfoco/Hiperfoco (9 x 12 cm).png', alt: 'Etiqueta de Hiperfoco' },
+    { kind: 'mockup', type: 'image', src: '/assets/products/Hiperfoco/Hiperfoco-mockup (9 x 12 cm).png', alt: 'Mockup de bolsa Hiperfoco' }
   ]
 };
 
@@ -126,6 +127,10 @@ function getProductPrice(productId, format, fallbackPrice) {
   }
 
   return fallback;
+}
+
+function getFreeShippingThreshold() {
+  return publicCatalogState.freeShippingThreshold || DEFAULT_FREE_SHIPPING_THRESHOLD;
 }
 
 function getQuizComboPrice() {
@@ -489,9 +494,7 @@ function hydratePublicCatalog(payload) {
 }
 
 function updateFreeShippingThresholdText() {
-  if (!publicCatalogState.freeShippingThreshold) return;
-
-  var thresholdText = formatCurrency(publicCatalogState.freeShippingThreshold) + ' CLP';
+  var thresholdText = formatCurrency(getFreeShippingThreshold()) + ' CLP';
 
   document.querySelectorAll('[data-free-shipping-threshold]').forEach(function(node) {
     node.textContent = thresholdText;
@@ -509,6 +512,11 @@ function refreshPublicCatalogUi() {
 
   updateFreeShippingThresholdText();
   syncQuizPanelHeight();
+  document.dispatchEvent(new CustomEvent('roast:public-catalog-updated', {
+    detail: {
+      freeShippingThreshold: getFreeShippingThreshold()
+    }
+  }));
 }
 
 function markPublicCatalogFallback() {
@@ -793,6 +801,8 @@ function initSupportLinks() {
   document.querySelectorAll('[data-support-whatsapp-link]').forEach(function(link) {
     var context = link.getAttribute('data-support-context') || 'mi pedido web';
     link.href = buildSupportWhatsAppUrl(buildSupportMessage(context));
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
   });
 }
 
@@ -1045,6 +1055,8 @@ window.RoastShop = {
   buildCheckoutUrl: buildCheckoutUrl,
   buildSupportWhatsAppUrl: buildSupportWhatsAppUrl,
   buildSupportMessage: buildSupportMessage,
+  getProductPrice: getProductPrice,
+  getFreeShippingThreshold: getFreeShippingThreshold,
   decodeDraftPayload: decodeDraftPayload,
   encodeDraftPayload: encodeDraftPayload,
   createItem: createItem,

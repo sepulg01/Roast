@@ -137,8 +137,8 @@
   <a href="#final-cta" onclick="closeDrawer()">Pedir ahora</a>
 </nav>
 
-<main>
-  <section class="page-hero page-hero--grano" aria-labelledby="page-heading">
+<main class="article-shell" data-article-shell>
+  <section class="page-hero page-hero--grano article-hero" aria-labelledby="page-heading">
     <div class="container">
       <ol class="breadcrumb-list" aria-label="Breadcrumb">
         <li><a href="/">Inicio</a></li>
@@ -150,7 +150,7 @@
       <div class="hero-ctas">
         <a href="/pedido/" class="btn btn-primary" aria-label="Iniciar pedido web de café en grano" data-checkout-link data-checkout-origin="cafe_en_grano_hero" data-checkout-channel="site_editorial_wholebean" data-analytics-label="wholebean_hero_primary">Iniciar pedido web</a>
         <a href="#contenido" class="btn btn-secondary hero-cta-secondary">Leer guía</a>
-        <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary hero-cta-secondary" aria-label="Hablar con soporte por WhatsApp" data-support-whatsapp-link data-support-context="pedir cafe en grano" data-analytics-label="wholebean_hero_support">WhatsApp de soporte</a>
+        <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary hero-cta-secondary" target="_blank" rel="noopener noreferrer" aria-label="Hablar con soporte por WhatsApp" data-support-whatsapp-link data-support-context="pedir cafe en grano" data-analytics-label="wholebean_hero_support">WhatsApp de soporte</a>
       </div>
       <p class="hero-contact-note">Si quieres confirmar si te conviene grano o molido, escríbenos a <a href="mailto:contacto@caferoast.cl">contacto@caferoast.cl</a>.</p>
       <ul class="page-proof" aria-label="Beneficios clave">
@@ -161,7 +161,7 @@
     </div>
   </section>
 
-  <section id="contenido" class="page-section" aria-labelledby="grano-copy-heading">
+  <section id="contenido" class="page-section article-prose article-section" aria-labelledby="grano-copy-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="grano-copy-heading">Pedir café en grano tiene sentido cuando quieres más control y menos dependencia de una molienda cerrada.</h2>
@@ -178,32 +178,10 @@
           <p>En ese caso suele calzar mejor el <a href="/cafe-molido/" class="text-link">café molido a pedido</a>. Y si todavía estás entendiendo qué cambia realmente entre uno y otro, te conviene leer antes la guía de <a href="/cafe-de-especialidad/" class="text-link">café de especialidad</a> para no tomar la decisión como si fuera una prueba técnica.</p>
         </article>
       </div>
-      <div class="feature-grid">
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Más control</span>
-          <h3>Tú decides la molienda</h3>
-          <p>Útil si cambias entre moka, filtro o espresso y prefieres ajustar según tu receta.</p>
-        </article>
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Más aroma</span>
-          <h3>Mejor para guardar el café</h3>
-          <p>El grano entero resiste mejor el paso de los días que el café ya molido, sobre todo si compras formatos grandes.</p>
-        </article>
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Misma compra simple</span>
-          <h3>Pedido web con cero fricción extra</h3>
-          <p>No necesitas un checkout complejo para comprar buen café en grano. Dejas el contexto listo, confirmas el total y pagas cuando todo está claro.</p>
-        </article>
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Menos pose</span>
-          <h3>Más café real, menos ceremonia</h3>
-          <p>El cambio no es técnico: sigues tomando café mejor, solo que molido en casa cuando tú quieras. Si esa parte no te entusiasma, probablemente el <a href="/cafe-molido/" class="text-link">molido a pedido</a> te va a servir más.</p>
-        </article>
-      </div>
     </div>
   </section>
 
-  <section class="page-section page-section-alt" aria-labelledby="grano-tips-heading">
+  <section class="page-section page-section-alt article-section article-panel" aria-labelledby="grano-tips-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="grano-tips-heading">Cómo guardar el grano para que te dure mejor.</h2>
@@ -222,7 +200,7 @@
     </div>
   </section>
 
-  <section class="page-section" aria-labelledby="grano-extra-heading">
+  <section class="page-section article-section article-panel" aria-labelledby="grano-extra-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="grano-extra-heading">Cuándo no conviene comprar en grano, aunque suene más “pro”.</h2>
@@ -241,7 +219,7 @@
     </div>
   </section>
 
-  <section id="faq" class="page-section page-faq" aria-labelledby="faq-heading">
+  <section id="faq" class="page-section page-faq article-section" aria-labelledby="faq-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="faq-heading">Preguntas frecuentes sobre el café en grano.</h2>
@@ -280,7 +258,7 @@
     </div>
   </section>
 
-  <section id="seo-hub" class="page-section" aria-labelledby="seo-hub-heading">
+  <section id="seo-hub" class="page-section article-related" aria-labelledby="seo-hub-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="seo-hub-heading">Lee también estos artículos.</h2>
@@ -315,29 +293,12 @@
     </div>
   </section>
 
-  <section class="page-section page-section-alt" aria-labelledby="grano-bridge-heading">
-    <div class="container">
-      <div class="related-grid">
-        <article class="related-card fade-in">
-          <span class="badge">SIGUIENTE PASO</span>
-          <h3 id="grano-bridge-heading">¿Qué te conviene pedir ahora?</h3>
-          <p>Si ya mueles en casa y quieres un café más intenso, entra al pedido web y deja el formato resuelto de una vez.</p>
-          <p>Si todavía no decides entre grano y molido, lo resolvemos contigo por soporte antes de que compres algo que te complique el desayuno.</p>
-          <div class="hero-ctas">
-            <a href="/pedido/" class="btn btn-primary" data-checkout-link data-checkout-origin="cafe_en_grano_bridge" data-checkout-channel="site_editorial_wholebean" data-analytics-label="wholebean_bridge_primary">Ir al pedido web</a>
-            <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary hero-cta-secondary" aria-label="Consultar café en grano por WhatsApp" data-support-whatsapp-link data-support-context="definir si me conviene cafe en grano" data-analytics-label="wholebean_bridge_support">Consultar por WhatsApp</a>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
   <section id="final-cta" aria-labelledby="final-heading">
     <h2 id="final-heading">Confirma tu formato y ciérralo desde el pedido web.</h2>
     <p class="final-sub">Si te conviene grano entero, aquí lo resuelves sin vueltas y con Flow listo para el pago.</p>
     <div class="final-cta-actions">
       <a href="/pedido/" class="btn btn-final" data-checkout-link data-checkout-origin="cafe_en_grano_final" data-checkout-channel="site_editorial_wholebean" data-analytics-label="wholebean_final_primary">Iniciar pedido web</a>
-      <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary" data-support-whatsapp-link data-support-context="mi pedido de cafe en grano" data-analytics-label="wholebean_final_support">WhatsApp de soporte</a>
+      <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary" target="_blank" rel="noopener noreferrer" data-support-whatsapp-link data-support-context="mi pedido de cafe en grano" data-analytics-label="wholebean_final_support">WhatsApp de soporte</a>
     </div>
   </section>
 </main>
@@ -375,7 +336,7 @@
         <p class="footer-contact-note">Si todavía no decides entre grano y molido, revisamos contigo cuál ruta te conviene más.</p>
       </div>
       <div class="footer-socials" aria-label="Canales de soporte">
-        <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="icon-link icon-link-whatsapp" aria-label="Abrir conversación por WhatsApp con Cafe Roast" data-support-whatsapp-link data-support-context="mi pedido de cafe en grano" data-analytics-label="wholebean_footer_support">
+        <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="icon-link icon-link-whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Abrir conversación por WhatsApp con Cafe Roast" data-support-whatsapp-link data-support-context="mi pedido de cafe en grano" data-analytics-label="wholebean_footer_support">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
         </a>
         <a href="https://www.instagram.com/caferoast.cl" class="icon-link icon-link-accent" target="_blank" rel="noopener noreferrer" aria-label="Visitar Instagram de Cafe Roast">

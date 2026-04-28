@@ -82,6 +82,8 @@ function orderPayload(status = 'paid') {
 }
 
 export async function installMockWorkerApi(page, options = {}) {
+  const orderDraftRequests = [];
+
   await page.route('**/api/public-catalog', async route => {
     if (options.catalogHtmlError) {
       await route.fulfill({
@@ -100,6 +102,17 @@ export async function installMockWorkerApi(page, options = {}) {
   });
 
   await page.route('**/api/order-drafts', async route => {
+    const request = route.request();
+    const postData = request.postData();
+
+    if (postData) {
+      try {
+        orderDraftRequests.push(JSON.parse(postData));
+      } catch (error) {
+        orderDraftRequests.push({ parseError: error.message, raw: postData });
+      }
+    }
+
     if (options.orderDraftHtmlError) {
       await route.fulfill({
         status: 200,
@@ -156,6 +169,11 @@ export async function installMockWorkerApi(page, options = {}) {
       body: '<!doctype html><title>Mock Flow</title><h1>Mock Flow checkout</h1>'
     });
   });
+
+  return {
+    orderDraftRequests,
+    publicCatalogPayload
+  };
 }
 
 export async function expectNoHorizontalOverflow(page) {

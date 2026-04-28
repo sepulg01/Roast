@@ -137,8 +137,8 @@
   <a href="#final-cta" onclick="closeDrawer()">Pedir ahora</a>
 </nav>
 
-<main>
-  <section class="page-hero page-hero--domicilio" aria-labelledby="page-heading">
+<main class="article-shell" data-article-shell>
+  <section class="page-hero page-hero--domicilio article-hero" aria-labelledby="page-heading">
     <div class="container">
       <ol class="breadcrumb-list" aria-label="Breadcrumb">
         <li><a href="/">Inicio</a></li>
@@ -160,6 +160,8 @@
         <a href="#contenido" class="btn btn-secondary hero-cta-secondary">Leer guía</a>
         <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido."
            class="btn btn-secondary hero-cta-secondary"
+           target="_blank"
+           rel="noopener noreferrer"
            aria-label="Hablar con soporte por WhatsApp"
            data-support-whatsapp-link
            data-support-context="pedir cafe a domicilio"
@@ -176,7 +178,7 @@
     </div>
   </section>
 
-  <section id="contenido" class="page-section" aria-labelledby="domicilio-copy-heading">
+  <section id="contenido" class="page-section article-prose article-section" aria-labelledby="domicilio-copy-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="domicilio-copy-heading">Pedir café a domicilio debería ser corto: elegir, escribir y esperar el timbre.</h2>
@@ -193,32 +195,10 @@
           <p>Si compras sobre $36.000 CLP dentro de Santiago, el envío va gratis. Y si todavía estás decidiendo qué tipo de café pedir, la guía de <a href="/cafe-de-especialidad/" class="text-link">café de especialidad</a> aclara la parte del producto antes de cerrar la logística.</p>
         </article>
       </div>
-      <div class="feature-grid">
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Sin fricción</span>
-          <h3>Pedido web corto, no eterno</h3>
-          <p>Ideal si quieres resolver café a domicilio rápido, con un formulario mínimo y un total confirmado antes de pagar.</p>
-        </article>
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Cobertura actual</span>
-          <h3>Santiago primero</h3>
-          <p>Hoy nos concentramos en despachar bien dentro de la Región Metropolitana antes de abrir otras ciudades.</p>
-        </article>
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Compra flexible</span>
-          <h3>Molido o en grano</h3>
-          <p>El despacho no cambia el producto. Puedes pedir Roast molido a pedido según tu cafetera o en grano entero.</p>
-        </article>
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Consumo real</span>
-          <h3>Formato según tu ritmo</h3>
-          <p>Desde 250g para probar hasta 1kg para quien ya quiere dejar el mes resuelto de una sola vez.</p>
-        </article>
-      </div>
     </div>
   </section>
 
-  <section class="page-section page-section-alt" aria-labelledby="domicilio-guide-heading">
+  <section class="page-section page-section-alt article-section article-panel" aria-labelledby="domicilio-guide-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="domicilio-guide-heading">Qué revisar antes de pedir despacho.</h2>
@@ -237,7 +217,7 @@
     </div>
   </section>
 
-  <section class="page-section" aria-labelledby="domicilio-next-heading">
+  <section class="page-section article-section article-panel" aria-labelledby="domicilio-next-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="domicilio-next-heading">Qué pasa después de enviar el pedido web.</h2>
@@ -256,7 +236,7 @@
     </div>
   </section>
 
-  <section id="faq" class="page-section page-faq" aria-labelledby="faq-heading">
+  <section id="faq" class="page-section page-faq article-section" aria-labelledby="faq-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="faq-heading">Preguntas frecuentes sobre el café a domicilio.</h2>
@@ -295,7 +275,7 @@
     </div>
   </section>
 
-  <section id="seo-hub" class="page-section" aria-labelledby="seo-hub-heading">
+  <section id="seo-hub" class="page-section article-related" aria-labelledby="seo-hub-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="seo-hub-heading">Lee también estos artículos.</h2>
@@ -330,29 +310,12 @@
     </div>
   </section>
 
-  <section class="page-section page-section-alt" aria-labelledby="domicilio-bridge-heading">
-    <div class="container">
-      <div class="related-grid">
-        <article class="related-card fade-in">
-          <span class="badge">SIGUIENTE PASO</span>
-          <h3 id="domicilio-bridge-heading">¿Qué te conviene pedir ahora?</h3>
-          <p>Si ya tienes claro que quieres resolverlo por despacho, entra al pedido web y deja el contexto armado de una vez.</p>
-          <p>Si todavía no decides entre molido o grano, o quieres confirmar cobertura antes de pagar, te lo resolvemos por soporte.</p>
-          <div class="hero-ctas">
-            <a href="/pedido/" class="btn btn-primary" data-checkout-link data-checkout-origin="cafe_a_domicilio_bridge" data-checkout-channel="site_editorial_delivery" data-analytics-label="delivery_bridge_primary">Ir al pedido web</a>
-            <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary hero-cta-secondary" aria-label="Consultar despacho por WhatsApp" data-support-whatsapp-link data-support-context="confirmar cobertura para despacho" data-analytics-label="delivery_bridge_support">Consultar por WhatsApp</a>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
   <section id="final-cta" aria-labelledby="final-heading">
     <h2 id="final-heading">Activa tu pedido web y cierra el pago por Flow.</h2>
     <p class="final-sub">Despacho en Santiago, cobertura clara y soporte visible si necesitas confirmar algo antes de pagar.</p>
     <div class="final-cta-actions">
       <a href="/pedido/" class="btn btn-final" data-checkout-link data-checkout-origin="cafe_a_domicilio_final" data-checkout-channel="site_editorial_delivery" data-analytics-label="delivery_final_primary">Iniciar pedido web</a>
-      <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary" data-support-whatsapp-link data-support-context="mi pedido de despacho" data-analytics-label="delivery_final_support">WhatsApp de soporte</a>
+      <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary" target="_blank" rel="noopener noreferrer" data-support-whatsapp-link data-support-context="mi pedido de despacho" data-analytics-label="delivery_final_support">WhatsApp de soporte</a>
     </div>
   </section>
 </main>
@@ -390,7 +353,7 @@
         <p class="footer-contact-note">Si tu zona requiere confirmación manual, cerramos el pedido contigo por soporte.</p>
       </div>
       <div class="footer-socials" aria-label="Canales de soporte">
-        <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="icon-link icon-link-whatsapp" aria-label="Abrir conversación por WhatsApp con Cafe Roast" data-support-whatsapp-link data-support-context="mi pedido a domicilio" data-analytics-label="delivery_footer_support">
+        <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="icon-link icon-link-whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Abrir conversación por WhatsApp con Cafe Roast" data-support-whatsapp-link data-support-context="mi pedido a domicilio" data-analytics-label="delivery_footer_support">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
         </a>
         <a href="https://www.instagram.com/caferoast.cl" class="icon-link icon-link-accent" target="_blank" rel="noopener noreferrer" aria-label="Visitar Instagram de Cafe Roast">

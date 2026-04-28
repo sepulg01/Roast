@@ -3,6 +3,7 @@ import { installMockWorkerApi } from './helpers/mockWorkerApi.js';
 
 async function reachCustomerStep(page) {
   await page.goto('/pedido/', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('button', { name: 'Agregar al resumen' }).click();
   await page.getByRole('button', { name: 'Continuar con datos' }).click();
 }
 
@@ -17,6 +18,55 @@ async function fillCustomerData(page, commune = 'Providencia') {
 }
 
 test.describe('checkout flow', () => {
+  test('direct checkout starts with an editable empty draft and only submits added items', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page);
+    await page.goto('/pedido/', { waitUntil: 'domcontentloaded' });
+
+    await expect(page.locator('.checkout-item-card')).toHaveCount(1);
+    await expect(page.locator('#checkoutSummaryItems li')).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Agregar al resumen' }).click();
+
+    await expect(page.locator('#checkoutSummaryItems li')).toHaveCount(1);
+    await expect(page.locator('#checkoutSummaryItems')).toContainText(/Downtime.*250g.*prensa francesa/i);
+    await expect(page.locator('[data-summary-remove-item]')).toHaveCount(1);
+
+    await page.locator('[data-summary-remove-item]').click();
+
+    await expect(page.locator('#checkoutSummaryItems li')).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Agregar al resumen' }).click();
+    await page.getByRole('button', { name: 'Continuar con datos' }).click();
+    await fillCustomerData(page);
+    await page.getByRole('button', { name: 'Continuar a revisión' }).click();
+
+    await expect.poll(() => mockApi.orderDraftRequests.length).toBe(1);
+    expect(mockApi.orderDraftRequests[0].items).toEqual([
+      {
+        product_code: 'downtime',
+        format_code: '250g',
+        grind: 'prensa francesa',
+        quantity: 1
+      }
+    ]);
+  });
+
+  test('free-shipping alert changes from remaining amount to success after threshold is reached', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.goto('/pedido/', { waitUntil: 'domcontentloaded' });
+
+    const alert = page.locator('[data-free-shipping-alert]');
+    await expect(alert).toContainText(/faltan|quedan|restan/i);
+    await expect(alert).toContainText(/\$|CLP/);
+
+    await page.locator('[data-current-item-field="format_code"]').selectOption('1kg');
+    await page.getByRole('button', { name: 'Agregar al resumen' }).click();
+    await page.getByRole('button', { name: 'Agregar al resumen' }).click();
+
+    await expect(alert).toContainText(/env[ií]o gratis|gratis activado|alcanzaste/i);
+    await expect(alert).toHaveAttribute('data-free-shipping-state', 'qualified');
+  });
+
   test('happy path creates a draft, creates a payment link, and redirects to Flow', async ({ page }) => {
     await installMockWorkerApi(page);
     await reachCustomerStep(page);

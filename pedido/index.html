@@ -64,7 +64,7 @@
             </div>
             <div id="checkoutItems"></div>
             <div class="checkout-step-actions">
-              <button type="button" class="btn btn-secondary" id="addCheckoutItem">Agregar otro item</button>
+              <button type="button" class="btn btn-secondary" id="addCheckoutItem">Agregar al resumen</button>
               <button type="button" class="btn btn-primary" id="checkoutStep1Next">Continuar con datos</button>
             </div>
           </section>
@@ -169,10 +169,11 @@
           <p class="checkout-summary-kicker">Resumen en vivo</p>
           <h2>Lo que llevas</h2>
           <ul class="checkout-summary-list" id="checkoutSummaryItems"></ul>
+          <p class="checkout-shipping-alert" data-free-shipping-alert data-free-shipping-state="remaining">Te faltan $36.000 CLP para llegar al envío gratis.</p>
           <p class="checkout-summary-note">El total final se confirma al pasar al paso 3. Si tu comuna queda fuera de cobertura automática, el pedido pasa a revisión manual.</p>
           <div class="checkout-summary-support">
             <a href="mailto:contacto@caferoast.cl" class="checkout-summary-email" data-support-email-link>contacto@caferoast.cl</a>
-            <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="checkout-summary-whatsapp" data-checkout-support-link data-support-whatsapp-link data-support-context="mi pedido web" data-analytics-label="checkout_sidebar_support">WhatsApp de soporte</a>
+            <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="checkout-summary-whatsapp" target="_blank" rel="noopener noreferrer" data-checkout-support-link data-support-whatsapp-link data-support-context="mi pedido web" data-analytics-label="checkout_sidebar_support">WhatsApp de soporte</a>
           </div>
         </aside>
       </div>
@@ -186,7 +187,7 @@
       <span class="footer-logo-wordmark">Roast<span>.</span></span>
     </div>
     <div class="footer-meta">
-      <p class="footer-tagline">Pedido web simple, pago con Flow y soporte visible.</p>
+      <p class="footer-tagline">Tu primer café real</p>
       <p class="footer-site">caferoast.cl · Santiago, Chile</p>
     </div>
     <div class="footer-explore">
@@ -213,8 +214,15 @@
         <p class="footer-contact-note">WhatsApp queda disponible como rescate si necesitas ayuda con el pedido o el pago.</p>
       </div>
       <div class="footer-socials" aria-label="Canales de soporte">
-        <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="icon-link icon-link-whatsapp" data-checkout-support-link data-support-whatsapp-link data-support-context="mi pedido web" data-analytics-label="checkout_footer_support" aria-label="Abrir conversación por WhatsApp con Cafe Roast">
+        <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="icon-link icon-link-whatsapp" target="_blank" rel="noopener noreferrer" data-checkout-support-link data-support-whatsapp-link data-support-context="mi pedido web" data-analytics-label="checkout_footer_support" aria-label="Abrir conversación por WhatsApp con Cafe Roast">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/caferoast.cl" class="icon-link icon-link-accent" target="_blank" rel="noopener noreferrer" aria-label="Visitar Instagram de Cafe Roast">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+            <circle cx="12" cy="12" r="4"></circle>
+            <circle cx="17.5" cy="6.5" r="1"></circle>
+          </svg>
         </a>
       </div>
     </div>

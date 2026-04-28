@@ -137,8 +137,8 @@
   <a href="#final-cta" onclick="closeDrawer()">Pedir ahora</a>
 </nav>
 
-<main>
-  <section class="page-hero page-hero--molido" aria-labelledby="page-heading">
+<main class="article-shell" data-article-shell>
+  <section class="page-hero page-hero--molido article-hero" aria-labelledby="page-heading">
     <div class="container">
       <ol class="breadcrumb-list" aria-label="Breadcrumb">
         <li><a href="/">Inicio</a></li>
@@ -150,7 +150,7 @@
       <div class="hero-ctas">
         <a href="/pedido/" class="btn btn-primary" aria-label="Iniciar pedido web de café molido" data-checkout-link data-checkout-origin="cafe_molido_hero" data-checkout-channel="site_editorial_ground" data-analytics-label="ground_hero_primary">Iniciar pedido web</a>
         <a href="#contenido" class="btn btn-secondary hero-cta-secondary">Leer guía</a>
-        <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary hero-cta-secondary" aria-label="Consultar molienda por soporte" data-support-whatsapp-link data-support-context="elegir molienda" data-analytics-label="ground_hero_support">WhatsApp de soporte</a>
+        <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary hero-cta-secondary" target="_blank" rel="noopener noreferrer" aria-label="Consultar molienda por soporte" data-support-whatsapp-link data-support-context="elegir molienda" data-analytics-label="ground_hero_support">WhatsApp de soporte</a>
       </div>
       <p class="hero-contact-note">Si te complica la molienda, también puedes escribir a <a href="mailto:contacto@caferoast.cl">contacto@caferoast.cl</a>.</p>
       <ul class="page-proof" aria-label="Beneficios clave">
@@ -161,7 +161,7 @@
     </div>
   </section>
 
-  <section id="contenido" class="page-section" aria-labelledby="molido-copy-heading">
+  <section id="contenido" class="page-section article-prose article-section" aria-labelledby="molido-copy-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="molido-copy-heading">Molido a pedido significa que el café llega pensado para tu cafetera, no para una bolsa genérica.</h2>
@@ -178,32 +178,10 @@
           <p>Si ya mueles en casa y te gusta ajustar tú mismo, el <a href="/cafe-en-grano/" class="text-link">café en grano</a> puede hacer más sentido. Si además vienes saliendo del instantáneo, este camino suele ser el acceso más fácil al <a href="/cafe-de-especialidad/" class="text-link">café de especialidad</a>.</p>
         </article>
       </div>
-      <div class="feature-grid">
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Sin molinillo</span>
-          <h3>Sirve para empezar hoy mismo</h3>
-          <p>No necesitas equipo extra ni aprender una receta nueva para tomar mejor café mañana.</p>
-        </article>
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Molienda correcta</span>
-          <h3>La cafetera sí importa</h3>
-          <p>Moka, prensa, filtro o espresso no usan la misma molienda. Esa diferencia cambia la taza más de lo que parece.</p>
-        </article>
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Cambio fácil</span>
-          <h3>Es la vía corta para dejar el café instantáneo</h3>
-          <p>Sigues comprando simple, pero con café real y una molienda que sí calza con tu forma de prepararlo.</p>
-        </article>
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Más claridad</span>
-          <h3>Si sabes cómo lo preparas, ya sabes suficiente</h3>
-          <p>No hay que estudiar café para pedir bien. Basta con saber si usas moka, prensa, filtro o espresso.</p>
-        </article>
-      </div>
     </div>
   </section>
 
-  <section class="page-section page-section-alt" aria-labelledby="molido-guide-heading">
+  <section class="page-section page-section-alt article-section article-panel" aria-labelledby="molido-guide-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="molido-guide-heading">Cómo elegir la molienda sin complicarte.</h2>
@@ -219,22 +197,10 @@
           <p>La prensa francesa pide molienda más gruesa y el filtro va en un punto medio. Son preparaciones simples, pero la molienda sí cambia el resultado.</p>
         </article>
       </div>
-      <div class="feature-grid">
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Espresso</span>
-          <h3>Más fina y más precisa</h3>
-          <p>Si usas espresso, la molienda debe ser más fina que en cualquier método de goteo o inmersión.</p>
-        </article>
-        <article class="feature-card fade-in">
-          <span class="feature-kicker">Chemex y AeroPress</span>
-          <h3>Te guiamos si lo necesitas</h3>
-          <p>Si usas métodos intermedios, no hace falta memorizar nada. Basta con indicarlo en el pedido o escribirnos si quieres una revisión rápida.</p>
-        </article>
-      </div>
     </div>
   </section>
 
-  <section class="page-section" aria-labelledby="molido-errors-heading">
+  <section class="page-section article-section article-panel" aria-labelledby="molido-errors-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="molido-errors-heading">Errores comunes al pedir molienda por primera vez.</h2>
@@ -253,7 +219,7 @@
     </div>
   </section>
 
-  <section id="faq" class="page-section page-faq" aria-labelledby="faq-heading">
+  <section id="faq" class="page-section page-faq article-section" aria-labelledby="faq-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="faq-heading">Preguntas frecuentes sobre el café molido a pedido.</h2>
@@ -292,7 +258,7 @@
     </div>
   </section>
 
-  <section id="seo-hub" class="page-section" aria-labelledby="seo-hub-heading">
+  <section id="seo-hub" class="page-section article-related" aria-labelledby="seo-hub-heading">
     <div class="container">
       <div class="section-header fade-in">
         <h2 id="seo-hub-heading">Lee también estos artículos.</h2>
@@ -327,29 +293,12 @@
     </div>
   </section>
 
-  <section class="page-section page-section-alt" aria-labelledby="molido-bridge-heading">
-    <div class="container">
-      <div class="related-grid">
-        <article class="related-card fade-in">
-          <span class="badge">SIGUIENTE PASO</span>
-          <h3 id="molido-bridge-heading">¿Qué te conviene pedir ahora?</h3>
-          <p>Si quieres facilidad y una taza correcta desde el primer pedido, parte por el pedido web con el formato y la molienda ya encaminados.</p>
-          <p>Si prefieres resolverlo conversando, te recomendamos la molienda correcta por soporte antes de cerrar el pago.</p>
-          <div class="hero-ctas">
-            <a href="/pedido/" class="btn btn-primary" data-checkout-link data-checkout-origin="cafe_molido_bridge" data-checkout-channel="site_editorial_ground" data-analytics-label="ground_bridge_primary">Ir al pedido web</a>
-            <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary hero-cta-secondary" aria-label="Consultar molienda por WhatsApp" data-support-whatsapp-link data-support-context="elegir molienda correcta" data-analytics-label="ground_bridge_support">Consultar por WhatsApp</a>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
   <section id="final-cta" aria-labelledby="final-heading">
     <h2 id="final-heading">Confirma la molienda y ciérralo en el pedido web.</h2>
     <p class="final-sub">Nos dices cómo lo preparas, el sistema recalcula el total y Flow se encarga del pago.</p>
     <div class="final-cta-actions">
       <a href="/pedido/" class="btn btn-final" data-checkout-link data-checkout-origin="cafe_molido_final" data-checkout-channel="site_editorial_ground" data-analytics-label="ground_final_primary">Iniciar pedido web</a>
-      <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary" data-support-whatsapp-link data-support-context="confirmar molienda antes de pagar" data-analytics-label="ground_final_support">WhatsApp de soporte</a>
+      <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="btn btn-secondary" target="_blank" rel="noopener noreferrer" data-support-whatsapp-link data-support-context="confirmar molienda antes de pagar" data-analytics-label="ground_final_support">WhatsApp de soporte</a>
     </div>
   </section>
 </main>
@@ -387,7 +336,7 @@
         <p class="footer-contact-note">Si no estás seguro de la molienda, la revisamos contigo antes de cerrar el pago.</p>
       </div>
       <div class="footer-socials" aria-label="Canales de soporte">
-        <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="icon-link icon-link-whatsapp" aria-label="Abrir conversación por WhatsApp con Cafe Roast" data-support-whatsapp-link data-support-context="mi pedido de cafe molido" data-analytics-label="ground_footer_support">
+        <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="icon-link icon-link-whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Abrir conversación por WhatsApp con Cafe Roast" data-support-whatsapp-link data-support-context="mi pedido de cafe molido" data-analytics-label="ground_footer_support">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.091.535 4.06 1.473 5.773L.057 23.077c-.083.303.186.583.492.51l5.426-1.396A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.784 9.784 0 01-4.988-1.367l-.357-.213-3.724.957.99-3.614-.234-.372A9.78 9.78 0 012.182 12C2.182 6.568 6.568 2.182 12 2.182S21.818 6.568 21.818 12 17.432 21.818 12 21.818z"/></svg>
         </a>
         <a href="https://www.instagram.com/caferoast.cl" class="icon-link icon-link-accent" target="_blank" rel="noopener noreferrer" aria-label="Visitar Instagram de Cafe Roast">

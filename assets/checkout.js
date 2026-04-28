@@ -26,6 +26,7 @@
     page: document.body.getAttribute('data-page') || '',
     origin: '',
     channel: '',
+    currentItem: null,
     items: [],
     order: null
   };
@@ -114,6 +115,55 @@
     return option ? option.label : value;
   }
 
+  function createDefaultCheckoutItem() {
+    return window.RoastShop.createItem('downtime', '250g', 'prensa francesa', 1);
+  }
+
+  function normalizeCheckoutItem(item) {
+    return {
+      product_code: item.product_code || item.product || 'downtime',
+      format_code: item.format_code || item.format || '250g',
+      grind: normalizeIncomingGrind(item.grind),
+      quantity: Math.max(Number(item.quantity || 1), 1)
+    };
+  }
+
+  function cloneCheckoutItem(item) {
+    return normalizeCheckoutItem(Object.assign({}, item || createDefaultCheckoutItem()));
+  }
+
+  function getLiveItemPrice(item) {
+    if (window.RoastShop.getProductPrice) {
+      return window.RoastShop.getProductPrice(item.product_code, item.format_code);
+    }
+
+    return window.RoastShop.PRODUCT_PRICE_MAP[item.format_code] || 0;
+  }
+
+  function getLiveSubtotal() {
+    return state.items.reduce(function(total, item) {
+      return total + (getLiveItemPrice(item) * Math.max(Number(item.quantity || 1), 1));
+    }, 0);
+  }
+
+  function renderFreeShippingAlert() {
+    var alert = document.querySelector('[data-free-shipping-alert]');
+    if (!alert) return;
+
+    var threshold = window.RoastShop.getFreeShippingThreshold ? window.RoastShop.getFreeShippingThreshold() : 36000;
+    var subtotal = getLiveSubtotal();
+    var remaining = Math.max(threshold - subtotal, 0);
+
+    if (remaining > 0) {
+      alert.setAttribute('data-free-shipping-state', 'remaining');
+      alert.textContent = 'Te faltan ' + window.RoastShop.formatCurrency(remaining) + ' CLP para llegar al envío gratis.';
+      return;
+    }
+
+    alert.setAttribute('data-free-shipping-state', 'qualified');
+    alert.textContent = 'Envío gratis activado. Ya alcanzaste el mínimo para despacho gratis.';
+  }
+
   function escapeHtml(value) {
     return String(value || '')
       .replace(/&/g, '&amp;')
@@ -171,31 +221,21 @@
     state.origin = params.get('origin') || (decodedDraft && decodedDraft.origin) || 'pedido_page';
     state.channel = params.get('channel') || (decodedDraft && decodedDraft.channel) || 'site_checkout';
 
-    if (!items.length) {
-      return [window.RoastShop.createItem('downtime', '250g', 'prensa francesa', 1)];
-    }
-
-    return items.map(function(item) {
-      return {
-        product_code: item.product_code || item.product || 'downtime',
-        format_code: item.format_code || item.format || '250g',
-        grind: normalizeIncomingGrind(item.grind),
-        quantity: Number(item.quantity || 1)
-      };
-    });
+    return items.map(normalizeCheckoutItem);
   }
 
   function renderItemsEditor() {
     var container = document.getElementById('checkoutItems');
     if (!container) return;
 
-    container.innerHTML = state.items.map(function(item, index) {
-      return [
+    var item = state.currentItem || createDefaultCheckoutItem();
+
+    container.innerHTML = [
         '<article class="checkout-item-card">',
         '  <div class="checkout-item-grid">',
         '    <label class="checkout-field">',
         '      <span class="checkout-label">Producto</span>',
-        '      <select data-item-field="product_code" data-item-index="' + index + '">',
+        '      <select data-current-item-field="product_code">',
         PRODUCT_OPTIONS.map(function(option) {
           return '        <option value="' + option.value + '"' + (option.value === item.product_code ? ' selected' : '') + '>' + option.label + '</option>';
         }).join(''),
@@ -203,7 +243,7 @@
         '    </label>',
         '    <label class="checkout-field">',
         '      <span class="checkout-label">Formato</span>',
-        '      <select data-item-field="format_code" data-item-index="' + index + '">',
+        '      <select data-current-item-field="format_code">',
         FORMAT_OPTIONS.map(function(option) {
           return '        <option value="' + option.value + '"' + (option.value === item.format_code ? ' selected' : '') + '>' + option.label + '</option>';
         }).join(''),
@@ -211,7 +251,7 @@
         '    </label>',
         '    <label class="checkout-field">',
         '      <span class="checkout-label">Molienda</span>',
-        '      <select data-item-field="grind" data-item-index="' + index + '">',
+        '      <select data-current-item-field="grind">',
         GRIND_OPTIONS.map(function(option) {
           return '        <option value="' + option.value + '"' + (option.value === item.grind ? ' selected' : '') + '>' + option.label + '</option>';
         }).join(''),
@@ -219,41 +259,48 @@
         '    </label>',
         '    <label class="checkout-field">',
         '      <span class="checkout-label">Cantidad</span>',
-        '      <input type="number" min="1" step="1" value="' + Number(item.quantity || 1) + '" data-item-field="quantity" data-item-index="' + index + '" />',
+        '      <input type="number" min="1" step="1" value="' + Number(item.quantity || 1) + '" data-current-item-field="quantity" />',
         '    </label>',
         '  </div>',
-        state.items.length > 1 ? '  <button type="button" class="checkout-remove-item" data-remove-item="' + index + '">Eliminar item</button>' : '',
         '</article>'
       ].join('\n');
-    }).join('');
 
-    container.querySelectorAll('[data-item-field]').forEach(function(input) {
+    container.querySelectorAll('[data-current-item-field]').forEach(function(input) {
       input.addEventListener('change', function() {
-        var field = input.getAttribute('data-item-field');
-        var index = Number(input.getAttribute('data-item-index'));
-        state.items[index][field] = field === 'quantity' ? Math.max(Number(input.value || 1), 1) : input.value;
-        renderLiveSummary();
+        var field = input.getAttribute('data-current-item-field');
+        state.currentItem[field] = field === 'quantity' ? Math.max(Number(input.value || 1), 1) : input.value;
+        renderFreeShippingAlert();
       });
     });
+  }
 
-    container.querySelectorAll('[data-remove-item]').forEach(function(button) {
-      button.addEventListener('click', function() {
-        var index = Number(button.getAttribute('data-remove-item'));
-        state.items.splice(index, 1);
-        renderItemsEditor();
-        renderLiveSummary();
-      });
-    });
+  function renderSummaryItem(item, index) {
+    var productLabel = window.RoastShop.PRODUCT_NAME_MAP[item.product_code] || item.product_code;
+    var quantityLabel = Number(item.quantity || 1) > 1 ? ' · x' + Number(item.quantity || 1) : '';
+
+    return [
+      '<li>',
+      '  <span>' + escapeHtml(productLabel + ' · ' + item.format_code + ' · ' + getGrindLabel(item.grind) + quantityLabel) + '</span>',
+      '  <button type="button" class="checkout-summary-remove" data-summary-remove-item="' + index + '" aria-label="Eliminar ' + escapeHtml(productLabel) + ' del resumen">Eliminar</button>',
+      '</li>'
+    ].join('\n');
   }
 
   function renderLiveSummary() {
     var container = document.getElementById('checkoutSummaryItems');
     if (!container) return;
 
-    container.innerHTML = state.items.map(function(item) {
-      var productLabel = window.RoastShop.PRODUCT_NAME_MAP[item.product_code] || item.product_code;
-      return '<li>' + escapeHtml(productLabel + ' · ' + item.format_code + ' · ' + getGrindLabel(item.grind)) + '</li>';
-    }).join('');
+    container.innerHTML = state.items.map(renderSummaryItem).join('');
+
+    container.querySelectorAll('[data-summary-remove-item]').forEach(function(button) {
+      button.addEventListener('click', function() {
+        var index = Number(button.getAttribute('data-summary-remove-item'));
+        state.items.splice(index, 1);
+        renderLiveSummary();
+      });
+    });
+
+    renderFreeShippingAlert();
   }
 
   function collectCustomerData() {
@@ -269,7 +316,7 @@
   }
 
   function validateItems() {
-    return state.items.every(function(item) {
+    return state.items.length > 0 && state.items.every(function(item) {
       return item.product_code && item.format_code && item.grind && Number(item.quantity || 0) > 0;
     });
   }
@@ -330,6 +377,8 @@
     var message = window.RoastShop.buildSupportMessage('mi pedido web', orderId);
     document.querySelectorAll('[data-checkout-support-link]').forEach(function(link) {
       link.href = window.RoastShop.buildSupportWhatsAppUrl(message);
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
     });
     document.querySelectorAll('[data-support-email-link]').forEach(function(link) {
       link.href = 'mailto:' + window.RoastShop.SUPPORT_EMAIL;
@@ -476,6 +525,7 @@
     var payButton = document.getElementById('checkoutPayButton');
 
     state.items = getInitialItems();
+    state.currentItem = createDefaultCheckoutItem();
     renderItemsEditor();
     renderLiveSummary();
     updateSupportLinks();
@@ -483,8 +533,7 @@
 
     if (addItemButton) {
       addItemButton.addEventListener('click', function() {
-        state.items.push(window.RoastShop.createItem('downtime', '250g', 'prensa francesa', 1));
-        renderItemsEditor();
+        state.items.push(cloneCheckoutItem(state.currentItem));
         renderLiveSummary();
       });
     }
@@ -492,7 +541,7 @@
     if (step1Next) {
       step1Next.addEventListener('click', function() {
         if (!validateItems()) {
-          setGlobalStatus('Completa producto, formato, molienda y cantidad antes de continuar.', 'error');
+          setGlobalStatus('Agrega al menos un producto al resumen antes de continuar.', 'error');
           return;
         }
         setGlobalStatus('', 'info');
@@ -519,6 +568,8 @@
     if (payButton) {
       payButton.addEventListener('click', createPaymentLink);
     }
+
+    document.addEventListener('roast:public-catalog-updated', renderLiveSummary);
   }
 
   function getStatusConfig(status) {
