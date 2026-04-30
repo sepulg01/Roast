@@ -4,9 +4,10 @@
   "type": "module",
   "scripts": {
     "check": "npm run test:static",
+    "check:copy-approval": "node scripts/check-visible-copy-approval.mjs",
     "serve:static": "http-server . -p 4173 -a 127.0.0.1 -c-1 --silent",
     "sheets:readme": "node scripts/sync-sheet-readme.mjs",
-    "test:static": "node --check assets/site.js assets/checkout.js scripts/sync-sheet-readme.mjs scripts/run-playwright.mjs playwright.config.js && find worker/src -name \"*.js\" -print -exec node --check {} \\; && npm --prefix worker run check && git diff --check",
+    "test:static": "node --check assets/site.js assets/checkout.js apps-script/Code.js scripts/check-visible-copy-approval.mjs scripts/sync-sheet-readme.mjs scripts/run-playwright.mjs playwright.config.js && find worker/src -name \"*.js\" -print -exec node --check {} \\; && npm --prefix worker run check && npm run check:copy-approval && git diff --check",
     "test:functional": "node scripts/run-playwright.mjs",
     "test:functional:list": "node scripts/run-playwright.mjs --list"
   },

@@ -18,7 +18,7 @@ Cafe Roast quiere ser una **marca D2C reconocida en redes sociales por su humor 
 
 El crecimiento se proyecta en tres ejes:
 
-- **Canal:** hoy pedido web con pago mediante Flow, soporte por WhatsApp (+56 9 9174 6361) y correo. Próximamente suscripción recurrente (semanal, quincenal, mensual).
+- **Canal:** hoy pedido web con cierre temporal por WhatsApp (+56 9 9174 6361) y correo. Flow queda en desarrollo para reactivación posterior. Próximamente suscripción recurrente (semanal, quincenal, mensual).
 - **Geografía:** hoy distribuye en Santiago RM. Próximamente desde Talca, Chillán, y Puerto Varas.
 - **Contenido:** redes sociales como canal de awareness y construcción de marca, con humor como vehículo principal.
 
@@ -189,14 +189,14 @@ Espresso · Moka · Prensa francesa · Filtro / pour over · Chemex · AeroPress
 
 ### Canal de venta
 
-Pedido web primero: el cliente arma su pedido en caferoast.cl, confirma el total y paga con Flow. WhatsApp (+56 9 9174 6361) queda como soporte y rescate operativo cuando alguien necesita ayuda con pedido, despacho o pago.
+Pedido web primero: el cliente arma su pedido en caferoast.cl, confirma el total y el cierre temporal se deriva a WhatsApp (+56 9 9174 6361) y correo para coordinar pago y despacho.
 
 ### En desarrollo
 
 - Suscripción recurrente (semanal, quincenal, mensual)
 - Expansión a Talca, Chillán, Puerto Varas
-- Habilitación de link de pago mediante plataforma Flow
-- Formulario de compra simple, para captura de datos mínimos del cliente y envío del link de pago (para clientes que no gustan de conversar)
+- Reactivación de link de pago mediante plataforma Flow
+- Formulario de compra simple con captura de datos mínimos, email operativo y cierre humano por WhatsApp mientras Flow queda demorado
 
 ---
 

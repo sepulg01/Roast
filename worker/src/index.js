@@ -1,4 +1,11 @@
-import { createOrderDraft, createPaymentLink, getPublicCatalog, getPublicOrder, syncPaymentStatus } from './lib/orders.js';
+import {
+  createOrderContactRequest,
+  createOrderDraft,
+  createPaymentLink,
+  getPublicCatalog,
+  getPublicOrder,
+  syncPaymentStatus
+} from './lib/orders.js';
 import {
   errorResponse,
   getPublicBaseUrl,
@@ -22,6 +29,12 @@ async function handleOrderDraft(request, env) {
 async function handlePaymentLink(request, env, publicBaseUrl) {
   const payload = await parseRequestBody(request);
   const result = await createPaymentLink(env, payload, publicBaseUrl);
+  return jsonResponse(result);
+}
+
+async function handleOrderContactRequest(request, env) {
+  const payload = await parseRequestBody(request);
+  const result = await createOrderContactRequest(env, payload);
   return jsonResponse(result);
 }
 
@@ -83,6 +96,10 @@ export default {
 
       if (request.method === 'POST' && url.pathname === '/api/payment-links') {
         return handlePaymentLink(request, env, publicBaseUrl);
+      }
+
+      if (request.method === 'POST' && url.pathname === '/api/order-contact-requests') {
+        return handleOrderContactRequest(request, env);
       }
 
       if (request.method === 'GET' && url.pathname === '/api/public-catalog') {

@@ -70,7 +70,7 @@ test.describe('home catalog, media, and quiz', () => {
     await installMockWorkerApi(page);
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-    await expect(page.locator('#downtime-price')).toContainText('$17.777');
+    await expect(page.locator('#downtime-price')).toContainText('$18.900');
     await expect(page.locator('[data-free-shipping-threshold]').first()).toContainText('$36.000');
   });
 
@@ -78,6 +78,8 @@ test.describe('home catalog, media, and quiz', () => {
     await installMockWorkerApi(page, { catalogHtmlError: true });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
+    await expect(page.locator('#downtime-price')).toContainText('$18.900');
+    await expect(page.locator('#hiperfoco-price')).toContainText('$18.900');
     await expect(page.locator('#downtime-price')).toHaveAttribute(
       'title',
       'Precio referencial; se confirma en checkout.'

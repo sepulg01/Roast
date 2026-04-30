@@ -11,15 +11,15 @@ var quizMethod = null;
 var quizProductChoice = null;
 var QUIZ_DESKTOP_BREAKPOINT = 900;
 var QUIZ_RESULT_REFERENCE_TEXT = '250g de Downtime + 250g de Hiperfoco, molido para prensa francesa';
-var QUIZ_RESULT_REFERENCE_PRICE = '$18.000 CLP';
+var QUIZ_RESULT_REFERENCE_PRICE = '$19.800 CLP';
 
 var PRICE_MAP = {
-  '1_taza': { format: '250g', price: 9000 },
-  '2_tazas': { format: '500g', price: 16500 },
-  '3_o_mas': { format: '1kg', price: 29000 }
+  '1_taza': { format: '250g', price: 9900 },
+  '2_tazas': { format: '500g', price: 18900 },
+  '3_o_mas': { format: '1kg', price: 32900 }
 };
 
-var QUIZ_COMBO_PRICE = 18000;
+var QUIZ_COMBO_PRICE = 19800;
 
 var METHOD_GRIND_MAP = {
   'moka': 'molido para moka',
@@ -46,9 +46,9 @@ var PRODUCT_NAME_MAP = {
 };
 
 var PRODUCT_PRICE_MAP = {
-  '250g': 9000,
-  '500g': 16500,
-  '1kg': 29000
+  '250g': 9900,
+  '500g': 18900,
+  '1kg': 32900
 };
 
 var publicCatalogState = {

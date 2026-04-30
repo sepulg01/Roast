@@ -67,14 +67,19 @@ test.describe('checkout flow', () => {
     await expect(alert).toHaveAttribute('data-free-shipping-state', 'qualified');
   });
 
-  test('happy path creates a draft, creates a payment link, and redirects to Flow', async ({ page }) => {
-    await installMockWorkerApi(page);
+  test('happy path creates a draft, requests contact closure, and redirects to WhatsApp', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page);
+    const trackedEvents = [];
+    await page.exposeFunction('recordCheckoutEvent', event => {
+      trackedEvents.push(event);
+    });
+
     await reachCustomerStep(page);
     await fillCustomerData(page);
     await page.getByRole('button', { name: 'Continuar a revisión' }).click();
 
     await expect(page.locator('#reviewOrderId')).toContainText('ORD_TEST_001');
-    await expect(page.locator('#reviewTotal')).toContainText('$15.845');
+    await expect(page.locator('#reviewTotal')).toContainText('$13.400');
     await expect(page.locator('[data-checkout-support-link]').first()).toHaveAttribute(
       'href',
       /wa\.me\/56991746361.*ORD_TEST_001/
@@ -82,21 +87,51 @@ test.describe('checkout flow', () => {
 
     await page.locator('#accept_total').check();
     await page.locator('#accept_terms').check();
-    await page.getByRole('button', { name: 'Generar link de pago' }).click();
+    await page.evaluate(() => {
+      const originalPush = window.dataLayer.push.bind(window.dataLayer);
+      window.dataLayer.push = function(payload) {
+        window.recordCheckoutEvent(payload);
+        return originalPush(payload);
+      };
+    });
+    await page.getByRole('button', { name: 'Enviar pedido' }).click();
 
-    await page.waitForURL('**/__mock-flow/checkout?token=test-token');
-    await expect(page.getByRole('heading', { name: 'Mock Flow checkout' })).toBeVisible();
+    await expect.poll(() => mockApi.orderContactRequests.length).toBe(1);
+    expect(mockApi.orderContactRequests[0]).toEqual({
+      order_id: 'ORD_TEST_001',
+      accept_total: true,
+      accept_terms: true
+    });
+    expect(mockApi.paymentLinkRequests).toHaveLength(0);
+
+    await page.waitForURL(/wa\.me\/56991746361/);
+    await expect(page.getByRole('heading', { name: 'Mock WhatsApp redirect' })).toBeVisible();
+    await expect.poll(() => trackedEvents.map(event => event.event)).toEqual(
+      expect.arrayContaining(['order_contact_requested', 'whatsapp_redirected'])
+    );
   });
 
-  test('manual review draft shows support path and disables payment', async ({ page }) => {
-    await installMockWorkerApi(page, { manualReview: true });
+  test('manual review draft shows support path and allows contact closure', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page, { manualReview: true });
     await reachCustomerStep(page);
     await fillCustomerData(page, 'Paine');
     await page.getByRole('button', { name: 'Continuar a revisión' }).click();
 
     await expect(page.locator('#manualReviewBox')).toBeVisible();
     await expect(page.locator('#checkoutStatus')).toContainText('revisión manual');
-    await expect(page.locator('#checkoutPayButton')).toBeDisabled();
+    await expect(page.locator('#checkoutPayButton')).toBeEnabled();
+
+    await page.locator('#accept_total').check();
+    await page.locator('#accept_terms').check();
+    await page.getByRole('button', { name: 'Enviar pedido' }).click();
+
+    await expect.poll(() => mockApi.orderContactRequests.length).toBe(1);
+    expect(mockApi.orderContactRequests[0]).toEqual({
+      order_id: 'ORD_TEST_001',
+      accept_total: true,
+      accept_terms: true
+    });
+    expect(mockApi.paymentLinkRequests).toHaveLength(0);
   });
 
   test('HTML API response explains backend route misconfiguration', async ({ page }) => {

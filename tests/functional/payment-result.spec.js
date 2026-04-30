@@ -7,7 +7,7 @@ test.describe('payment result page', () => {
     await page.goto('/pago/resultado/?order_id=ORD_TEST_001', { waitUntil: 'domcontentloaded' });
 
     await expect(page.locator('#paymentResultTitle')).toContainText('Pago recibido');
-    await expect(page.locator('#paymentResultTotal')).toContainText('$15.845');
+    await expect(page.locator('#paymentResultTotal')).toContainText('$13.400');
     await expect(page.locator('#paymentResultItems')).toContainText('Downtime 250g');
     await expect(page.locator('[data-checkout-support-link]').first()).toHaveAttribute(
       'href',

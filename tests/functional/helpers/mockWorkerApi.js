@@ -11,42 +11,42 @@ export const publicCatalogPayload = {
       product_name: 'Downtime',
       format_code: '250g',
       format_label: '250g',
-      price_clp: 12345
+      price_clp: 9900
     },
     {
       product_code: 'downtime',
       product_name: 'Downtime',
       format_code: '500g',
       format_label: '500g',
-      price_clp: 17777
+      price_clp: 18900
     },
     {
       product_code: 'downtime',
       product_name: 'Downtime',
       format_code: '1kg',
       format_label: '1kg',
-      price_clp: 29000
+      price_clp: 32900
     },
     {
       product_code: 'hiperfoco',
       product_name: 'Hiperfoco',
       format_code: '250g',
       format_label: '250g',
-      price_clp: 12345
+      price_clp: 9900
     },
     {
       product_code: 'hiperfoco',
       product_name: 'Hiperfoco',
       format_code: '500g',
       format_label: '500g',
-      price_clp: 17777
+      price_clp: 18900
     },
     {
       product_code: 'hiperfoco',
       product_name: 'Hiperfoco',
       format_code: '1kg',
       format_label: '1kg',
-      price_clp: 29000
+      price_clp: 32900
     }
   ]
 };
@@ -73,7 +73,7 @@ function orderPayload(status = 'paid') {
     ok: true,
     order_id: 'ORD_TEST_001',
     items_label: 'Downtime 250g',
-    total_clp: 15845,
+    total_clp: 13400,
     internal_status: status,
     flow_checkout_url: ['pending_payment', 'link_sent'].includes(status) ? flowUrl : '',
     support_email: 'contacto@caferoast.cl',
@@ -83,6 +83,8 @@ function orderPayload(status = 'paid') {
 
 export async function installMockWorkerApi(page, options = {}) {
   const orderDraftRequests = [];
+  const orderContactRequests = [];
+  const paymentLinkRequests = [];
 
   await page.route('**/api/public-catalog', async route => {
     if (options.catalogHtmlError) {
@@ -129,9 +131,9 @@ export async function installMockWorkerApi(page, options = {}) {
       body: JSON.stringify({
         ok: true,
         order_id: 'ORD_TEST_001',
-        subtotal_clp: 12345,
+        subtotal_clp: 9900,
         shipping_clp: manualReview ? 0 : 3500,
-        total_clp: manualReview ? 12345 : 15845,
+        total_clp: manualReview ? 9900 : 13400,
         internal_status: manualReview ? 'manual_review' : 'draft',
         manual_review_reason: manualReview ? 'commune_outside_coverage' : '',
         items_label: 'Downtime 250g',
@@ -142,6 +144,17 @@ export async function installMockWorkerApi(page, options = {}) {
   });
 
   await page.route('**/api/payment-links', async route => {
+    const request = route.request();
+    const postData = request.postData();
+
+    if (postData) {
+      try {
+        paymentLinkRequests.push(JSON.parse(postData));
+      } catch (error) {
+        paymentLinkRequests.push({ parseError: error.message, raw: postData });
+      }
+    }
+
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -151,6 +164,37 @@ export async function installMockWorkerApi(page, options = {}) {
         flow_order: 'FLOW_TEST_001',
         internal_status: 'link_sent'
       })
+    });
+  });
+
+  await page.route('**/api/order-contact-requests', async route => {
+    const request = route.request();
+    const postData = request.postData();
+
+    if (postData) {
+      try {
+        orderContactRequests.push(JSON.parse(postData));
+      } catch (error) {
+        orderContactRequests.push({ parseError: error.message, raw: postData });
+      }
+    }
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        internal_status: 'contact_requested',
+        whatsapp_url: `${SUPPORT_WHATSAPP_URL}?text=Hola%20Roast.%20Quiero%20cerrar%20mi%20pedido%20ORD_TEST_001.`
+      })
+    });
+  });
+
+  await page.route('https://wa.me/**', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'text/html',
+      body: '<!doctype html><title>Mock WhatsApp</title><h1>Mock WhatsApp redirect</h1>'
     });
   });
 
@@ -172,6 +216,8 @@ export async function installMockWorkerApi(page, options = {}) {
 
   return {
     orderDraftRequests,
+    orderContactRequests,
+    paymentLinkRequests,
     publicCatalogPayload
   };
 }

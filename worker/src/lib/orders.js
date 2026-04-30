@@ -26,6 +26,8 @@ import {
 import { createFlowPayment, getFlowPaymentStatus, mapFlowStatus } from './flow.js';
 import { notifyOperationalEvent, shouldNotifyEvent } from './notifications.js';
 
+const CONTACT_REQUEST_ALLOWED_STATUSES = new Set(['draft', 'manual_review']);
+
 export const CLIENT_HEADERS = [
   'customer_id',
   'created_at',
@@ -441,20 +443,34 @@ async function appendLineRows(env, lines, createdAt) {
   }
 }
 
-async function appendEvent(env, event) {
+async function notifyEvent(env, event) {
+  if (!shouldNotifyEvent(event.event_type)) {
+    return false;
+  }
+
+  try {
+    return await notifyOperationalEvent(env, {
+      recipient: SUPPORT_EMAIL,
+      support_email: SUPPORT_EMAIL,
+      support_whatsapp: SUPPORT_WHATSAPP,
+      ...event
+    });
+  } catch (error) {
+    return false;
+  }
+}
+
+async function appendEvent(env, event, options = {}) {
   let notificationSent = false;
 
-  if (shouldNotifyEvent(event.event_type)) {
-    try {
-      notificationSent = await notifyOperationalEvent(env, {
-        recipient: SUPPORT_EMAIL,
-        support_email: SUPPORT_EMAIL,
-        support_whatsapp: SUPPORT_WHATSAPP,
-        ...event
-      });
-    } catch (error) {
-      notificationSent = false;
-    }
+  if (options.notificationSent === true) {
+    notificationSent = true;
+  } else if (options.notify !== false) {
+    notificationSent = await notifyEvent(env, event);
+  }
+
+  if (options.requireNotification && !notificationSent) {
+    throw new Error('Order contact notification could not be sent');
   }
 
   await appendSheetObject(env, 'Eventos', EVENT_HEADERS, {
@@ -540,6 +556,60 @@ async function updateCustomerPaymentStats(env, customerId, totalClp, paidAt) {
   await updateSheetObjectRow(env, 'Clientes', CLIENT_HEADERS, existing.row._rowNumber, updated);
 }
 
+function buildLineItemDetail(row) {
+  return {
+    line_id: row.line_id || '',
+    product_code: row.product_code || '',
+    product_name: row.product_name || '',
+    format_code: row.format_code || '',
+    format_label: row.format_label || '',
+    grind: row.grind || '',
+    quantity: parseInteger(row.quantity, 0),
+    unit_price_clp: toCurrencyNumber(row.unit_price_clp),
+    line_subtotal_clp: toCurrencyNumber(row.line_subtotal_clp),
+    unit_cost_clp: toCurrencyNumber(row.unit_cost_clp),
+    line_cost_clp: toCurrencyNumber(row.line_cost_clp),
+    format_bucket: row.format_bucket || '',
+    is_combo_component: isTruthy(row.is_combo_component)
+  };
+}
+
+async function getOrderLineItems(env, orderId) {
+  const table = await readSheetTable(env, 'Lineas_Pedido');
+  return table.rows
+    .filter(row => String(row.order_id || '') === String(orderId || ''))
+    .map(buildLineItemDetail);
+}
+
+function buildOrderContactPayload(order, lineItems, whatsappUrl) {
+  return {
+    order_id: order.order_id,
+    customer_id: order.customer_id || '',
+    customer_name: order.customer_name || '',
+    email: order.email || '',
+    phone: order.phone || '',
+    commune: order.commune || '',
+    address: order.address || '',
+    address_ref: order.address_ref || '',
+    notes: order.notes || '',
+    items_label: order.items_label || '',
+    items: lineItems,
+    units_total: parseInteger(order.units_total, 0),
+    subtotal_clp: toCurrencyNumber(order.subtotal_clp),
+    shipping_clp: toCurrencyNumber(order.shipping_clp),
+    total_clp: toCurrencyNumber(order.total_clp),
+    origin: order.origin || '',
+    channel: order.channel || '',
+    accepted_total_at: order.accepted_total_at || '',
+    accepted_terms_at: order.accepted_terms_at || '',
+    internal_status: order.internal_status || '',
+    manual_review_reason: order.manual_review_reason || '',
+    support_email: SUPPORT_EMAIL,
+    support_whatsapp: SUPPORT_WHATSAPP,
+    whatsapp_url: whatsappUrl
+  };
+}
+
 export async function createOrderDraft(env, payload) {
   const config = await loadOperationalConfig(env);
   const customer = validateCustomerPayload(payload);
@@ -621,6 +691,82 @@ export async function createOrderDraft(env, payload) {
   };
 }
 
+export async function createOrderContactRequest(env, request) {
+  const orderId = normalizeText(request.order_id);
+
+  if (!orderId) {
+    throw new Error('Missing order_id');
+  }
+
+  if (!isTruthy(request.accept_total) || !isTruthy(request.accept_terms)) {
+    throw new Error('accept_total and accept_terms are required');
+  }
+
+  const existing = await findSheetRowByField(env, 'Ventas', 'order_id', orderId);
+
+  if (!existing.row) {
+    throw new Error('Order not found');
+  }
+
+  const previousStatus = normalizeText(existing.row.internal_status);
+
+  if (previousStatus === 'contact_requested') {
+    return {
+      ok: true,
+      order_id: orderId,
+      internal_status: 'contact_requested',
+      support_email: SUPPORT_EMAIL,
+      whatsapp_url: buildSupportWhatsappMessage(orderId)
+    };
+  }
+
+  if (!CONTACT_REQUEST_ALLOWED_STATUSES.has(previousStatus)) {
+    throw new Error(`Order status ${previousStatus || 'unknown'} cannot request contact`);
+  }
+
+  const acceptedAt = getLocalTimestamp();
+  const lineItems = await getOrderLineItems(env, orderId);
+  const whatsappUrl = buildSupportWhatsappMessage(orderId);
+  const nextOrder = {
+    ...existing.row,
+    accepted_total_at: acceptedAt,
+    accepted_terms_at: acceptedAt,
+    internal_status: 'contact_requested'
+  };
+  const event = {
+    order_id: orderId,
+    source: 'api/order-contact-requests',
+    event_type: 'order_contact_requested',
+    from_status: previousStatus,
+    to_status: 'contact_requested',
+    payload: buildOrderContactPayload(nextOrder, lineItems, whatsappUrl)
+  };
+  const notificationSent = await notifyEvent(env, event);
+
+  if (!notificationSent) {
+    throw new Error('Order contact notification could not be sent');
+  }
+
+  const updatedOrder = await updateSalesOrder(env, orderId, {
+    accepted_total_at: acceptedAt,
+    accepted_terms_at: acceptedAt,
+    internal_status: 'contact_requested'
+  });
+
+  await appendEvent(env, {
+    ...event,
+    payload: buildOrderContactPayload(updatedOrder, lineItems, whatsappUrl)
+  }, { notify: false, notificationSent });
+
+  return {
+    ok: true,
+    order_id: orderId,
+    internal_status: 'contact_requested',
+    support_email: SUPPORT_EMAIL,
+    whatsapp_url: whatsappUrl
+  };
+}
+
 export async function createPaymentLink(env, request, publicBaseUrl) {
   const config = await loadOperationalConfig(env);
   const orderId = normalizeText(request.order_id);
@@ -650,6 +796,10 @@ export async function createPaymentLink(env, request, publicBaseUrl) {
       flow_order: existing.row.flow_order,
       internal_status: existing.row.internal_status
     };
+  }
+
+  if (normalizeText(existing.row.internal_status) !== 'draft') {
+    throw new Error(`Order status ${existing.row.internal_status || 'unknown'} cannot create a payment link`);
   }
 
   const optionalData = {

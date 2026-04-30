@@ -456,8 +456,8 @@
 
     if (state.order.internal_status === 'manual_review') {
       if (manualReviewBox) manualReviewBox.hidden = false;
-      if (payButton) payButton.disabled = true;
-      setGlobalStatus('Tu comuna quedó en revisión manual. Escríbenos y cerramos despacho + pago contigo.', 'info');
+      if (payButton) payButton.disabled = false;
+      setGlobalStatus('Tu comuna quedó en revisión manual. Envía el pedido y cerramos despacho + pago contigo por WhatsApp o email.', 'info');
     } else {
       if (manualReviewBox) manualReviewBox.hidden = true;
       if (payButton) payButton.disabled = false;
@@ -465,7 +465,7 @@
     }
   }
 
-  async function createPaymentLink() {
+  async function requestOrderContact() {
     var payButton = document.getElementById('checkoutPayButton');
     var acceptedTotal = document.getElementById('accept_total');
     var acceptedTerms = document.getElementById('accept_terms');
@@ -475,20 +475,15 @@
       return;
     }
 
-    if (state.order.internal_status === 'manual_review') {
-      setGlobalStatus('Este pedido necesita revisión manual antes de generar el link de pago.', 'info');
-      return;
-    }
-
     if (!acceptedTotal.checked || !acceptedTerms.checked) {
-      setGlobalStatus('Necesitas aceptar el total y los términos antes de generar el link.', 'error');
+      setGlobalStatus('Necesitas aceptar el total y los términos antes de enviar el pedido.', 'error');
       return;
     }
 
-    setButtonLoading(payButton, 'Generando link...', true);
+    setButtonLoading(payButton, 'Enviando pedido...', true);
 
     try {
-      var payload = await fetchJsonOrThrow('/api/payment-links', {
+      var payload = await fetchJsonOrThrow('/api/order-contact-requests', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -499,24 +494,29 @@
           accept_total: true,
           accept_terms: true
         })
-      }, 'No se pudo generar el link de Flow.');
+      }, 'No se pudo enviar el pedido para cierre por contacto.');
 
-      window.RoastShop.trackEvent('payment_link_created', {
+      if (!payload.whatsapp_url) {
+        throw new Error('No recibimos el link de WhatsApp para cerrar el pedido.');
+      }
+
+      window.RoastShop.trackEvent('order_contact_requested', {
         order_id: state.order.order_id,
-        total_clp: state.order.total_clp
+        total_clp: state.order.total_clp,
+        internal_status: payload.internal_status || state.order.internal_status
       });
-      window.RoastShop.trackEvent('payment_redirected', {
+      window.RoastShop.trackEvent('whatsapp_redirected', {
         order_id: state.order.order_id
       });
-      window.location.href = payload.checkout_url;
+      window.location.href = payload.whatsapp_url;
     } catch (error) {
-      setGlobalStatus(error.message || 'No pudimos generar el link de pago.', 'error');
+      setGlobalStatus(error.message || 'No pudimos enviar el pedido.', 'error');
     } finally {
-      setButtonLoading(payButton, 'Generar link de pago', false);
+      setButtonLoading(payButton, 'Enviar pedido', false);
     }
   }
 
-  function bindCheckoutFlow() {
+  function bindCheckout() {
     var addItemButton = document.getElementById('addCheckoutItem');
     var step1Next = document.getElementById('checkoutStep1Next');
     var step2Back = document.getElementById('checkoutStep2Back');
@@ -566,7 +566,7 @@
     }
 
     if (payButton) {
-      payButton.addEventListener('click', createPaymentLink);
+      payButton.addEventListener('click', requestOrderContact);
     }
 
     document.addEventListener('roast:public-catalog-updated', renderLiveSummary);
@@ -582,7 +582,7 @@
       },
       pending_payment: {
         title: 'Pago pendiente',
-        copy: 'Flow todavía no confirma el pago. Si pagaste con un medio asíncrono, espera unos minutos y vuelve a revisar.',
+        copy: 'El procesador todavía no confirma el pago. Si pagaste con un medio asíncrono, espera unos minutos y vuelve a revisar.',
         tone: 'info'
       },
       link_sent: {
@@ -592,7 +592,7 @@
       },
       payment_failed: {
         title: 'Pago no completado',
-        copy: 'Flow informó un intento fallido. Puedes volver a abrir el link o escribirnos para cerrar el pedido contigo.',
+        copy: 'El procesador informó un intento fallido. Puedes volver a abrir el link o escribirnos para cerrar el pedido contigo.',
         tone: 'error'
       },
       canceled: {
@@ -684,7 +684,7 @@
 
   function init() {
     if (state.page === 'checkout') {
-      bindCheckoutFlow();
+      bindCheckout();
     }
 
     if (state.page === 'payment-result') {

@@ -39,19 +39,31 @@ function doPost(e) {
 }
 
 function buildEmailBody(payload) {
+  const details = payload.payload || {};
   const fields = [
-    ['Pedido', payload.order_id || 'Sin order_id'],
+    ['Pedido', firstValue(details.order_id, payload.order_id, 'Sin order_id')],
     ['Evento', payload.event_type || 'Sin tipo'],
-    ['Origen', payload.origin || payload.source || 'Sin origen'],
-    ['Canal', payload.channel || 'Sin canal'],
-    ['Total', payload.total_clp ? `$${payload.total_clp} CLP` : 'Sin total'],
-    ['Comuna', payload.commune || 'Sin comuna'],
-    ['Items', payload.items_label || 'Sin items'],
-    ['Estado destino', payload.to_status || payload.internal_status || 'Sin estado']
+    ['Estado destino', firstValue(payload.to_status, details.internal_status, payload.internal_status, 'Sin estado')],
+    ['Cliente', firstValue(details.customer_name, payload.customer_name, 'Sin cliente')],
+    ['Email', firstValue(details.email, payload.email, 'Sin email')],
+    ['Telefono', firstValue(details.phone, payload.phone, 'Sin telefono')],
+    ['Comuna', firstValue(details.commune, payload.commune, 'Sin comuna')],
+    ['Direccion', firstValue(details.address, payload.address, 'Sin direccion')],
+    ['Referencia', firstValue(details.address_ref, payload.address_ref, 'Sin referencia')],
+    ['Notas', firstValue(details.notes, payload.notes, 'Sin notas')],
+    ['Origen', firstValue(details.origin, payload.origin, payload.source, 'Sin origen')],
+    ['Canal', firstValue(details.channel, payload.channel, 'Sin canal')],
+    ['Items', firstValue(details.items_label, payload.items_label, 'Sin items')],
+    ['Subtotal', formatCurrency(firstValue(details.subtotal_clp, payload.subtotal_clp))],
+    ['Despacho', formatCurrency(firstValue(details.shipping_clp, payload.shipping_clp))],
+    ['Total', formatCurrency(firstValue(details.total_clp, payload.total_clp))],
+    ['Soporte email', firstValue(details.support_email, payload.support_email, DEFAULT_SUPPORT_EMAIL)],
+    ['Soporte WhatsApp', firstValue(details.whatsapp_url, details.support_whatsapp, payload.support_whatsapp, 'Sin WhatsApp')]
   ];
   const rows = fields
-    .map(([label, value]) => `<tr><td style="padding:8px 12px;border:1px solid #e7ddd0;font-weight:700;">${label}</td><td style="padding:8px 12px;border:1px solid #e7ddd0;">${value}</td></tr>`)
+    .map(([label, value]) => `<tr><td style="padding:8px 12px;border:1px solid #e7ddd0;font-weight:700;">${escapeHtml(label)}</td><td style="padding:8px 12px;border:1px solid #e7ddd0;">${escapeHtml(value)}</td></tr>`)
     .join('');
+  const itemsTable = buildItemsTable(details.items || []);
 
   return `
     <div style="font-family:Arial,sans-serif;background:#0d0d0d;color:#f5f0e8;padding:24px;">
@@ -60,9 +72,81 @@ function buildEmailBody(payload) {
       <table style="border-collapse:collapse;background:#1a1a1a;border-radius:12px;overflow:hidden;">
         ${rows}
       </table>
-      <pre style="margin-top:20px;padding:16px;background:#111;border-radius:10px;color:#f5f0e8;white-space:pre-wrap;">${JSON.stringify(payload, null, 2)}</pre>
+      ${itemsTable}
+      <pre style="margin-top:20px;padding:16px;background:#111;border-radius:10px;color:#f5f0e8;white-space:pre-wrap;">${escapeHtml(JSON.stringify(payload, null, 2))}</pre>
     </div>
   `;
+}
+
+function buildItemsTable(items) {
+  if (!Array.isArray(items) || !items.length) {
+    return '';
+  }
+
+  const rows = items
+    .map(item => `
+      <tr>
+        <td style="padding:8px 12px;border:1px solid #e7ddd0;">${escapeHtml(item.product_name || item.product_code || '')}</td>
+        <td style="padding:8px 12px;border:1px solid #e7ddd0;">${escapeHtml(item.format_label || item.format_code || '')}</td>
+        <td style="padding:8px 12px;border:1px solid #e7ddd0;">${escapeHtml(item.grind || '')}</td>
+        <td style="padding:8px 12px;border:1px solid #e7ddd0;">${escapeHtml(firstValue(item.quantity, ''))}</td>
+        <td style="padding:8px 12px;border:1px solid #e7ddd0;">${escapeHtml(formatCurrency(item.line_subtotal_clp))}</td>
+      </tr>
+    `)
+    .join('');
+
+  return `
+    <h2 style="font-size:18px;margin:24px 0 10px;">Lineas del pedido</h2>
+    <table style="border-collapse:collapse;background:#1a1a1a;border-radius:12px;overflow:hidden;">
+      <thead>
+        <tr>
+          <th style="padding:8px 12px;border:1px solid #e7ddd0;text-align:left;">Producto</th>
+          <th style="padding:8px 12px;border:1px solid #e7ddd0;text-align:left;">Formato</th>
+          <th style="padding:8px 12px;border:1px solid #e7ddd0;text-align:left;">Molienda</th>
+          <th style="padding:8px 12px;border:1px solid #e7ddd0;text-align:left;">Cantidad</th>
+          <th style="padding:8px 12px;border:1px solid #e7ddd0;text-align:left;">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+  `;
+}
+
+function firstValue() {
+  for (let index = 0; index < arguments.length; index += 1) {
+    const value = arguments[index];
+
+    if (value !== undefined && value !== null && String(value) !== '') {
+      return value;
+    }
+  }
+
+  return '';
+}
+
+function formatCurrency(value) {
+  if (value === undefined || value === null || String(value) === '') {
+    return 'Sin monto';
+  }
+
+  const numeric = Number(String(value).replace(/[^\d-]/g, ''));
+
+  if (!Number.isFinite(numeric)) {
+    return String(value);
+  }
+
+  return `$${numeric.toLocaleString('es-CL')} CLP`;
+}
+
+function escapeHtml(value) {
+  return String(value === undefined || value === null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function jsonOutput(payload, status) {

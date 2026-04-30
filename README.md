@@ -1,13 +1,14 @@
 # Roast
 
-Sitio estatico y flujo de pedido web para Cafe Roast. El cliente arma el pedido en `caferoast.cl`, el Worker calcula el total con Google Sheets, Flow genera el link de pago y Apps Script envia notificaciones operativas por email.
+Sitio estatico y flujo de pedido web para Cafe Roast. El cliente arma el pedido en `caferoast.cl`, el Worker calcula el total con Google Sheets y, temporalmente, el cierre se deriva a WhatsApp + email operativo mientras Flow queda disponible en codigo para retomarlo.
 
 ## Stack Operativo
 
 - Website estatico: HTML publico, `assets/site.js` y `assets/checkout.js`.
 - API: Cloudflare Worker en `worker/src/index.js`.
 - Operacion: Google Sheets como fuente de configuracion y registro.
-- Pagos: Flow mediante `/payment/create` y `/payment/getStatus`.
+- Cierre temporal: `POST /api/order-contact-requests` envia email operativo y deriva a WhatsApp.
+- Pagos Flow: endpoints y codigo se mantienen para reactivacion posterior mediante `/payment/create` y `/payment/getStatus`.
 - Notificaciones: Apps Script como webhook de email; no escribe en Sheets.
 - Soporte: `contacto@caferoast.cl` y WhatsApp `+56 9 9174 6361`.
 
@@ -15,7 +16,8 @@ Sitio estatico y flujo de pedido web para Cafe Roast. El cliente arma el pedido 
 
 - `GET /api/public-catalog`: catalogo publico desde `Config`.
 - `POST /api/order-drafts`: crea cliente, venta, lineas y evento. No es idempotente.
-- `POST /api/payment-links`: crea o reutiliza link Flow para pedidos `link_sent` o `pending_payment`.
+- `POST /api/order-contact-requests`: confirma aceptacion del total, exige email operativo por Apps Script y devuelve WhatsApp para cierre humano.
+- `POST /api/payment-links`: codigo legado Flow; crea links solo para pedidos `draft` y reutiliza links `link_sent` o `pending_payment`.
 - `POST /api/flow/confirmation`: callback server-to-server de Flow.
 - `POST /pago/retorno`: retorno del navegador desde Flow hacia `/pago/resultado/`.
 - `GET /api/orders/:order_id`: estado publico por ID de pedido.
@@ -47,8 +49,8 @@ Worker:
 - `GOOGLE_SERVICE_ACCOUNT_JSON`
 - `GOOGLE_SHEET_ID`
 - `PUBLIC_BASE_URL`
-- `APPS_SCRIPT_WEBHOOK_URL` opcional
-- `APPS_SCRIPT_SHARED_SECRET` opcional, requerido si se activa Apps Script
+- `APPS_SCRIPT_WEBHOOK_URL`, requerido para email operativo del cierre temporal
+- `APPS_SCRIPT_SHARED_SECRET`, requerido junto al webhook de Apps Script
 
 Apps Script:
 
