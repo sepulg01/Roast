@@ -201,4 +201,17 @@ test.describe('checkout 2-step order and transfer flow', () => {
 
     await expect(page.locator('#checkoutStatus')).toContainText('El backend del checkout no está respondiendo');
   });
+
+  test('JSON Not found API response explains checkout-orders backend route misconfiguration', async ({ page }) => {
+    await installMockWorkerApi(page, { checkoutOrderJsonNotFound: true });
+    await reachDataStep(page, { quantity: 2, format: '1kg' });
+    await fillCustomerData(page);
+    await choosePaymentMethod(page, /transferencia/i);
+    await page.locator('#accept_total').check();
+    await page.locator('#accept_terms').check();
+    await page.getByRole('button', { name: 'Finalizar Pedido' }).click();
+
+    await expect(page.locator('#checkoutStatus')).toContainText('El backend del checkout no está respondiendo correctamente');
+    await expect(page.locator('#checkoutStatus')).toContainText('/api/checkout-orders');
+  });
 });

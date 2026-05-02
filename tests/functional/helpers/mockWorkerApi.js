@@ -200,6 +200,18 @@ export async function installMockWorkerApi(page, options = {}) {
       return;
     }
 
+    if (options.checkoutOrderJsonNotFound) {
+      await route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ok: false,
+          error: 'Not found'
+        })
+      });
+      return;
+    }
+
     const requestItems = Array.isArray(checkoutOrderRequest.items) ? checkoutOrderRequest.items : [];
     const subtotalClp = requestItems.reduce((sum, item) => {
       const catalogItem = publicCatalogPayload.catalog.find(entry => (

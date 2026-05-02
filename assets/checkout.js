@@ -105,6 +105,11 @@
     return 'El backend del checkout no está respondiendo en ' + target + '. El dominio está devolviendo HTML del hosting estático o falta configurar data-api-base hacia el Worker.';
   }
 
+  function buildBackendRouteNotFoundMessage(path) {
+    var target = buildApiUrl(path);
+    return 'El backend del checkout no está respondiendo correctamente en ' + target + '. El Worker desplegado no reconoce esta ruta o data-api-base apunta a un backend desactualizado.';
+  }
+
   async function fetchJsonOrThrow(path, options, fallbackMessage) {
     var response = await fetch(buildApiUrl(path), options);
     var contentType = String(response.headers.get('content-type') || '').toLowerCase();
@@ -132,6 +137,10 @@
     }
 
     if (!response.ok || payload.ok === false) {
+      if (response.status === 404 && payload.error === 'Not found' && String(path || '').indexOf('/api/') === 0) {
+        throw new Error(buildBackendRouteNotFoundMessage(path));
+      }
+
       throw new Error(payload.error || fallbackMessage || 'La API del checkout devolvió un error.');
     }
 

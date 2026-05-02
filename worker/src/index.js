@@ -98,35 +98,35 @@ export default {
 
     try {
       if (request.method === 'POST' && url.pathname === '/api/order-drafts') {
-        return handleOrderDraft(request, env);
+        return await handleOrderDraft(request, env);
       }
 
       if (request.method === 'POST' && url.pathname === '/api/payment-links') {
-        return handlePaymentLink(request, env, publicBaseUrl);
+        return await handlePaymentLink(request, env, publicBaseUrl);
       }
 
       if (request.method === 'POST' && url.pathname === '/api/order-contact-requests') {
-        return handleOrderContactRequest(request, env);
+        return await handleOrderContactRequest(request, env);
       }
 
       if (request.method === 'POST' && url.pathname === '/api/checkout-orders') {
-        return handleCheckoutOrder(request, env);
+        return await handleCheckoutOrder(request, env);
       }
 
       if (request.method === 'GET' && url.pathname === '/api/public-catalog') {
-        return handlePublicCatalog(env);
+        return await handlePublicCatalog(env);
       }
 
       if (request.method === 'POST' && url.pathname === '/api/flow/confirmation') {
-        return handleFlowConfirmation(request, env, ctx);
+        return await handleFlowConfirmation(request, env, ctx);
       }
 
       if (request.method === 'POST' && url.pathname === '/pago/retorno') {
-        return handleFlowReturn(request, env, publicBaseUrl);
+        return await handleFlowReturn(request, env, publicBaseUrl);
       }
 
       if (request.method === 'GET' && extractOrderId(url.pathname)) {
-        return handlePublicOrder(extractOrderId(url.pathname), env);
+        return await handlePublicOrder(extractOrderId(url.pathname), env);
       }
 
       return errorResponse('Not found', { status: 404 });

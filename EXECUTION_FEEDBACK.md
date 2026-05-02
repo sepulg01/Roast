@@ -417,3 +417,14 @@
 - Completado totalmente: repo, fallbacks, UI visible, fixtures, pruebas funcionales y aprobacion de copy quedaron alineados con los nuevos precios.
 - Parcial: no se pudo actualizar la planilla real `Config.catalog` porque este entorno no tiene `GOOGLE_SERVICE_ACCOUNT_JSON`, `GOOGLE_SHEET_ID` ni `worker/.dev.vars` disponibles. Los valores pendientes para `downtime` y `hiperfoco` son `250g=11900`, `500g=19900`, `1kg=34900`.
 - Pendiente/deferido: cargar secretos reales de Google Sheets, actualizar las 6 filas de `Config.catalog`, confirmar que `/api/public-catalog` productivo devuelve los nuevos `price_clp` y probar un checkout real hasta `pending_transfer` para validar `Ventas` y `Lineas_Pedido`.
+
+## 2026-05-02 - Hotfix Worker checkout Not found
+
+- Se corrigio el router del Worker para esperar (`await`) todos los handlers async dentro del `try/catch`, evitando que fallas de `/api/public-catalog`, `/api/checkout-orders` u otras rutas escapen como error Cloudflare `1101`.
+- Se agrego cobertura `node:test` en `tests/worker/index.test.mjs` para confirmar que errores async de catalogo y JSON invalido en checkout devuelven JSON controlado.
+- Se mejoro el error visible del checkout: cuando `/api/checkout-orders` responde JSON `404 Not found`, la UI reemplaza el mensaje crudo por una explicacion accionable de backend Worker desactualizado o `data-api-base` mal apuntado.
+- Se agrego la aprobacion de copy `copy-approvals/2026-05-02-checkout-worker-hotfix.md` para el nuevo texto visible de error.
+- Validacion realizada: ciclo TDD rojo con `npm run test:worker` fallando por errores async escapados, ciclo verde con `npm run test:worker` pasando, ciclo funcional rojo con `npm run test:functional -- tests/functional/checkout.spec.js --project=chromium --grep "JSON Not found" --reporter=line` mostrando `Not found`, ciclo verde del mismo test, `npm run test:static` y `npm run test:functional -- tests/functional/checkout.spec.js --project=chromium --reporter=line` con 11 pruebas pasando.
+- Completado totalmente: hotfix de captura async del Worker, mensaje UX para `Not found`, cobertura automatizada worker/checkout y aprobacion de copy.
+- Parcial: no se pudo ejecutar `wrangler secret list`, `wrangler deploy`, smoke productivo ni pedido real de prueba porque `CLOUDFLARE_API_TOKEN` no esta disponible en este entorno.
+- Pendiente/deferido: exportar `CLOUDFLARE_API_TOKEN`, verificar secretos `GOOGLE_SERVICE_ACCOUNT_JSON`, `GOOGLE_SHEET_ID`, `GOOGLE_MAPS_API_KEY` y `PUBLIC_BASE_URL`, desplegar el Worker, validar `GET /api/public-catalog`, validar `POST /api/checkout-orders` y crear el pedido de prueba marcado `PRUEBA TECNICA HOTFIX 2026-05-02 - no preparar`.
