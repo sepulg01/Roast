@@ -14,7 +14,7 @@ const routes = [
   { path: '/cafe-en-grano/', heading: /café en grano/i },
   { path: '/cafe-de-especialidad/', heading: /café de especialidad/i },
   { path: '/cafe-a-domicilio/', heading: /café a domicilio/i },
-  { path: '/pedido/', heading: /arma tu pedido/i },
+  { path: '/pedido/', heading: /pedido web roast/i },
   { path: '/pago/resultado/?order_id=ORD_TEST_001', heading: /revisando tu pedido|pago recibido/i }
 ];
 

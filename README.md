@@ -51,6 +51,15 @@ El cierre activo muestra estos datos para pago por transferencia:
 - RUT: `17515638-0`
 - Email: `contacto@caferoast.cl`
 
+Cuando `POST /api/checkout-orders` deja un pedido en `pending_transfer`, el Worker envia un evento `pending_transfer` enriquecido al webhook de Apps Script. Apps Script mantiene el email operativo a `contacto@caferoast.cl` y envia tambien una confirmacion al cliente con:
+
+- Subject: `Hemos recibido tu pedido!`
+- Logo publico: `https://caferoast.cl/assets/logos/logo_white.png`
+- Numero de pedido, resumen de productos, subtotal, envio, IVA incluido y total.
+- Canal de respuesta: `contacto@caferoast.cl` y WhatsApp `+56 9 9174 6361`.
+
+Para que el sender real sea `contacto@caferoast.cl`, el web app de Apps Script debe ejecutarse/autorizarse desde esa cuenta o tener `contacto@caferoast.cl` como alias verificado de Gmail. Si el alias no esta disponible, el script usa `MailApp` con `replyTo` y nombre de remitente `contacto@caferoast.cl`.
+
 ## Variables Y Secretos
 
 Worker:
@@ -68,6 +77,7 @@ Worker:
 Apps Script:
 
 - `APPS_SCRIPT_SHARED_SECRET`, igual al secreto del Worker.
+- OAuth: el script usa `MailApp` y, si existe alias de Gmail, `GmailApp` para intentar enviar desde `contacto@caferoast.cl`; al desplegar puede requerir reautorizacion de envio de correo.
 
 No versionar `.dev.vars`, service accounts, claves Flow ni URLs privadas de webhook.
 

@@ -14,13 +14,13 @@ async function openCheckoutWithItems(page, { quantity = 1, format = '250g' } = {
   await page.locator('[data-current-item-field="format_code"]').selectOption(format);
 
   for (let index = 0; index < quantity; index += 1) {
-    await page.getByRole('button', { name: 'Agregar al resumen' }).click();
+    await page.getByRole('button', { name: 'Agregar al carrito' }).click();
   }
 }
 
 async function reachDataStep(page, options = {}) {
   await openCheckoutWithItems(page, options);
-  await page.getByRole('button', { name: 'Continuar con datos' }).click();
+  await page.getByRole('button', { name: 'Finalizar Pedido' }).click();
 }
 
 async function fillCustomerData(page, { commune = 'Providencia' } = {}) {
@@ -49,7 +49,7 @@ async function finishTransferCheckout(page, mockApi, { commune = 'Providencia' }
   await choosePaymentMethod(page, /transferencia/i);
   await page.locator('#accept_total').check();
   await page.locator('#accept_terms').check();
-  await page.getByRole('button', { name: 'Finalizar Pedido' }).click();
+  await page.getByRole('button', { name: 'Pagar ahora' }).click();
   await expect.poll(() => mockApi.checkoutOrderRequests.length).toBe(1);
 }
 
@@ -69,12 +69,33 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await openCheckoutWithItems(page);
 
     const sidebar = page.getByRole('complementary');
+    await expect(sidebar.locator('.checkout-summary-kicker')).toHaveText('Resumen de tus productos');
     await expect(sidebar.getByRole('heading', { name: 'Tu carrito Roast' })).toBeVisible();
     await expect(sidebar).toContainText(/Subtotal/i);
     await expect(sidebar).toContainText(/Env[ií]o/i);
     await expect(page.locator('#summaryShipping')).toContainText(/Pendiente/i);
     await expect(sidebar).toContainText(/Total/i);
     await expect(sidebar).toContainText(/IVA incluido 19%/i);
+  });
+
+  test('checkout starts with an empty cart message and only commune names in the dropdown', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.goto('/pedido/', { waitUntil: 'domcontentloaded' });
+
+    await expect(page.getByRole('heading', { name: 'Arma tu pedido, confirma el total y lo cerramos contigo.' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Agregar al carrito' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Finalizar Pedido' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Continuar con datos' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Agregar al resumen' })).toHaveCount(0);
+    await expect(page.locator('#checkoutSummaryItems .checkout-summary-empty')).toHaveText('Aún no hay productos en tu carrito');
+
+    const communeLabels = await page.locator('#commune option').evaluateAll(options =>
+      options.map(option => option.textContent.trim())
+    );
+    expect(communeLabels).toContain('Providencia');
+    expect(communeLabels).toContain('Quilicura');
+    expect(communeLabels).not.toContain('Providencia - Oriente');
+    expect(communeLabels.every(label => !label.includes(' - '))).toBe(true);
   });
 
   test('checkout selector exposes the four approved grind choices with whole bean as default', async ({ page }) => {
@@ -89,7 +110,7 @@ test.describe('checkout 2-step order and transfer flow', () => {
     expect(labels).toEqual(GRIND_OPTION_LABELS);
     await expect(grindSelect).toHaveValue('grano entero');
 
-    await page.getByRole('button', { name: 'Agregar al resumen' }).click();
+    await page.getByRole('button', { name: 'Agregar al carrito' }).click();
     await expect(page.locator('#checkoutSummaryItems')).toContainText(/Downtime.*250g.*Grano Entero/i);
   });
 
@@ -111,7 +132,7 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await choosePaymentMethod(page, /^Flow$/i);
 
     await expect(page.locator('#checkoutStatus')).toContainText('La integración con Flow se encuentra deshabilitada momentáneamente');
-    await expect(page.getByRole('button', { name: 'Finalizar Pedido' })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Pagar ahora' })).toBeDisabled();
     expect(mockApi.checkoutOrderRequests).toHaveLength(0);
     expect(mockApi.paymentLinkRequests).toHaveLength(0);
   });
@@ -125,7 +146,7 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await expect(page.getByText('Tendrás 2 horas para transferir antes que se cierre tu carro de venta.')).toBeVisible();
     await page.locator('#accept_total').check();
     await page.locator('#accept_terms').check();
-    await page.getByRole('button', { name: 'Finalizar Pedido' }).click();
+    await page.getByRole('button', { name: 'Pagar ahora' }).click();
 
     await expect.poll(() => mockApi.checkoutOrderRequests.length).toBe(1);
     expect(mockApi.checkoutOrderRequests[0]).toEqual(expect.objectContaining({
@@ -186,7 +207,7 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await choosePaymentMethod(page, /transferencia/i);
 
     await expect(page.locator('[data-error-for="commune"]')).toContainText(/fuera de cobertura|no tenemos cobertura|no despachamos/i);
-    await expect(page.getByRole('button', { name: 'Finalizar Pedido' })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Pagar ahora' })).toBeDisabled();
     expect(mockApi.checkoutOrderRequests).toHaveLength(0);
   });
 
@@ -197,7 +218,7 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await choosePaymentMethod(page, /transferencia/i);
     await page.locator('#accept_total').check();
     await page.locator('#accept_terms').check();
-    await page.getByRole('button', { name: 'Finalizar Pedido' }).click();
+    await page.getByRole('button', { name: 'Pagar ahora' }).click();
 
     await expect(page.locator('#checkoutStatus')).toContainText('El backend del checkout no está respondiendo');
   });
@@ -209,7 +230,7 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await choosePaymentMethod(page, /transferencia/i);
     await page.locator('#accept_total').check();
     await page.locator('#accept_terms').check();
-    await page.getByRole('button', { name: 'Finalizar Pedido' }).click();
+    await page.getByRole('button', { name: 'Pagar ahora' }).click();
 
     await expect(page.locator('#checkoutStatus')).toContainText('El backend del checkout no está respondiendo correctamente');
     await expect(page.locator('#checkoutStatus')).toContainText('/api/checkout-orders');

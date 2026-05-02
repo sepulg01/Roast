@@ -75,6 +75,26 @@ async function expectSingleRenderedMediaChild(slider) {
   return state;
 }
 
+async function getFlavorChipStyles(page, productId) {
+  return page.locator(`[data-product-card][data-product-id="${productId}"] .product-flavor-list li`).evaluateAll((chips) => {
+    const flavorStyles = window.getComputedStyle(chips[0]);
+    const roastStyles = window.getComputedStyle(chips[chips.length - 1]);
+
+    return {
+      flavor: {
+        backgroundColor: flavorStyles.backgroundColor,
+        borderColor: flavorStyles.borderColor,
+        color: flavorStyles.color
+      },
+      roast: {
+        backgroundColor: roastStyles.backgroundColor,
+        borderColor: roastStyles.borderColor,
+        color: roastStyles.color
+      }
+    };
+  });
+}
+
 test.describe('home catalog, media, and quiz', () => {
   test('landing copy and product roast chips match the approved copy', async ({ page }) => {
     await installMockWorkerApi(page);
@@ -82,13 +102,32 @@ test.describe('home catalog, media, and quiz', () => {
 
     await expect(page.locator('.hero-sub')).toHaveText('Café Roast es el paso para dejar el café instantáneo: solo tienes que elegir cuál de nuestros tuestes te acomoda más y contarnos cómo lo quieres tomar. Luego nosotros te lo enviamos en grano, o recién molido.');
     await expect(page.locator('#hero')).toContainText('Café recién tostado');
+    await expect(page.locator('#hero')).not.toContainText('Cierre por WhatsApp');
     await expect(page.locator('#hero')).not.toContainText('Pago con Flow');
-    await expect(page.locator('#pain-heading')).toHaveText('Si el café de tarro ya te aburrió, este Café Roast es el siguiente paso.');
+    await expect(page.locator('#pain-heading')).toHaveText('Si el café de tarro ya te aburrió, Café Roast es el siguiente paso.');
     await expect(page.getByText('Solo tienes que elegir cuál te acompaña mejor. Nosotros te lo mandamos en grano o recién molido, listo para entrar a la rutina.')).toHaveCount(0);
+    await expect(page.locator('[data-product-card][data-product-id="hiperfoco"] .product-microcopy')).toHaveText('Precisión Líquida.');
+    await expect(page.locator('#reviews')).not.toContainText('El de Colombia');
+    await expect(page.locator('#reviews')).toContainText('Llegó recién molido y se notó altiro. En filtro quedó dulce, con cuerpo y cero amargo.');
 
     await expect(page.locator('[data-product-card][data-product-id="downtime"] .product-flavor-list')).toContainText('Tueste Medio-Italiano');
     await expect(page.locator('[data-product-card][data-product-id="hiperfoco"] .product-flavor-list')).toContainText('Tueste Italiano');
     await expect(page.locator('[data-product-card] .product-config-stack').getByText(/^Tueste$/)).toHaveCount(0);
+  });
+
+  test('roast chips and ideal-for metadata match the product card visual system', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    for (const productId of ['downtime', 'hiperfoco']) {
+      const chipStyles = await getFlavorChipStyles(page, productId);
+      expect(chipStyles.roast).toEqual(chipStyles.flavor);
+
+      const idealGroup = page.locator(`[data-product-card][data-product-id="${productId}"] [data-product-ideal-group]`);
+      await expect(idealGroup.locator('> .product-select-label')).toHaveText('Ideal para');
+      await expect(idealGroup.locator('> .product-meta-item .product-meta-value')).toBeVisible();
+      await expect(idealGroup.locator('.product-meta-item .product-meta-label')).toHaveCount(0);
+    }
   });
 
   test('product cards expose the four approved grind choices with whole bean as default', async ({ page }) => {
@@ -168,6 +207,29 @@ test.describe('home catalog, media, and quiz', () => {
     }
   });
 
+  test('product media autoplay advances every three seconds and keeps manual controls usable', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    const slider = page.locator('[data-product-card][data-product-id="downtime"] [data-product-slider]');
+    await expect(slider).toHaveAttribute('data-current-index', /\d/);
+    await expect(slider).toHaveAttribute('data-autoplay-interval', '3000');
+
+    const initialIndex = Number(await slider.getAttribute('data-current-index'));
+    await page.waitForTimeout(3200);
+    const expectedAutoIndex = String((initialIndex + 1) % 4);
+    await expect(slider).toHaveAttribute('data-current-index', expectedAutoIndex);
+    await expectSingleRenderedMediaChild(slider);
+
+    await slider.focus();
+    const currentIndex = Number(await slider.getAttribute('data-current-index'));
+    const manualDelta = currentIndex > 0 ? -1 : 1;
+    const expectedManualIndex = String(currentIndex + manualDelta);
+    await slider.locator(manualDelta < 0 ? '[data-product-slider-prev]' : '[data-product-slider-next]').click();
+    await expect(slider).toHaveAttribute('data-current-index', expectedManualIndex);
+    await expectSingleRenderedMediaChild(slider);
+  });
+
   test('final home CTA opens an empty checkout draft that blocks continuation until an item is added', async ({ page }) => {
     await installMockWorkerApi(page);
     await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -176,9 +238,9 @@ test.describe('home catalog, media, and quiz', () => {
     await page.waitForURL('**/pedido/**');
 
     await expect(page.locator('.checkout-item-card')).toHaveCount(1);
-    await expect(page.locator('#checkoutSummaryItems li')).toHaveCount(0);
+    await expect(page.locator('#checkoutSummaryItems .checkout-summary-empty')).toHaveText('Aún no hay productos en tu carrito');
 
-    await page.getByRole('button', { name: 'Continuar con datos' }).click();
+    await page.getByRole('button', { name: 'Finalizar Pedido' }).click();
 
     await expect(page.locator('[data-checkout-step="1"]')).toHaveClass(/checkout-step-active/);
     await expect(page.locator('#checkoutStatus')).toContainText(/agrega|item|producto/i);
@@ -227,6 +289,13 @@ test.describe('home catalog, media, and quiz', () => {
     const slider = page.locator('[data-product-card][data-product-id="downtime"] [data-product-slider]');
     const previous = slider.locator('[data-product-slider-prev]');
     const next = slider.locator('[data-product-slider-next]');
+
+    await slider.focus();
+    let currentIndex = Number(await slider.getAttribute('data-current-index'));
+    while (currentIndex > 0) {
+      await previous.click();
+      currentIndex -= 1;
+    }
 
     await expect(slider).toHaveAttribute('data-current-index', '0');
     await expect(previous).toBeDisabled();

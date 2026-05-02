@@ -468,7 +468,7 @@
     return [
       '<li>',
       '  <span>' + escapeHtml(productLabel + ' · ' + item.format_code + ' · ' + getGrindLabel(item.grind) + quantityLabel) + '</span>',
-      '  <button type="button" class="checkout-summary-remove" data-summary-remove-item="' + index + '" aria-label="Eliminar ' + escapeHtml(productLabel) + ' del resumen">Eliminar</button>',
+      '  <button type="button" class="checkout-summary-remove" data-summary-remove-item="' + index + '" aria-label="Eliminar ' + escapeHtml(productLabel) + ' del carrito">Eliminar</button>',
       '</li>'
     ].join('\n');
   }
@@ -477,7 +477,9 @@
     var container = document.getElementById('checkoutSummaryItems');
     if (!container) return;
 
-    container.innerHTML = state.items.length ? state.items.map(renderSummaryItem).join('') : '';
+    container.innerHTML = state.items.length
+      ? state.items.map(renderSummaryItem).join('')
+      : '<li class="checkout-summary-empty">Aún no hay productos en tu carrito</li>';
 
     container.querySelectorAll('[data-summary-remove-item]').forEach(function(button) {
       button.addEventListener('click', function() {
@@ -611,7 +613,7 @@
       .sort(function(a, b) { return a.name.localeCompare(b.name, 'es'); });
 
     field.innerHTML = '<option value="">Selecciona tu comuna</option>' + options.map(function(item) {
-      var label = item.name + (item.sector ? ' - ' + item.sector : '');
+      var label = item.name;
       return '<option value="' + escapeHtml(item.name) + '">' + escapeHtml(label) + '</option>';
     }).join('');
 
@@ -864,7 +866,7 @@
     } catch (error) {
       setGlobalStatus(error.message || 'No pudimos finalizar el pedido.', 'error');
     } finally {
-      setButtonLoading(payButton, 'Finalizar Pedido', false);
+      setButtonLoading(payButton, 'Pagar ahora', false);
       updateFinalizeButtonState();
     }
   }
@@ -894,7 +896,7 @@
     if (step1Next) {
       step1Next.addEventListener('click', function() {
         if (!validateItems()) {
-          setGlobalStatus('Agrega al menos un producto al resumen antes de continuar.', 'error');
+          setGlobalStatus('Agrega al menos un producto al carrito antes de continuar.', 'error');
           return;
         }
         setGlobalStatus('', 'info');

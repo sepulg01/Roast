@@ -836,6 +836,61 @@ function buildOrderContactPayload(order, lineItems, whatsappUrl) {
   };
 }
 
+function buildPublicAssetUrl(env, path) {
+  const baseUrl = normalizeText(env && env.PUBLIC_BASE_URL) || 'https://caferoast.cl';
+  const normalizedPath = String(path || '');
+  return baseUrl.replace(/\/+$/, '') + (normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`);
+}
+
+export function buildPendingTransferNotificationPayload({
+  env,
+  orderId,
+  customer,
+  salesRow,
+  communeCoverage,
+  delivery,
+  orderMetrics,
+  responseItems,
+  transferExpiresAt,
+  bankTransfer = BANK_TRANSFER_DETAILS
+}) {
+  const items = Array.isArray(responseItems) ? responseItems : [];
+  const total = toCurrencyNumber(orderMetrics && orderMetrics.total_clp);
+
+  return {
+    order_id: orderId,
+    origin: salesRow?.origin || '',
+    channel: salesRow?.channel || '',
+    customer_name: customer?.customer_name || '',
+    first_name: customer?.first_name || '',
+    last_name: customer?.last_name || '',
+    email: customer?.email || '',
+    phone: customer?.phone || '',
+    commune: customer?.commune || '',
+    sector: communeCoverage?.sector || '',
+    address: customer?.address || '',
+    address_ref: customer?.address_ref || '',
+    notes: customer?.notes || '',
+    delivery: {
+      geocoded_address: delivery?.formatted_address || '',
+      place_id: delivery?.place_id || '',
+      location: delivery?.location || null
+    },
+    items,
+    items_label: salesRow?.items_label || buildItemsLabel(items),
+    subtotal_clp: toCurrencyNumber(orderMetrics && orderMetrics.subtotal_clp),
+    shipping_clp: toCurrencyNumber(orderMetrics && orderMetrics.shipping_clp),
+    tax_included_clp: Math.round(total * 19 / 119),
+    total_clp: total,
+    transfer_expires_at: transferExpiresAt,
+    payment_method: 'transfer',
+    bank_transfer: bankTransfer,
+    support_email: SUPPORT_EMAIL,
+    support_whatsapp: SUPPORT_WHATSAPP,
+    logo_url: buildPublicAssetUrl(env, '/assets/logos/logo_white.png')
+  };
+}
+
 export async function createOrderDraft(env, payload) {
   const config = await loadOperationalConfig(env);
   const customer = validateCustomerPayload(payload);
@@ -1013,17 +1068,19 @@ export async function createCheckoutOrder(env, payload) {
     event_type: 'pending_transfer',
     from_status: '',
     to_status: 'pending_transfer',
-    payload: {
+    payload: buildPendingTransferNotificationPayload({
+      env,
       order_id: orderId,
-      origin: salesRow.origin,
-      channel: salesRow.channel,
-      total_clp: salesRow.total_clp,
-      commune: salesRow.commune,
-      sector: communeCoverage.sector || '',
-      items_label: itemsLabel,
-      transfer_expires_at: transferExpiresAt,
-      payment_method: 'transfer'
-    }
+      orderId,
+      customer,
+      salesRow,
+      communeCoverage,
+      delivery,
+      orderMetrics,
+      responseItems,
+      transferExpiresAt,
+      bankTransfer: BANK_TRANSFER_DETAILS
+    })
   });
 
   return {

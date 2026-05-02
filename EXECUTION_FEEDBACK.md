@@ -431,3 +431,15 @@
 - Se creo el pedido real de prueba `roast_20260502_013326_1ppzd` con nota `PRUEBA TECNICA HOTFIX 2026-05-02 - no preparar`, quedando en `pending_transfer`, total `$15.400`, despacho `$3.500`, direccion geocodificada en Providencia y `GET /api/orders/roast_20260502_013326_1ppzd` respondiendo `200`.
 - Parcial: el pedido de prueba queda registrado en Sheets como validacion tecnica y debe tratarse operacionalmente como `no preparar`.
 - Pendiente/deferido: revisar Sheets si se desea cancelar/anotar manualmente el pedido tecnico `roast_20260502_013326_1ppzd` para evitar confusion operativa futura.
+
+## 2026-05-02 - Ajustes UI checkout y email de transferencia
+
+- Se elimino del hero el chip `Cierre por WhatsApp`, se actualizo el heading de dolor, se cambio Hiperfoco a `Precision Liquida`, se reemplazo el testimonio que mencionaba Colombia y los niveles de tueste quedaron con los mismos tonos visuales de las notas de sabor.
+- Se ajustaron las cards de producto: `Ideal para` quedo como etiqueta externa al bloque de valor, las imagenes del slider se redujeron dentro del marco y el slider de media avanza automaticamente cada 3 segundos, con pausa por hover/focus y controles manuales preservados.
+- Se actualizo `/pedido/`: botones `Agregar al carrito`, `Finalizar Pedido` y `Pagar ahora`, resumen `Resumen de tus productos`, mensaje vacio `Aun no hay productos en tu carrito`, comunas visibles solo por nombre y H1 simplificado a `Pedido web Roast`.
+- Se enriquecio el evento `pending_transfer` del Worker con cliente, items, totales, IVA incluido, logo publico y datos de soporte; Apps Script ahora mantiene el email operativo y agrega email de confirmacion al cliente con subject `Hemos recibido tu pedido!`.
+- Se agrego `assets/products/Hiperfoco/Hiperfoco (9 x 12 cm).pdf` al alcance del cambio y se registro la aprobacion de copy `copy-approvals/2026-05-02-roast-ui-checkout-transfer-email.md`.
+- Validacion realizada: ciclo rojo con `npm run test:worker` fallando por export/helper inexistente y Playwright enfocado fallando por copy/autoplay/empty state; ciclo verde con `npm run test:worker`, checks de sintaxis JS/Worker, `npm run test:static`, suite enfocada `catalog-and-home + checkout` en Chromium con 27 pruebas pasando, subset de regresion `autoplay|navigation changes|/pedido/ responds` en desktop/mobile con 6 pruebas pasando y `npm run test:functional -- --reporter=line` con 118 pruebas pasando.
+- Completado totalmente: cambios UI/copy solicitados, dropdown de comunas, payload de notificacion, email HTML/texto para cliente, cobertura automatizada, documentacion README y aprobacion de copy.
+- Parcial: no se envio un email real desde Apps Script en produccion durante esta ejecucion local.
+- Pendiente/deferido: desplegar/autorizar Apps Script con `contacto@caferoast.cl` como cuenta ejecutora o alias Gmail verificado, ejecutar una compra real por transferencia y confirmar sender real, logo, resumen de productos y totales en el email recibido por el cliente.

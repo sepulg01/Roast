@@ -12,6 +12,7 @@ var quizProductChoice = null;
 var QUIZ_DESKTOP_BREAKPOINT = 900;
 var QUIZ_RESULT_REFERENCE_TEXT = '250g de Downtime + 250g de Hiperfoco, Molienda Gruesa (Prensa Francesa, Cold Brew)';
 var QUIZ_RESULT_REFERENCE_PRICE = '$23.800 CLP';
+var PRODUCT_MEDIA_AUTOPLAY_INTERVAL_MS = 3000;
 
 var PRICE_MAP = {
   '1_taza': { format: '250g', price: 11900 },
@@ -710,6 +711,16 @@ function stepProductMediaSlider(slider, slides, delta) {
   setProductMediaSlide(slider, slides, currentIndex + delta);
 }
 
+function advanceProductMediaSlider(slider, slides) {
+  var currentIndex = Number(slider.getAttribute('data-current-index') || 0);
+  var nextIndex = currentIndex >= slides.length - 1 ? 0 : currentIndex + 1;
+  setProductMediaSlide(slider, slides, nextIndex);
+}
+
+function shouldAutoplayProductMedia() {
+  return !window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 function initProductMediaSliders() {
   document.querySelectorAll('[data-product-card]').forEach(function(card) {
     var productId = card.getAttribute('data-product-id') || '';
@@ -719,42 +730,71 @@ function initProductMediaSliders() {
     var prevButton = card.querySelector('[data-product-slider-prev]');
     var nextButton = card.querySelector('[data-product-slider-next]');
     var slides = PRODUCT_MEDIA_MANIFEST[productId] || [];
+    var autoplayTimer = null;
 
     if (!slider || !track || !slides.length || slider.getAttribute('data-slider-ready') === 'true') return;
 
     track.textContent = '';
     slider.setAttribute('aria-label', 'Slider de media de ' + productName);
+    slider.setAttribute('data-autoplay-interval', String(PRODUCT_MEDIA_AUTOPLAY_INTERVAL_MS));
 
     slides.forEach(function(slide, index) {
       track.appendChild(createProductMediaSlide(slide, index, slides.length, productName));
     });
 
+    function stopAutoplay() {
+      if (!autoplayTimer) return;
+      window.clearInterval(autoplayTimer);
+      autoplayTimer = null;
+    }
+
+    function startAutoplay() {
+      if (autoplayTimer || slides.length <= 1 || !shouldAutoplayProductMedia()) return;
+      if (slider.matches(':hover') || slider.contains(document.activeElement)) return;
+      autoplayTimer = window.setInterval(function() {
+        advanceProductMediaSlider(slider, slides);
+      }, PRODUCT_MEDIA_AUTOPLAY_INTERVAL_MS);
+    }
+
+    function handleManualStep(delta) {
+      stopAutoplay();
+      stepProductMediaSlider(slider, slides, delta);
+      startAutoplay();
+    }
+
     if (prevButton) {
       prevButton.addEventListener('click', function() {
-        stepProductMediaSlider(slider, slides, -1);
+        handleManualStep(-1);
       });
     }
 
     if (nextButton) {
       nextButton.addEventListener('click', function() {
-        stepProductMediaSlider(slider, slides, 1);
+        handleManualStep(1);
       });
     }
 
     slider.addEventListener('keydown', function(event) {
       if (event.key === 'ArrowLeft') {
         event.preventDefault();
-        stepProductMediaSlider(slider, slides, -1);
+        handleManualStep(-1);
       }
 
       if (event.key === 'ArrowRight') {
         event.preventDefault();
-        stepProductMediaSlider(slider, slides, 1);
+        handleManualStep(1);
       }
     });
 
+    slider.tabIndex = 0;
+    slider.addEventListener('mouseenter', stopAutoplay);
+    slider.addEventListener('focusin', stopAutoplay);
+    slider.addEventListener('mouseleave', startAutoplay);
+    slider.addEventListener('focusout', startAutoplay);
+
     slider.setAttribute('data-slider-ready', 'true');
     setProductMediaSlide(slider, slides, 0);
+    startAutoplay();
   });
 }
 
