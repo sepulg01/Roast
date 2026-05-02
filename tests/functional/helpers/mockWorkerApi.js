@@ -4,7 +4,16 @@ export const publicCatalogPayload = {
   ok: true,
   currency: 'CLP',
   generated_at: '2026-04-28T00:00:00.000Z',
+  shipping_fee_clp: 3500,
   free_shipping_threshold_clp: 36000,
+  communes: [
+    { commune: 'Santiago', sector: 'Centro', dispatchable: true, free_shipping_eligible: true },
+    { commune: 'Providencia', sector: 'Oriente', dispatchable: true, free_shipping_eligible: true },
+    { commune: 'Las Condes', sector: 'Oriente', dispatchable: true, free_shipping_eligible: true },
+    { commune: 'Quilicura', sector: 'Norte', dispatchable: true, free_shipping_eligible: false },
+    { commune: 'La Florida', sector: 'Sur', dispatchable: true, free_shipping_eligible: false },
+    { commune: 'Pudahuel', sector: 'Poniente', dispatchable: false, free_shipping_eligible: false }
+  ],
   catalog: [
     {
       product_code: 'downtime',
@@ -84,6 +93,7 @@ function orderPayload(status = 'paid') {
 export async function installMockWorkerApi(page, options = {}) {
   const orderDraftRequests = [];
   const orderContactRequests = [];
+  const checkoutOrderRequests = [];
   const paymentLinkRequests = [];
 
   await page.route('**/api/public-catalog', async route => {
@@ -167,6 +177,73 @@ export async function installMockWorkerApi(page, options = {}) {
     });
   });
 
+  await page.route('**/api/checkout-orders', async route => {
+    const request = route.request();
+    const postData = request.postData();
+    let checkoutOrderRequest = {};
+
+    if (postData) {
+      try {
+        checkoutOrderRequest = JSON.parse(postData);
+        checkoutOrderRequests.push(checkoutOrderRequest);
+      } catch (error) {
+        checkoutOrderRequests.push({ parseError: error.message, raw: postData });
+      }
+    }
+
+    if (options.checkoutOrderHtmlError) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<!doctype html><p>not the checkout worker</p>'
+      });
+      return;
+    }
+
+    const requestItems = Array.isArray(checkoutOrderRequest.items) ? checkoutOrderRequest.items : [];
+    const subtotalClp = requestItems.reduce((sum, item) => {
+      const catalogItem = publicCatalogPayload.catalog.find(entry => (
+        entry.product_code === item.product_code && entry.format_code === item.format_code
+      ));
+      return sum + ((catalogItem ? catalogItem.price_clp : 0) * Number(item.quantity || 1));
+    }, 0);
+    const normalizedCommune = String(checkoutOrderRequest.commune || '').trim().toLowerCase();
+    const freeShippingCommunes = new Set(['providencia', 'las condes', 'santiago']);
+    const paidShippingCommunes = new Set(['quilicura', 'la florida']);
+    const qualifiesForFreeShipping = subtotalClp >= publicCatalogPayload.free_shipping_threshold_clp
+      && freeShippingCommunes.has(normalizedCommune);
+    const shippingClp = qualifiesForFreeShipping ? 0 : 3500;
+    const covered = freeShippingCommunes.has(normalizedCommune) || paidShippingCommunes.has(normalizedCommune);
+
+    await route.fulfill({
+      status: covered ? 200 : 422,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: covered,
+        order_id: 'ORD_TEST_001',
+        subtotal_clp: subtotalClp,
+        shipping_clp: shippingClp,
+        total_clp: subtotalClp + shippingClp,
+        iva_included_rate: 0.19,
+        internal_status: 'pending_transfer',
+        payment_method: 'transfer',
+        transfer_expires_at: '2026-05-01T14:00:00.000Z',
+        items_label: requestItems.length === 2 ? 'Downtime 1kg x2' : 'Downtime 1kg',
+        error: covered ? '' : 'commune_outside_coverage',
+        message: covered ? '' : 'No tenemos cobertura para esa comuna.',
+        bank_transfer: {
+          bank: 'BCI',
+          account_type: 'Cuenta Corriente',
+          account_number: '61947059',
+          rut: '17515638-0',
+          email: 'contacto@caferoast.cl'
+        },
+        support_email: 'contacto@caferoast.cl',
+        support_whatsapp: '+56991746361'
+      })
+    });
+  });
+
   await page.route('**/api/order-contact-requests', async route => {
     const request = route.request();
     const postData = request.postData();
@@ -215,6 +292,7 @@ export async function installMockWorkerApi(page, options = {}) {
   });
 
   return {
+    checkoutOrderRequests,
     orderDraftRequests,
     orderContactRequests,
     paymentLinkRequests,

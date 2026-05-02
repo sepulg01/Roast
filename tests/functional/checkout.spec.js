@@ -1,144 +1,203 @@
 import { expect, test } from '@playwright/test';
 import { installMockWorkerApi } from './helpers/mockWorkerApi.js';
 
-async function reachCustomerStep(page) {
+const GRIND_OPTION_LABELS = [
+  'Molienda Fina (Espresso, Cafetera italiana "Moka")',
+  'Molienda Media (Goteo, Aeropress)',
+  'Molienda Gruesa (Prensa Francesa, Cold Brew)',
+  'Grano Entero'
+];
+
+async function openCheckoutWithItems(page, { quantity = 1, format = '250g' } = {}) {
   await page.goto('/pedido/', { waitUntil: 'domcontentloaded' });
-  await page.getByRole('button', { name: 'Agregar al resumen' }).click();
+
+  await page.locator('[data-current-item-field="format_code"]').selectOption(format);
+
+  for (let index = 0; index < quantity; index += 1) {
+    await page.getByRole('button', { name: 'Agregar al resumen' }).click();
+  }
+}
+
+async function reachDataStep(page, options = {}) {
+  await openCheckoutWithItems(page, options);
   await page.getByRole('button', { name: 'Continuar con datos' }).click();
 }
 
-async function fillCustomerData(page, commune = 'Providencia') {
-  await page.locator('#customer_name').fill('Cliente Roast');
+async function fillCustomerData(page, { commune = 'Providencia' } = {}) {
+  await page.locator('#first_name').fill('Camila');
+  await page.locator('#last_name').fill('Roast');
   await page.locator('#email').fill('cliente@example.com');
   await page.locator('#phone').fill('+56991746361');
-  await page.locator('#commune').fill(commune);
+  await page.locator('#commune').selectOption(commune);
   await page.locator('#address').fill('Av. Siempre Viva 123');
   await page.locator('#address_ref').fill('Depto 42');
   await page.locator('#notes').fill('Moler justo antes de despacho.');
 }
 
-test.describe('checkout flow', () => {
-  test('direct checkout starts with an editable empty draft and only submits added items', async ({ page }) => {
-    const mockApi = await installMockWorkerApi(page);
-    await page.goto('/pedido/', { waitUntil: 'domcontentloaded' });
+async function choosePaymentMethod(page, name) {
+  if (String(name).toLowerCase() === 'flow' || String(name).includes('Flow')) {
+    await page.locator('input[name="payment_method"][value="flow"]').check();
+    return;
+  }
 
-    await expect(page.locator('.checkout-item-card')).toHaveCount(1);
-    await expect(page.locator('#checkoutSummaryItems li')).toHaveCount(0);
+  await page.locator('input[name="payment_method"][value="transfer"]').check();
+}
 
-    await page.getByRole('button', { name: 'Agregar al resumen' }).click();
+async function finishTransferCheckout(page, mockApi, { commune = 'Providencia' } = {}) {
+  await reachDataStep(page, { quantity: 2, format: '1kg' });
+  await fillCustomerData(page, { commune });
+  await choosePaymentMethod(page, /transferencia/i);
+  await page.locator('#accept_total').check();
+  await page.locator('#accept_terms').check();
+  await page.getByRole('button', { name: 'Finalizar Pedido' }).click();
+  await expect.poll(() => mockApi.checkoutOrderRequests.length).toBe(1);
+}
 
-    await expect(page.locator('#checkoutSummaryItems li')).toHaveCount(1);
-    await expect(page.locator('#checkoutSummaryItems')).toContainText(/Downtime.*250g.*prensa francesa/i);
-    await expect(page.locator('[data-summary-remove-item]')).toHaveCount(1);
-
-    await page.locator('[data-summary-remove-item]').click();
-
-    await expect(page.locator('#checkoutSummaryItems li')).toHaveCount(0);
-
-    await page.getByRole('button', { name: 'Agregar al resumen' }).click();
-    await page.getByRole('button', { name: 'Continuar con datos' }).click();
-    await fillCustomerData(page);
-    await page.getByRole('button', { name: 'Continuar a revisión' }).click();
-
-    await expect.poll(() => mockApi.orderDraftRequests.length).toBe(1);
-    expect(mockApi.orderDraftRequests[0].items).toEqual([
-      {
-        product_code: 'downtime',
-        format_code: '250g',
-        grind: 'prensa francesa',
-        quantity: 1
-      }
-    ]);
-  });
-
-  test('free-shipping alert changes from remaining amount to success after threshold is reached', async ({ page }) => {
+test.describe('checkout 2-step order and transfer flow', () => {
+  test('shows only Pedido and Datos steps without Pago or Paso 3 indicators', async ({ page }) => {
     await installMockWorkerApi(page);
     await page.goto('/pedido/', { waitUntil: 'domcontentloaded' });
 
-    const alert = page.locator('[data-free-shipping-alert]');
-    await expect(alert).toContainText(/faltan|quedan|restan/i);
-    await expect(alert).toContainText(/\$|CLP/);
-
-    await page.locator('[data-current-item-field="format_code"]').selectOption('1kg');
-    await page.getByRole('button', { name: 'Agregar al resumen' }).click();
-    await page.getByRole('button', { name: 'Agregar al resumen' }).click();
-
-    await expect(alert).toContainText(/env[ií]o gratis|gratis activado|alcanzaste/i);
-    await expect(alert).toHaveAttribute('data-free-shipping-state', 'qualified');
+    await expect(page.getByText(/Paso 1 de 2/i)).toBeVisible();
+    await expect(page.locator('[data-step-indicator]')).toHaveText(['Pedido', 'Datos']);
+    await expect(page.getByText(/^Pago$/i)).toHaveCount(0);
+    await expect(page.getByText(/Paso 3/i)).toHaveCount(0);
   });
 
-  test('happy path creates a draft, requests contact closure, and redirects to WhatsApp', async ({ page }) => {
+  test('sidebar is Tu carrito Roast with subtotal, pending shipping, total and included VAT', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await openCheckoutWithItems(page);
+
+    const sidebar = page.getByRole('complementary');
+    await expect(sidebar.getByRole('heading', { name: 'Tu carrito Roast' })).toBeVisible();
+    await expect(sidebar).toContainText(/Subtotal/i);
+    await expect(sidebar).toContainText(/Env[ií]o/i);
+    await expect(page.locator('#summaryShipping')).toContainText(/Pendiente/i);
+    await expect(sidebar).toContainText(/Total/i);
+    await expect(sidebar).toContainText(/IVA incluido 19%/i);
+  });
+
+  test('checkout selector exposes the four approved grind choices with whole bean as default', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.goto('/pedido/', { waitUntil: 'domcontentloaded' });
+
+    const grindSelect = page.locator('[data-current-item-field="grind"]');
+    const labels = await grindSelect.locator('option').evaluateAll(options =>
+      options.map(option => option.textContent.trim())
+    );
+
+    expect(labels).toEqual(GRIND_OPTION_LABELS);
+    await expect(grindSelect).toHaveValue('grano entero');
+
+    await page.getByRole('button', { name: 'Agregar al resumen' }).click();
+    await expect(page.locator('#checkoutSummaryItems')).toContainText(/Downtime.*250g.*Grano Entero/i);
+  });
+
+  test('captures first and last name separately before choosing payment', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await reachDataStep(page);
+
+    await expect(page.locator('#customer_name')).toHaveCount(0);
+    await fillCustomerData(page);
+    await expect(page.locator('#first_name')).toHaveValue('Camila');
+    await expect(page.locator('#last_name')).toHaveValue('Roast');
+  });
+
+  test('Flow payment is disabled and does not create orders or payment links', async ({ page }) => {
     const mockApi = await installMockWorkerApi(page);
-    const trackedEvents = [];
-    await page.exposeFunction('recordCheckoutEvent', event => {
-      trackedEvents.push(event);
-    });
-
-    await reachCustomerStep(page);
+    await reachDataStep(page);
     await fillCustomerData(page);
-    await page.getByRole('button', { name: 'Continuar a revisión' }).click();
 
-    await expect(page.locator('#reviewOrderId')).toContainText('ORD_TEST_001');
-    await expect(page.locator('#reviewTotal')).toContainText('$13.400');
-    await expect(page.locator('[data-checkout-support-link]').first()).toHaveAttribute(
-      'href',
-      /wa\.me\/56991746361.*ORD_TEST_001/
-    );
+    await choosePaymentMethod(page, /^Flow$/i);
 
-    await page.locator('#accept_total').check();
-    await page.locator('#accept_terms').check();
-    await page.evaluate(() => {
-      const originalPush = window.dataLayer.push.bind(window.dataLayer);
-      window.dataLayer.push = function(payload) {
-        window.recordCheckoutEvent(payload);
-        return originalPush(payload);
-      };
-    });
-    await page.getByRole('button', { name: 'Enviar pedido' }).click();
-
-    await expect.poll(() => mockApi.orderContactRequests.length).toBe(1);
-    expect(mockApi.orderContactRequests[0]).toEqual({
-      order_id: 'ORD_TEST_001',
-      accept_total: true,
-      accept_terms: true
-    });
-    expect(mockApi.paymentLinkRequests).toHaveLength(0);
-
-    await page.waitForURL(/wa\.me\/56991746361/);
-    await expect(page.getByRole('heading', { name: 'Mock WhatsApp redirect' })).toBeVisible();
-    await expect.poll(() => trackedEvents.map(event => event.event)).toEqual(
-      expect.arrayContaining(['order_contact_requested', 'whatsapp_redirected'])
-    );
-  });
-
-  test('manual review draft shows support path and allows contact closure', async ({ page }) => {
-    const mockApi = await installMockWorkerApi(page, { manualReview: true });
-    await reachCustomerStep(page);
-    await fillCustomerData(page, 'Paine');
-    await page.getByRole('button', { name: 'Continuar a revisión' }).click();
-
-    await expect(page.locator('#manualReviewBox')).toBeVisible();
-    await expect(page.locator('#checkoutStatus')).toContainText('revisión manual');
-    await expect(page.locator('#checkoutPayButton')).toBeEnabled();
-
-    await page.locator('#accept_total').check();
-    await page.locator('#accept_terms').check();
-    await page.getByRole('button', { name: 'Enviar pedido' }).click();
-
-    await expect.poll(() => mockApi.orderContactRequests.length).toBe(1);
-    expect(mockApi.orderContactRequests[0]).toEqual({
-      order_id: 'ORD_TEST_001',
-      accept_total: true,
-      accept_terms: true
-    });
+    await expect(page.locator('#checkoutStatus')).toContainText('La integración con Flow se encuentra deshabilitada momentáneamente');
+    await expect(page.getByRole('button', { name: 'Finalizar Pedido' })).toBeDisabled();
+    expect(mockApi.checkoutOrderRequests).toHaveLength(0);
     expect(mockApi.paymentLinkRequests).toHaveLength(0);
   });
 
-  test('HTML API response explains backend route misconfiguration', async ({ page }) => {
-    await installMockWorkerApi(page, { orderDraftHtmlError: true });
-    await reachCustomerStep(page);
+  test('transfer payment creates checkout order and confirms on the same page', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page);
+    await reachDataStep(page, { quantity: 2, format: '1kg' });
     await fillCustomerData(page);
-    await page.getByRole('button', { name: 'Continuar a revisión' }).click();
+
+    await choosePaymentMethod(page, /transferencia/i);
+    await expect(page.getByText('Tendrás 2 horas para transferir antes que se cierre tu carro de venta.')).toBeVisible();
+    await page.locator('#accept_total').check();
+    await page.locator('#accept_terms').check();
+    await page.getByRole('button', { name: 'Finalizar Pedido' }).click();
+
+    await expect.poll(() => mockApi.checkoutOrderRequests.length).toBe(1);
+    expect(mockApi.checkoutOrderRequests[0]).toEqual(expect.objectContaining({
+      payment_method: 'transfer',
+      first_name: 'Camila',
+      last_name: 'Roast',
+      commune: 'Providencia',
+      items: [
+        expect.objectContaining({
+          product_code: 'downtime',
+          format_code: '1kg',
+          grind: 'grano entero',
+          quantity: 1
+        }),
+        expect.objectContaining({
+          product_code: 'downtime',
+          format_code: '1kg',
+          grind: 'grano entero',
+          quantity: 1
+        })
+      ]
+    }));
+    expect(mockApi.paymentLinkRequests).toHaveLength(0);
+
+    await expect(page.getByRole('heading', { name: 'Confirmación N° ORD_TEST_001' })).toBeVisible();
+    await expect(page.getByText(/BCI/i)).toBeVisible();
+    await expect(page.getByText(/Cuenta Corriente\s+61947059/i)).toBeVisible();
+    await expect(page.getByText(/^RUT$/i)).toBeVisible();
+    await expect(page.locator('dd').filter({ hasText: /^17515638-0$/ })).toBeVisible();
+    await expect(page.locator('dd').filter({ hasText: /^contacto@caferoast\.cl$/i })).toBeVisible();
+    await expect(page.getByText(/Downtime.*1kg.*x2/i)).toBeVisible();
+  });
+
+  test('Centro and Oriente communes over threshold qualify for free shipping', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page);
+
+    await finishTransferCheckout(page, mockApi, { commune: 'Providencia' });
+    expect(mockApi.checkoutOrderRequests[0]).toEqual(expect.objectContaining({
+      commune: 'Providencia'
+    }));
+    await expect(page.getByText(/env[ií]o gratis/i)).toBeVisible();
+  });
+
+  test('Norte and Sur communes keep paid shipping even over threshold', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page);
+
+    await finishTransferCheckout(page, mockApi, { commune: 'Quilicura' });
+    expect(mockApi.checkoutOrderRequests[0]).toEqual(expect.objectContaining({
+      commune: 'Quilicura'
+    }));
+    await expect(page.locator('#summaryShipping')).toContainText(/\$3\.500|\$ 3\.500|CLP/);
+  });
+
+  test('Poniente or outside-coverage communes block checkout with an error', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page);
+    await reachDataStep(page, { quantity: 2, format: '1kg' });
+    await fillCustomerData(page, { commune: 'Pudahuel' });
+    await choosePaymentMethod(page, /transferencia/i);
+
+    await expect(page.locator('[data-error-for="commune"]')).toContainText(/fuera de cobertura|no tenemos cobertura|no despachamos/i);
+    await expect(page.getByRole('button', { name: 'Finalizar Pedido' })).toBeDisabled();
+    expect(mockApi.checkoutOrderRequests).toHaveLength(0);
+  });
+
+  test('HTML API response explains checkout-orders backend route misconfiguration', async ({ page }) => {
+    await installMockWorkerApi(page, { checkoutOrderHtmlError: true });
+    await reachDataStep(page, { quantity: 2, format: '1kg' });
+    await fillCustomerData(page);
+    await choosePaymentMethod(page, /transferencia/i);
+    await page.locator('#accept_total').check();
+    await page.locator('#accept_terms').check();
+    await page.getByRole('button', { name: 'Finalizar Pedido' }).click();
 
     await expect(page.locator('#checkoutStatus')).toContainText('El backend del checkout no está respondiendo');
   });

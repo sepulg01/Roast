@@ -1,23 +1,24 @@
 # Roast
 
-Sitio estatico y flujo de pedido web para Cafe Roast. El cliente arma el pedido en `caferoast.cl`, el Worker calcula el total con Google Sheets y, temporalmente, el cierre se deriva a WhatsApp + email operativo mientras Flow queda disponible en codigo para retomarlo.
+Sitio estatico y flujo de pedido web para Cafe Roast. El cliente arma el pedido en `caferoast.cl`, completa el checkout en 2 pasos (`Pedido` y `Datos`) y el Worker calcula el total con Google Sheets. El cierre activo queda por `Transferencia Bancaria`, dejando el pedido en estado `pending_transfer`; Flow permanece como codigo legado/desactivado por defecto con `flow_enabled=false`.
 
 ## Stack Operativo
 
 - Website estatico: HTML publico, `assets/site.js` y `assets/checkout.js`.
 - API: Cloudflare Worker en `worker/src/index.js`.
 - Operacion: Google Sheets como fuente de configuracion y registro.
-- Cierre temporal: `POST /api/order-contact-requests` envia email operativo y deriva a WhatsApp.
-- Pagos Flow: endpoints y codigo se mantienen para reactivacion posterior mediante `/payment/create` y `/payment/getStatus`.
+- Cierre activo: `POST /api/checkout-orders` crea el pedido para `Transferencia Bancaria` y lo deja en `pending_transfer`.
+- Pagos Flow: endpoints y codigo se mantienen como legado desactivado por defecto mediante `flow_enabled=false`; se reactivan solo con decision operativa explicita.
 - Notificaciones: Apps Script como webhook de email; no escribe en Sheets.
 - Soporte: `contacto@caferoast.cl` y WhatsApp `+56 9 9174 6361`.
 
 ## Rutas Del Worker
 
-- `GET /api/public-catalog`: catalogo publico desde `Config`.
+- `GET /api/public-catalog`: catalogo publico desde `Config`, incluyendo `shipping_fee_clp` y `communes`.
+- `POST /api/checkout-orders`: crea pedido de checkout en 2 pasos y devuelve instrucciones de transferencia con estado `pending_transfer`.
 - `POST /api/order-drafts`: crea cliente, venta, lineas y evento. No es idempotente.
-- `POST /api/order-contact-requests`: confirma aceptacion del total, exige email operativo por Apps Script y devuelve WhatsApp para cierre humano.
-- `POST /api/payment-links`: codigo legado Flow; crea links solo para pedidos `draft` y reutiliza links `link_sent` o `pending_payment`.
+- `POST /api/order-contact-requests`: ruta de contacto manual previa; no es el cierre activo mientras transferencia bancaria este vigente.
+- `POST /api/payment-links`: codigo legado Flow; permanece desactivado por defecto con `flow_enabled=false` y solo debe operar si Flow se reactiva.
 - `POST /api/flow/confirmation`: callback server-to-server de Flow.
 - `POST /pago/retorno`: retorno del navegador desde Flow hacia `/pago/resultado/`.
 - `GET /api/orders/:order_id`: estado publico por ID de pedido.
@@ -39,6 +40,17 @@ Hojas requeridas:
 
 `Config.status_map` se parsea hoy, pero no debe considerarse contrato productivo hasta que el Worker lo use explicitamente.
 
+## Transferencia Bancaria
+
+El cierre activo muestra estos datos para pago por transferencia:
+
+- Banco: BCI
+- Tipo: Cuenta Corriente
+- Numero: `61947059`
+- Titular: Gonzalo Sepúlveda Hermosilla
+- RUT: `17515638-0`
+- Email: `contacto@caferoast.cl`
+
 ## Variables Y Secretos
 
 Worker:
@@ -48,8 +60,9 @@ Worker:
 - `FLOW_BASE_URL` opcional, default `https://www.flow.cl/api`
 - `GOOGLE_SERVICE_ACCOUNT_JSON`
 - `GOOGLE_SHEET_ID`
+- `GOOGLE_MAPS_API_KEY`, requerido para validacion backend de direcciones mediante Google Geocoding
 - `PUBLIC_BASE_URL`
-- `APPS_SCRIPT_WEBHOOK_URL`, requerido para email operativo del cierre temporal
+- `APPS_SCRIPT_WEBHOOK_URL`, requerido solo para notificaciones o flujos de contacto manual que usen Apps Script
 - `APPS_SCRIPT_SHARED_SECRET`, requerido junto al webhook de Apps Script
 
 Apps Script:

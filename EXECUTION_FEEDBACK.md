@@ -383,3 +383,26 @@
 - Completado totalmente: flujo temporal frontend/backend para cierre por contacto, email operativo enriquecido, precios fallback/visibles, fixtures funcionales, documentacion del cambio y compuerta local de aprobacion de textos antes del commit.
 - Parcial: no se pudo actualizar la planilla real `Config.catalog` porque este entorno no tiene `GOOGLE_SERVICE_ACCOUNT_JSON` ni `GOOGLE_SHEET_ID` exportados. Los valores pendientes para `downtime` y `hiperfoco` son `250g=9900`, `500g=18900`, `1kg=32900`.
 - Pendiente/deferido: cargar secretos reales de Google/Apps Script en el entorno productivo, actualizar `Config.catalog` en Sheets, desplegar Worker y Apps Script, y probar el ciclo real `draft -> contact_requested -> email -> WhatsApp -> Sheets`.
+
+## 2026-05-02 - Checkout 2 pasos + transferencia
+
+- Se implemento el checkout publico en 2 pasos (`Pedido` y `Datos`) con carrito `Tu carrito Roast`, subtotal, envio pendiente/pagado/gratis, total e IVA incluido 19%.
+- Se separaron `Nombre` y `Apellido`, se agrego selector de pago `Checkout Flow`/`Transferencia Bancaria`, se bloqueo Flow con mensaje de integracion deshabilitada y se dejo transferencia como cierre activo.
+- Se implemento `POST /api/checkout-orders`, el contrato ampliado de `GET /api/public-catalog` con `shipping_fee_clp` y `communes`, el estado `pending_transfer`, la validacion de direccion con `GOOGLE_MAPS_API_KEY` via Google Geocoding y la compuerta `flow_enabled=false`.
+- Se registraron los datos bancarios de transferencia: BCI, Cuenta Corriente `61947059`, Gonzalo Sepúlveda Hermosilla, RUT `17515638-0`, `contacto@caferoast.cl`.
+- Completado totalmente: frontend de `/pedido/`, backend Worker, mocks/pruebas funcionales, README, Backlog, script de README en Sheets y registro de ejecucion quedaron alineados con el plan.
+- Validacion realizada: `npm run test:static`, `npm --prefix worker run check`, `npm run test:functional -- tests/functional/checkout.spec.js --project=chromium --reporter=line`, `npm run test:functional -- tests/functional/catalog-and-home.spec.js --project=chromium --project=mobile-chromium --grep "final home CTA" --reporter=line` y `npm run test:functional -- --reporter=line` con 110 pruebas pasando.
+- Parcial: no se ejecuto una prueba real contra Google Sheets/Google Geocoding productivo porque este entorno no tiene secretos reales exportados.
+- Pendiente/deferido: desplegar Worker con secretos reales, confirmar `GOOGLE_MAPS_API_KEY`, probar una compra real `Pedido -> Datos -> pending_transfer -> Sheets`, ejecutar `npm run sheets:readme` contra la planilla real si corresponde y mantener Flow apagado salvo decision explicita.
+
+## 2026-05-02 - Moliendas simplificadas y ajustes landing
+
+- Se actualizo el landing con el nuevo copy de hero, chip `Cafe recien tostado`, heading de dolor, remocion del parrafo redundante y niveles de tueste como pills junto a notas de sabor.
+- Se redujeron las opciones visibles de molienda a `Molienda Fina (Espresso, Cafetera italiana "Moka")`, `Molienda Media (Goteo, Aeropress)`, `Molienda Gruesa (Prensa Francesa, Cold Brew)` y `Grano Entero`, con default `Grano Entero` en productos y checkout.
+- Se normalizaron drafts/URLs antiguas hacia los valores canonicos `molienda fina`, `molienda media`, `molienda gruesa` y `grano entero`, preservando el contrato backend `items[].grind` como string.
+- Se actualizo el quiz para mapear moka/espresso a fina, filtro a media y prensa/hervidor/no se a gruesa, manteniendo etiquetas visibles consistentes en resumen y checkout.
+- Se agrego la aprobacion de copy `copy-approvals/2026-05-02-molienda-landing-copy.md` y cobertura funcional para las cuatro opciones exactas, defaults y nuevos textos visibles.
+- Validacion realizada: `npm run test:static`, `npm run test:functional -- tests/functional/catalog-and-home.spec.js tests/functional/checkout.spec.js --grep "landing copy|product cards expose|checkout selector exposes|product card draft pre-fills|transfer payment creates" --reporter=line`, `npm run test:functional -- tests/functional/catalog-and-home.spec.js tests/functional/checkout.spec.js --reporter=line`, `npm run test:functional -- tests/functional/static-routes.spec.js --reporter=line` y `npm run test:functional -- --reporter=line` con 110 pruebas funcionales pasando.
+- Completado totalmente: cambios de copy/UI solicitados, opciones y defaults de molienda, normalizacion de valores antiguos, tests funcionales y registro de aprobacion de copy.
+- Parcial: no quedaron tareas parcialmente implementadas dentro del alcance aprobado.
+- Pendiente/deferido: revision visual manual opcional en navegador real antes de publicar; no se hicieron cambios backend, DB/Sheets, commit, push ni refresh de stacks porque no estaban dentro de la instruccion positiva de esta ejecucion.

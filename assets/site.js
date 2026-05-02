@@ -10,7 +10,7 @@ var quizCups = null;
 var quizMethod = null;
 var quizProductChoice = null;
 var QUIZ_DESKTOP_BREAKPOINT = 900;
-var QUIZ_RESULT_REFERENCE_TEXT = '250g de Downtime + 250g de Hiperfoco, molido para prensa francesa';
+var QUIZ_RESULT_REFERENCE_TEXT = '250g de Downtime + 250g de Hiperfoco, Molienda Gruesa (Prensa Francesa, Cold Brew)';
 var QUIZ_RESULT_REFERENCE_PRICE = '$19.800 CLP';
 
 var PRICE_MAP = {
@@ -22,22 +22,19 @@ var PRICE_MAP = {
 var QUIZ_COMBO_PRICE = 19800;
 
 var METHOD_GRIND_MAP = {
-  'moka': 'molido para moka',
-  'prensa_francesa': 'molido grueso para prensa francesa',
-  'filtro': 'molido medio para filtro',
-  'espresso': 'molido fino para espresso',
-  'hervidor': 'molido grueso para prensa francesa',
-  'no_se': 'molido grueso para prensa francesa'
+  'moka': 'molienda fina',
+  'prensa_francesa': 'molienda gruesa',
+  'filtro': 'molienda media',
+  'espresso': 'molienda fina',
+  'hervidor': 'molienda gruesa',
+  'no_se': 'molienda gruesa'
 };
 
 var PRODUCT_GRIND_LABEL_MAP = {
-  'espresso': 'molido para espresso',
-  'moka': 'molido para moka',
-  'prensa francesa': 'molido para prensa francesa',
-  'filtro / pour over': 'molido para filtro / pour over',
-  'chemex': 'molido para chemex',
-  'aeropress': 'molido para aeropress',
-  'grano entero': 'en grano entero'
+  'molienda fina': 'Molienda Fina (Espresso, Cafetera italiana "Moka")',
+  'molienda media': 'Molienda Media (Goteo, Aeropress)',
+  'molienda gruesa': 'Molienda Gruesa (Prensa Francesa, Cold Brew)',
+  'grano entero': 'Grano Entero'
 };
 
 var PRODUCT_NAME_MAP = {
@@ -308,7 +305,8 @@ function selectProductChoice(button) {
 
 function getQuizRecommendation() {
   var formatRecommendation = PRICE_MAP[quizCups] || PRICE_MAP['1_taza'];
-  var grindLabel = METHOD_GRIND_MAP[quizMethod] || 'molido grueso para prensa francesa';
+  var grind = METHOD_GRIND_MAP[quizMethod] || 'molienda gruesa';
+  var grindLabel = PRODUCT_GRIND_LABEL_MAP[grind] || grind;
 
   if (quizProductChoice === 'ambos_250') {
     return {
@@ -318,8 +316,8 @@ function getQuizRecommendation() {
         origin: 'index_quiz_result',
         channel: 'site_home_quiz',
         items: [
-          createItem('downtime', '250g', grindLabel, 1),
-          createItem('hiperfoco', '250g', grindLabel, 1)
+          createItem('downtime', '250g', grind, 1),
+          createItem('hiperfoco', '250g', grind, 1)
         ]
       },
       supportMessage: buildSupportMessage('la recomendación del quiz')
@@ -337,7 +335,7 @@ function getQuizRecommendation() {
       origin: 'index_quiz_result',
       channel: 'site_home_quiz',
       items: [
-        createItem(productId, formatRecommendation.format, grindLabel, 1)
+        createItem(productId, formatRecommendation.format, grind, 1)
       ]
     },
     supportMessage: buildSupportMessage('la recomendación del quiz')

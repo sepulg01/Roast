@@ -4,6 +4,7 @@ const NOTIFIABLE_EVENTS = new Set([
   'draft_created',
   'payment_link_created',
   'order_contact_requested',
+  'pending_transfer',
   'paid',
   'payment_failed',
   'manual_review'

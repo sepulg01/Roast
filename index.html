@@ -64,7 +64,7 @@
             "name": "¿Venden café molido a pedido?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Sí. Molemos el café según tu cafetera para moka, prensa francesa, filtro, espresso, Chemex o AeroPress."
+              "text": "Sí. Puedes elegir Molienda Fina, Molienda Media, Molienda Gruesa o Grano Entero según cómo quieres prepararlo."
             }
           },
           {
@@ -166,7 +166,7 @@
     <div class="hero-content">
       <span class="hero-eyebrow">Tu primer café real.</span>
       <h1 class="hero-headline">Tu desayuno merece más que agua tibia con colorante.</h1>
-      <p class="hero-sub">Café Roast es el paso para dejar el café instantáneo: solo tienes que elegir cuál de nuestros tuestes te acomoda más y contarnos cómo lo quieres tomar. Luego nosotros te enviamos a casa tu café en grano, o recién molido.</p>
+      <p class="hero-sub">Café Roast es el paso para dejar el café instantáneo: solo tienes que elegir cuál de nuestros tuestes te acomoda más y contarnos cómo lo quieres tomar. Luego nosotros te lo enviamos en grano, o recién molido.</p>
       <div class="hero-ctas">
         <a href="/pedido/"
            class="btn btn-primary"
@@ -193,6 +193,7 @@
         <li>Molienda según tu cafetera</li>
         <li>Despacho en Santiago</li>
         <li>Cierre por WhatsApp</li>
+        <li>Café recién tostado</li>
       </ul>
     </div>
   </section>
@@ -200,7 +201,7 @@
   <section id="pain-points" aria-labelledby="pain-heading">
     <div class="container">
       <div class="section-header fade-in">
-        <h2 id="pain-heading">Si el café de tarro ya te aburrió, este es el siguiente paso lógico.</h2>
+        <h2 id="pain-heading">Si el café de tarro ya te aburrió, este Café Roast es el siguiente paso.</h2>
       </div>
       <div class="pain-grid">
         <div class="card pain-card fade-in" aria-label="Problema: Sabor plano">
@@ -227,7 +228,6 @@
       <div class="section-header fade-in">
         <h2 id="products-heading">Dos tuestes para dos estados muy distintos del día.</h2>
       </div>
-      <p class="section-sub fade-in">Solo tienes que elegir cuál te acompaña mejor. Nosotros te lo mandamos en grano o recién molido, listo para entrar a la rutina.</p>
       <div class="products-grid">
         <article class="card product-card fade-in" aria-label="Downtime" data-product-card data-product-id="downtime">
           <div class="product-card-content">
@@ -236,17 +236,14 @@
               <p class="product-title">Downtime</p>
               <p class="product-microcopy">Productividad a la espera.</p>
               <p class="product-story">Equilibrado y fácil de repetir: una taza redonda para bajar un cambio sin apagar el día.</p>
-              <ul class="product-flavor-list" aria-label="Perfil sensorial de Downtime">
+              <ul class="product-flavor-list" aria-label="Notas de sabor y nivel de tueste de Downtime">
                 <li>Chocolate</li>
                 <li>Caramelo</li>
                 <li>Frutos secos</li>
+                <li class="product-roast-pill">Tueste Medio-Italiano</li>
               </ul>
             </div>
             <div class="product-config-stack" aria-label="Configuración de Downtime">
-              <div class="product-config-item product-meta-item">
-                <span class="product-meta-label">Tueste</span>
-                <span class="product-meta-value">Medio</span>
-              </div>
               <label class="product-config-item product-select-group">
                 <span class="product-select-label">Formato</span>
                 <select id="downtime-format" data-product-format aria-label="Selecciona formato para Downtime">
@@ -258,13 +255,10 @@
               <label class="product-config-item product-select-group">
                 <span class="product-select-label">Molienda</span>
                 <select id="downtime-grind" data-product-grind aria-label="Selecciona molienda para Downtime">
-                  <option value="prensa francesa" selected>Prensa francesa</option>
-                  <option value="filtro / pour over">Filtro / pour over</option>
-                  <option value="moka">Moka</option>
-                  <option value="espresso">Espresso</option>
-                  <option value="chemex">Chemex</option>
-                  <option value="aeropress">AeroPress</option>
-                  <option value="grano entero">Grano entero</option>
+                  <option value="molienda fina">Molienda Fina (Espresso, Cafetera italiana "Moka")</option>
+                  <option value="molienda media">Molienda Media (Goteo, Aeropress)</option>
+                  <option value="molienda gruesa">Molienda Gruesa (Prensa Francesa, Cold Brew)</option>
+                  <option value="grano entero" selected>Grano Entero</option>
                 </select>
               </label>
               <div class="product-config-item product-meta-item">
@@ -329,17 +323,14 @@
               <p class="product-title">Hiperfoco</p>
               <p class="product-microcopy">Foco sin rodeos.</p>
               <p class="product-story">Más oscuro y más directo: corta la inercia y te devuelve a la tarea con una taza que se hace sentir.</p>
-              <ul class="product-flavor-list" aria-label="Perfil sensorial de Hiperfoco">
+              <ul class="product-flavor-list" aria-label="Notas de sabor y nivel de tueste de Hiperfoco">
                 <li>Chocolate amargo</li>
                 <li>Tostado</li>
                 <li>Azúcar morena</li>
+                <li class="product-roast-pill">Tueste Italiano</li>
               </ul>
             </div>
             <div class="product-config-stack" aria-label="Configuración de Hiperfoco">
-              <div class="product-config-item product-meta-item">
-                <span class="product-meta-label">Tueste</span>
-                <span class="product-meta-value">Italiano / oscuro</span>
-              </div>
               <label class="product-config-item product-select-group">
                 <span class="product-select-label">Formato</span>
                 <select id="hiperfoco-format" data-product-format aria-label="Selecciona formato para Hiperfoco">
@@ -351,13 +342,10 @@
               <label class="product-config-item product-select-group">
                 <span class="product-select-label">Molienda</span>
                 <select id="hiperfoco-grind" data-product-grind aria-label="Selecciona molienda para Hiperfoco">
-                  <option value="espresso" selected>Espresso</option>
-                  <option value="moka">Moka</option>
-                  <option value="prensa francesa">Prensa francesa</option>
-                  <option value="filtro / pour over">Filtro / pour over</option>
-                  <option value="chemex">Chemex</option>
-                  <option value="aeropress">AeroPress</option>
-                  <option value="grano entero">Grano entero</option>
+                  <option value="molienda fina">Molienda Fina (Espresso, Cafetera italiana "Moka")</option>
+                  <option value="molienda media">Molienda Media (Goteo, Aeropress)</option>
+                  <option value="molienda gruesa">Molienda Gruesa (Prensa Francesa, Cold Brew)</option>
+                  <option value="grano entero" selected>Grano Entero</option>
                 </select>
               </label>
               <div class="product-config-item product-meta-item">
@@ -612,7 +600,7 @@
             ¿Venden café molido a pedido?
             <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <div class="faq-answer" id="faq-a1" role="region"><div class="faq-answer-inner">Sí. Molemos el café según tu cafetera. Tú nos dices si usas moka, prensa francesa, filtro, espresso, Chemex o AeroPress, y te llega listo para preparar.</div></div>
+          <div class="faq-answer" id="faq-a1" role="region"><div class="faq-answer-inner">Sí. Puedes elegir Molienda Fina, Molienda Media, Molienda Gruesa o Grano Entero según cómo quieres prepararlo.</div></div>
         </div>
         <div class="faq-item">
           <button class="faq-btn" aria-expanded="false" aria-controls="faq-a2">

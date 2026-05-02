@@ -45,13 +45,12 @@
   <section class="checkout-main">
     <div class="container">
       <div class="checkout-layout">
-        <div class="checkout-primary">
+        <div class="checkout-primary" id="checkoutFormShell">
           <div class="checkout-step-head">
-            <p class="checkout-step-label" id="checkoutStepLabel">Paso 1 de 3</p>
+            <p class="checkout-step-label" id="checkoutStepLabel">Paso 1 de 2</p>
             <ol class="checkout-step-indicators" aria-label="Progreso del pedido">
               <li class="checkout-step-indicator checkout-step-indicator-active" data-step-indicator="1">Pedido</li>
               <li class="checkout-step-indicator" data-step-indicator="2">Datos</li>
-              <li class="checkout-step-indicator" data-step-indicator="3">Pago</li>
             </ol>
           </div>
 
@@ -76,9 +75,14 @@
             </div>
             <div class="checkout-fields-grid">
               <label class="checkout-field">
-                <span class="checkout-label">Nombre y apellido</span>
-                <input id="customer_name" name="customer_name" type="text" autocomplete="name" />
-                <span class="checkout-error" data-error-for="customer_name"></span>
+                <span class="checkout-label">Nombre</span>
+                <input id="first_name" name="first_name" type="text" autocomplete="given-name" />
+                <span class="checkout-error" data-error-for="first_name"></span>
+              </label>
+              <label class="checkout-field">
+                <span class="checkout-label">Apellido</span>
+                <input id="last_name" name="last_name" type="text" autocomplete="family-name" />
+                <span class="checkout-error" data-error-for="last_name"></span>
               </label>
               <label class="checkout-field">
                 <span class="checkout-label">Email</span>
@@ -92,7 +96,9 @@
               </label>
               <label class="checkout-field">
                 <span class="checkout-label">Comuna</span>
-                <input id="commune" name="commune" type="text" autocomplete="address-level2" />
+                <select id="commune" name="commune" autocomplete="address-level2">
+                  <option value="">Selecciona tu comuna</option>
+                </select>
                 <span class="checkout-error" data-error-for="commune"></span>
               </label>
               <label class="checkout-field checkout-field-full">
@@ -110,67 +116,67 @@
                 <textarea id="notes" name="notes" rows="4" placeholder="Algo que Roast deba considerar para este pedido"></textarea>
               </label>
             </div>
-            <div class="checkout-step-actions">
-              <button type="button" class="btn btn-secondary" id="checkoutStep2Back">Volver</button>
-              <button type="button" class="btn btn-primary" id="checkoutStep2Next">Continuar a revisión</button>
-            </div>
-          </section>
 
-          <section class="checkout-step-block" data-checkout-step="3">
-            <div class="checkout-step-copy">
-              <h2>3. Revisa el total y envía tu pedido</h2>
-              <p>El monto final siempre lo recalcula Roast con la configuración operativa vigente. Al enviarlo abriremos WhatsApp para cerrar pago y despacho contigo.</p>
-            </div>
-
-            <article class="checkout-review-card">
-              <p class="checkout-review-kicker">Pedido</p>
-              <p class="checkout-review-items" id="reviewItemsLabel">—</p>
-              <p class="checkout-review-order">Order ID: <strong id="reviewOrderId">—</strong></p>
-              <div class="checkout-review-rows">
-                <div class="checkout-review-row">
-                  <span>Subtotal</span>
-                  <strong id="reviewSubtotal">—</strong>
-                </div>
-                <div class="checkout-review-row">
-                  <span>Despacho</span>
-                  <strong id="reviewShipping">—</strong>
-                </div>
-                <div class="checkout-review-row checkout-review-row-total">
-                  <span>Total</span>
-                  <strong id="reviewTotal">—</strong>
-                </div>
-              </div>
-            </article>
+            <fieldset class="checkout-payment-group">
+              <legend>Medio de pago</legend>
+              <label class="checkout-payment-option" data-payment-option="flow">
+                <input type="radio" name="payment_method" value="flow" />
+                <span class="checkout-payment-body">
+                  <span class="checkout-payment-title">Flow</span>
+                  <span class="checkout-payment-copy">La integración con Flow se encuentra deshabilitada momentáneamente</span>
+                </span>
+              </label>
+              <label class="checkout-payment-option checkout-payment-option-active" data-payment-option="transfer">
+                <input type="radio" name="payment_method" value="transfer" checked />
+                <span class="checkout-payment-body">
+                  <span class="checkout-payment-title">Transferencia Bancaria</span>
+                  <span class="checkout-payment-copy">Tendrás 2 horas para transferir antes que se cierre tu carro de venta.</span>
+                </span>
+              </label>
+              <span class="checkout-error" data-error-for="payment_method"></span>
+            </fieldset>
 
             <div class="checkout-review-checks">
               <label class="checkout-checkbox">
                 <input type="checkbox" id="accept_total" />
-                <span>Acepto el total calculado y entiendo que Roast cerrará pago y despacho conmigo por email o WhatsApp.</span>
+                <span>Acepto el total calculado para este pedido.</span>
               </label>
               <label class="checkout-checkbox">
                 <input type="checkbox" id="accept_terms" />
                 <span>Acepto los <a href="/policies/terminos-y-condiciones.html">términos y condiciones</a> y la <a href="/policies/politica-de-privacidad.html">política de privacidad</a>.</span>
               </label>
             </div>
-
-            <div class="manual-review-box" id="manualReviewBox" hidden>
-              <h3>Pedido en revisión manual</h3>
-              <p>Tu comuna quedó fuera de cobertura automática. Envía el pedido y lo cerramos contigo por WhatsApp o a <a href="mailto:contacto@caferoast.cl" data-support-email-link>contacto@caferoast.cl</a>.</p>
-            </div>
-
             <div class="checkout-step-actions">
-              <button type="button" class="btn btn-secondary" id="checkoutStep3Back">Volver</button>
-              <button type="button" class="btn btn-primary" id="checkoutPayButton">Enviar pedido</button>
+              <button type="button" class="btn btn-secondary" id="checkoutStep2Back">Volver</button>
+              <button type="button" class="btn btn-primary" id="checkoutPayButton">Finalizar Pedido</button>
             </div>
           </section>
         </div>
 
         <aside class="checkout-summary-card">
           <p class="checkout-summary-kicker">Resumen en vivo</p>
-          <h2>Lo que llevas</h2>
+          <h2>Tu carrito Roast</h2>
           <ul class="checkout-summary-list" id="checkoutSummaryItems"></ul>
           <p class="checkout-shipping-alert" data-free-shipping-alert data-free-shipping-state="remaining">Te faltan $36.000 CLP para llegar al envío gratis.</p>
-          <p class="checkout-summary-note">El total final se confirma al pasar al paso 3. Si tu comuna queda fuera de cobertura automática, el pedido pasa a revisión manual.</p>
+          <div class="checkout-summary-totals" aria-live="polite">
+            <div class="checkout-summary-row">
+              <span>Subtotal</span>
+              <strong id="summarySubtotal">—</strong>
+            </div>
+            <div class="checkout-summary-row">
+              <span>Envío</span>
+              <strong id="summaryShipping">Pendiente</strong>
+            </div>
+            <div class="checkout-summary-row checkout-summary-row-total">
+              <span>Total</span>
+              <strong id="summaryTotal">—</strong>
+            </div>
+            <div class="checkout-summary-row checkout-summary-row-secondary">
+              <span>IVA incluido 19%</span>
+              <strong id="summaryTax">—</strong>
+            </div>
+          </div>
+          <p class="checkout-summary-note" id="checkoutCoverageNote">Selecciona tu comuna para validar cobertura y envío.</p>
           <div class="checkout-summary-support">
             <a href="mailto:contacto@caferoast.cl" class="checkout-summary-email" data-support-email-link>contacto@caferoast.cl</a>
             <a href="https://wa.me/56991746361?text=Hola%20Roast,%20necesito%20ayuda%20con%20mi%20pedido." class="checkout-summary-whatsapp" target="_blank" rel="noopener noreferrer" data-checkout-support-link data-support-whatsapp-link data-support-context="mi pedido web" data-analytics-label="checkout_sidebar_support">WhatsApp de soporte</a>

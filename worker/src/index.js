@@ -1,4 +1,5 @@
 import {
+  createCheckoutOrder,
   createOrderContactRequest,
   createOrderDraft,
   createPaymentLink,
@@ -35,6 +36,12 @@ async function handlePaymentLink(request, env, publicBaseUrl) {
 async function handleOrderContactRequest(request, env) {
   const payload = await parseRequestBody(request);
   const result = await createOrderContactRequest(env, payload);
+  return jsonResponse(result);
+}
+
+async function handleCheckoutOrder(request, env) {
+  const payload = await parseRequestBody(request);
+  const result = await createCheckoutOrder(env, payload);
   return jsonResponse(result);
 }
 
@@ -102,6 +109,10 @@ export default {
         return handleOrderContactRequest(request, env);
       }
 
+      if (request.method === 'POST' && url.pathname === '/api/checkout-orders') {
+        return handleCheckoutOrder(request, env);
+      }
+
       if (request.method === 'GET' && url.pathname === '/api/public-catalog') {
         return handlePublicCatalog(env);
       }
@@ -120,7 +131,10 @@ export default {
 
       return errorResponse('Not found', { status: 404 });
     } catch (error) {
-      return errorResponse(error.message || 'Unexpected error', { status: 500 });
+      return errorResponse(error.message || 'Unexpected error', {
+        status: error.status || 500,
+        details: error.details
+      });
     }
   }
 };

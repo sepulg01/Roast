@@ -13,14 +13,59 @@
   ];
 
   var GRIND_OPTIONS = [
-    { value: 'espresso', label: 'Molido para espresso' },
-    { value: 'moka', label: 'Molido para moka' },
-    { value: 'prensa francesa', label: 'Molido para prensa francesa' },
-    { value: 'filtro / pour over', label: 'Molido para filtro / pour over' },
-    { value: 'chemex', label: 'Molido para chemex' },
-    { value: 'aeropress', label: 'Molido para aeropress' },
-    { value: 'grano entero', label: 'En grano entero' }
+    { value: 'molienda fina', label: 'Molienda Fina (Espresso, Cafetera italiana "Moka")' },
+    { value: 'molienda media', label: 'Molienda Media (Goteo, Aeropress)' },
+    { value: 'molienda gruesa', label: 'Molienda Gruesa (Prensa Francesa, Cold Brew)' },
+    { value: 'grano entero', label: 'Grano Entero' }
   ];
+
+  var FALLBACK_COMMUNES = [
+    { name: 'Santiago', sector: 'Centro', covered: true, free_shipping_eligible: true },
+    { name: 'Estación Central', sector: 'Centro', covered: true, free_shipping_eligible: true },
+    { name: 'Independencia', sector: 'Centro', covered: true, free_shipping_eligible: true },
+    { name: 'Quinta Normal', sector: 'Centro', covered: true, free_shipping_eligible: true },
+    { name: 'Recoleta', sector: 'Centro', covered: true, free_shipping_eligible: true },
+    { name: 'Pedro Aguirre Cerda', sector: 'Centro', covered: true, free_shipping_eligible: true },
+    { name: 'San Joaquín', sector: 'Centro', covered: true, free_shipping_eligible: true },
+    { name: 'San Miguel', sector: 'Centro', covered: true, free_shipping_eligible: true },
+    { name: 'Providencia', sector: 'Oriente', covered: true, free_shipping_eligible: true },
+    { name: 'Las Condes', sector: 'Oriente', covered: true, free_shipping_eligible: true },
+    { name: 'Vitacura', sector: 'Oriente', covered: true, free_shipping_eligible: true },
+    { name: 'Lo Barnechea', sector: 'Oriente', covered: true, free_shipping_eligible: true },
+    { name: 'La Reina', sector: 'Oriente', covered: true, free_shipping_eligible: true },
+    { name: 'Ñuñoa', sector: 'Oriente', covered: true, free_shipping_eligible: true },
+    { name: 'Peñalolén', sector: 'Oriente', covered: true, free_shipping_eligible: true },
+    { name: 'Macul', sector: 'Oriente', covered: true, free_shipping_eligible: true },
+    { name: 'Conchalí', sector: 'Norte', covered: true, free_shipping_eligible: false },
+    { name: 'Huechuraba', sector: 'Norte', covered: true, free_shipping_eligible: false },
+    { name: 'Quilicura', sector: 'Norte', covered: true, free_shipping_eligible: false },
+    { name: 'Renca', sector: 'Norte', covered: true, free_shipping_eligible: false },
+    { name: 'Cerro Navia', sector: 'Norte', covered: true, free_shipping_eligible: false },
+    { name: 'La Cisterna', sector: 'Sur', covered: true, free_shipping_eligible: false },
+    { name: 'El Bosque', sector: 'Sur', covered: true, free_shipping_eligible: false },
+    { name: 'San Ramón', sector: 'Sur', covered: true, free_shipping_eligible: false },
+    { name: 'La Granja', sector: 'Sur', covered: true, free_shipping_eligible: false },
+    { name: 'La Pintana', sector: 'Sur', covered: true, free_shipping_eligible: false },
+    { name: 'Lo Espejo', sector: 'Sur', covered: true, free_shipping_eligible: false },
+    { name: 'La Florida', sector: 'Sur', covered: true, free_shipping_eligible: false },
+    { name: 'Puente Alto', sector: 'Sur', covered: true, free_shipping_eligible: false },
+    { name: 'San Bernardo', sector: 'Sur', covered: true, free_shipping_eligible: false },
+    { name: 'Maipú', sector: 'Poniente', covered: false, free_shipping_eligible: false },
+    { name: 'Cerrillos', sector: 'Poniente', covered: false, free_shipping_eligible: false },
+    { name: 'Pudahuel', sector: 'Poniente', covered: false, free_shipping_eligible: false },
+    { name: 'Lo Prado', sector: 'Poniente', covered: false, free_shipping_eligible: false }
+  ];
+
+  var DEFAULT_SHIPPING_FEE_CLP = 3500;
+  var TRANSFER_EXPIRES_HOURS = 2;
+  var BANK_TRANSFER_DETAILS = {
+    bank: 'BCI',
+    account_type: 'Cuenta Corriente',
+    account_number: '61947059',
+    holder: 'Gonzalo Sepúlveda Hermosilla',
+    rut: '17515638-0',
+    email: 'contacto@caferoast.cl'
+  };
 
   var state = {
     page: document.body.getAttribute('data-page') || '',
@@ -28,7 +73,12 @@
     channel: '',
     currentItem: null,
     items: [],
-    order: null
+    order: null,
+    publicCatalog: {
+      loaded: false,
+      shippingFeeClp: DEFAULT_SHIPPING_FEE_CLP,
+      communes: FALLBACK_COMMUNES.slice()
+    }
   };
   var apiBase = normalizeApiBase(document.body.getAttribute('data-api-base') || window.ROAST_API_BASE || '');
 
@@ -91,20 +141,36 @@
   function normalizeIncomingGrind(value) {
     var raw = String(value || '').trim().toLowerCase();
     var map = {
-      'molido para espresso': 'espresso',
-      'molido fino para espresso': 'espresso',
-      'molido para moka': 'moka',
-      'molido grueso para prensa francesa': 'prensa francesa',
-      'molido para prensa francesa': 'prensa francesa',
-      'molido medio para filtro': 'filtro / pour over',
-      'molido para filtro / pour over': 'filtro / pour over',
-      'molido para filtro': 'filtro / pour over',
-      'molido para chemex': 'chemex',
-      'molido para aeropress': 'aeropress',
-      'en grano entero': 'grano entero'
+      'molienda fina': 'molienda fina',
+      'molienda fina (espresso, cafetera italiana "moka")': 'molienda fina',
+      'molido para espresso': 'molienda fina',
+      'molido fino para espresso': 'molienda fina',
+      'molido para moka': 'molienda fina',
+      'espresso': 'molienda fina',
+      'moka': 'molienda fina',
+      'molienda media': 'molienda media',
+      'molienda media (goteo, aeropress)': 'molienda media',
+      'goteo': 'molienda media',
+      'molido grueso para prensa francesa': 'molienda gruesa',
+      'molido para prensa francesa': 'molienda gruesa',
+      'prensa francesa': 'molienda gruesa',
+      'molienda gruesa': 'molienda gruesa',
+      'molienda gruesa (prensa francesa, cold brew)': 'molienda gruesa',
+      'cold brew': 'molienda gruesa',
+      'molido medio para filtro': 'molienda media',
+      'molido para filtro / pour over': 'molienda media',
+      'molido para filtro': 'molienda media',
+      'filtro / pour over': 'molienda media',
+      'filtro': 'molienda media',
+      'molido para chemex': 'molienda media',
+      'chemex': 'molienda media',
+      'molido para aeropress': 'molienda media',
+      'aeropress': 'molienda media',
+      'en grano entero': 'grano entero',
+      'grano entero': 'grano entero'
     };
 
-    return map[raw] || value || 'prensa francesa';
+    return map[raw] || 'grano entero';
   }
 
   function getGrindLabel(value) {
@@ -116,7 +182,7 @@
   }
 
   function createDefaultCheckoutItem() {
-    return window.RoastShop.createItem('downtime', '250g', 'prensa francesa', 1);
+    return window.RoastShop.createItem('downtime', '250g', 'grano entero', 1);
   }
 
   function normalizeCheckoutItem(item) {
@@ -146,13 +212,93 @@
     }, 0);
   }
 
+  function normalizeCommuneName(value) {
+    return String(value || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+
+  function normalizeCommuneItem(item) {
+    if (typeof item === 'string') {
+      return {
+        name: item,
+        sector: '',
+        covered: true
+      };
+    }
+
+    var name = item && (item.name || item.commune || item.label || item.value);
+    var sector = item && (item.sector || item.zone || '');
+    var coveredValue = item && (item.dispatchable !== undefined ? item.dispatchable : (item.covered !== undefined ? item.covered : item.active));
+    var covered = coveredValue === undefined ? true : ['true', '1', 'si', 'sí', 'yes', 'y', 'activo'].indexOf(String(coveredValue).toLowerCase()) !== -1 || coveredValue === true;
+    var freeShippingValue = item && (item.free_shipping_eligible !== undefined ? item.free_shipping_eligible : item.freeShippingEligible);
+    var normalizedSector = normalizeCommuneName(sector);
+    var freeShippingEligible = freeShippingValue === undefined
+      ? ['centro', 'oriente'].indexOf(normalizedSector) !== -1
+      : ['true', '1', 'si', 'sí', 'yes', 'y', 'activo'].indexOf(String(freeShippingValue).toLowerCase()) !== -1 || freeShippingValue === true;
+
+    return {
+      name: String(name || '').trim(),
+      sector: String(sector || '').trim(),
+      covered: covered,
+      free_shipping_eligible: freeShippingEligible
+    };
+  }
+
+  function getSelectedCommune() {
+    var field = document.getElementById('commune');
+    var selected = field ? field.value : '';
+    var normalized = normalizeCommuneName(selected);
+
+    if (!normalized) return null;
+
+    return state.publicCatalog.communes.find(function(item) {
+      return normalizeCommuneName(item.name) === normalized;
+    }) || null;
+  }
+
+  function getCheckoutTotals() {
+    var subtotal = getLiveSubtotal();
+    var commune = getSelectedCommune();
+    var threshold = window.RoastShop.getFreeShippingThreshold ? window.RoastShop.getFreeShippingThreshold() : 36000;
+    var shipping = null;
+    var blocked = false;
+    var blockReason = '';
+
+    if (commune) {
+      blocked = !commune.covered || normalizeCommuneName(commune.sector) === 'poniente';
+      blockReason = blocked ? 'Por ahora no tenemos cobertura automática en sector Poniente o fuera de zona.' : '';
+      shipping = blocked ? null : (commune.free_shipping_eligible && subtotal >= threshold ? 0 : state.publicCatalog.shippingFeeClp);
+    }
+
+    var total = subtotal + (Number.isFinite(shipping) ? shipping : 0);
+
+    return {
+      subtotal: subtotal,
+      shipping: shipping,
+      total: total,
+      tax: Math.round(total * 19 / 119),
+      commune: commune,
+      blocked: blocked,
+      blockReason: blockReason,
+      freeShippingThreshold: threshold
+    };
+  }
+
   function renderFreeShippingAlert() {
     var alert = document.querySelector('[data-free-shipping-alert]');
     if (!alert) return;
 
-    var threshold = window.RoastShop.getFreeShippingThreshold ? window.RoastShop.getFreeShippingThreshold() : 36000;
-    var subtotal = getLiveSubtotal();
-    var remaining = Math.max(threshold - subtotal, 0);
+    var totals = getCheckoutTotals();
+    var remaining = Math.max(totals.freeShippingThreshold - totals.subtotal, 0);
+
+    if (totals.commune && !totals.commune.free_shipping_eligible && !totals.blocked) {
+      alert.setAttribute('data-free-shipping-state', 'paid');
+      alert.textContent = 'Tu comuna tiene despacho disponible con envío pagado.';
+      return;
+    }
 
     if (remaining > 0) {
       alert.setAttribute('data-free-shipping-state', 'remaining');
@@ -162,6 +308,38 @@
 
     alert.setAttribute('data-free-shipping-state', 'qualified');
     alert.textContent = 'Envío gratis activado. Ya alcanzaste el mínimo para despacho gratis.';
+  }
+
+  function renderSummaryTotals() {
+    var totals = getCheckoutTotals();
+    var subtotal = document.getElementById('summarySubtotal');
+    var shipping = document.getElementById('summaryShipping');
+    var total = document.getElementById('summaryTotal');
+    var tax = document.getElementById('summaryTax');
+    var note = document.getElementById('checkoutCoverageNote');
+
+    if (subtotal) subtotal.textContent = window.RoastShop.formatCurrency(totals.subtotal);
+    if (shipping) {
+      if (!totals.commune) {
+        shipping.textContent = 'Pendiente';
+      } else if (totals.blocked) {
+        shipping.textContent = 'No disponible';
+      } else {
+        shipping.textContent = totals.shipping === 0 ? 'Gratis' : window.RoastShop.formatCurrency(totals.shipping);
+      }
+    }
+    if (total) total.textContent = window.RoastShop.formatCurrency(totals.total);
+    if (tax) tax.textContent = window.RoastShop.formatCurrency(totals.tax);
+
+    if (note) {
+      if (!totals.commune) {
+        note.textContent = 'Selecciona tu comuna para validar cobertura y envío.';
+      } else if (totals.blocked) {
+        note.textContent = 'Tu comuna queda fuera de cobertura automática. No podemos finalizar este pedido por la web.';
+      } else {
+        note.textContent = 'Despacho validado para ' + totals.commune.name + '.';
+      }
+    }
   }
 
   function escapeHtml(value) {
@@ -185,7 +363,7 @@
     document.querySelectorAll('[data-error-for]').forEach(function(node) {
       node.textContent = '';
     });
-    document.querySelectorAll('.checkout-field input, .checkout-field textarea').forEach(function(field) {
+    document.querySelectorAll('.checkout-field input, .checkout-field textarea, .checkout-field select').forEach(function(field) {
       field.setAttribute('aria-invalid', 'false');
     });
   }
@@ -290,7 +468,7 @@
     var container = document.getElementById('checkoutSummaryItems');
     if (!container) return;
 
-    container.innerHTML = state.items.map(renderSummaryItem).join('');
+    container.innerHTML = state.items.length ? state.items.map(renderSummaryItem).join('') : '';
 
     container.querySelectorAll('[data-summary-remove-item]').forEach(function(button) {
       button.addEventListener('click', function() {
@@ -301,11 +479,14 @@
     });
 
     renderFreeShippingAlert();
+    renderSummaryTotals();
+    updateFinalizeButtonState();
   }
 
   function collectCustomerData() {
     return {
-      customer_name: document.getElementById('customer_name').value.trim(),
+      first_name: document.getElementById('first_name').value.trim(),
+      last_name: document.getElementById('last_name').value.trim(),
       email: document.getElementById('email').value.trim(),
       phone: document.getElementById('phone').value.trim(),
       commune: document.getElementById('commune').value.trim(),
@@ -325,12 +506,17 @@
     clearInlineErrors();
     var data = collectCustomerData();
     var valid = true;
+    var selectedCommune = getSelectedCommune();
 
-    if (!data.customer_name) {
-      setInlineError('customer_name', 'Ingresa tu nombre.');
+    if (!data.first_name) {
+      setInlineError('first_name', 'Ingresa tu nombre.');
       valid = false;
     }
-    if (!data.email) {
+    if (!data.last_name) {
+      setInlineError('last_name', 'Ingresa tu apellido.');
+      valid = false;
+    }
+    if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
       setInlineError('email', 'Ingresa un email válido.');
       valid = false;
     }
@@ -339,7 +525,13 @@
       valid = false;
     }
     if (!data.commune) {
-      setInlineError('commune', 'Ingresa tu comuna.');
+      setInlineError('commune', 'Selecciona tu comuna.');
+      valid = false;
+    } else if (!selectedCommune) {
+      setInlineError('commune', 'Selecciona una comuna válida de la lista.');
+      valid = false;
+    } else if (!selectedCommune.covered || normalizeCommuneName(selectedCommune.sector) === 'poniente') {
+      setInlineError('commune', 'Por ahora no finalizamos pedidos web para sector Poniente o fuera de cobertura.');
       valid = false;
     }
     if (!data.address) {
@@ -358,17 +550,31 @@
       step.classList.toggle('checkout-step-indicator-active', step.getAttribute('data-step-indicator') === String(stepNumber));
     });
     var stepCounter = document.getElementById('checkoutStepLabel');
-    if (stepCounter) stepCounter.textContent = 'Paso ' + stepNumber + ' de 3';
+    if (stepCounter) stepCounter.textContent = 'Paso ' + stepNumber + ' de 2';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function bindFieldValidation() {
-    ['customer_name', 'email', 'phone', 'commune', 'address'].forEach(function(fieldId) {
+    ['first_name', 'last_name', 'email', 'phone', 'commune', 'address'].forEach(function(fieldId) {
       var field = document.getElementById(fieldId);
       if (!field) return;
 
       field.addEventListener('blur', function() {
         validateCustomerData();
+        renderSummaryTotals();
+        updateFinalizeButtonState();
+      });
+      field.addEventListener('change', function() {
+        if (fieldId === 'commune') {
+          var selectedCommune = getSelectedCommune();
+          if (selectedCommune && (!selectedCommune.covered || normalizeCommuneName(selectedCommune.sector) === 'poniente')) {
+            setInlineError('commune', 'Por ahora no finalizamos pedidos web para sector Poniente o fuera de cobertura.');
+          } else {
+            setInlineError('commune', '');
+          }
+        }
+        renderSummaryTotals();
+        updateFinalizeButtonState();
       });
     });
   }
@@ -386,17 +592,236 @@
     });
   }
 
-  async function createDraft() {
-    var customerData = validateCustomerData();
-    var nextButton = document.getElementById('checkoutStep2Next');
+  function renderCommuneOptions() {
+    var field = document.getElementById('commune');
+    if (!field) return;
 
-    if (!customerData) return;
+    var currentValue = field.value;
+    var options = state.publicCatalog.communes
+      .filter(function(item) { return item.name; })
+      .sort(function(a, b) { return a.name.localeCompare(b.name, 'es'); });
 
-    setGlobalStatus('', 'info');
-    setButtonLoading(nextButton, 'Calculando total...', true);
+    field.innerHTML = '<option value="">Selecciona tu comuna</option>' + options.map(function(item) {
+      var label = item.name + (item.sector ? ' - ' + item.sector : '');
+      return '<option value="' + escapeHtml(item.name) + '">' + escapeHtml(label) + '</option>';
+    }).join('');
+
+    if (currentValue) {
+      var matchingOption = options.find(function(item) {
+        return normalizeCommuneName(item.name) === normalizeCommuneName(currentValue);
+      });
+      if (matchingOption) field.value = matchingOption.name;
+    }
+  }
+
+  function applyPublicCatalog(payload) {
+    if (!payload) return;
+
+    var rawShippingFee = payload.shipping_fee_clp !== undefined ? payload.shipping_fee_clp : payload.shipping;
+    var shippingFee = Number(rawShippingFee);
+    if (rawShippingFee !== undefined && Number.isFinite(shippingFee) && shippingFee >= 0) {
+      state.publicCatalog.shippingFeeClp = shippingFee;
+    }
+
+    if (Array.isArray(payload.communes) && payload.communes.length) {
+      var communes = payload.communes.map(normalizeCommuneItem).filter(function(item) {
+        return item.name;
+      });
+
+      if (communes.length) {
+        state.publicCatalog.communes = communes;
+      }
+    }
+
+    state.publicCatalog.loaded = true;
+    renderCommuneOptions();
+    renderLiveSummary();
+  }
+
+  async function loadCheckoutPublicCatalog() {
+    renderCommuneOptions();
 
     try {
-      var payload = await fetchJsonOrThrow('/api/order-drafts', {
+      var payload = await fetchJsonOrThrow('/api/public-catalog', {
+        headers: {
+          'Accept': 'application/json'
+        }
+      }, 'No pudimos cargar la cobertura actual. Usaremos la cobertura de respaldo.');
+      applyPublicCatalog(payload);
+    } catch (error) {
+      renderCommuneOptions();
+      renderLiveSummary();
+    }
+  }
+
+  function getSelectedPaymentMethod() {
+    var selected = document.querySelector('input[name="payment_method"]:checked');
+    return selected ? selected.value : '';
+  }
+
+  function updatePaymentOptions() {
+    document.querySelectorAll('[data-payment-option]').forEach(function(option) {
+      var input = option.querySelector('input[type="radio"]');
+      option.classList.toggle('checkout-payment-option-active', Boolean(input && input.checked));
+    });
+
+    updateFinalizeButtonState();
+  }
+
+  function updateFinalizeButtonState() {
+    var payButton = document.getElementById('checkoutPayButton');
+    if (!payButton) return;
+
+    var acceptedTerms = document.getElementById('accept_terms');
+    var acceptedTotal = document.getElementById('accept_total');
+    var totals = getCheckoutTotals();
+    var method = getSelectedPaymentMethod();
+    var canSubmit = validateItems() && Boolean(totals.commune) && !totals.blocked && method === 'transfer' && Boolean(acceptedTerms && acceptedTerms.checked) && Boolean(acceptedTotal && acceptedTotal.checked);
+
+    payButton.disabled = !canSubmit;
+  }
+
+  function buildTransferExpiration(payload) {
+    var value = payload && (payload.transfer_expires_at || payload.expires_at || payload.transfer_expiration);
+    if (value) return value;
+
+    return new Date(Date.now() + (TRANSFER_EXPIRES_HOURS * 60 * 60 * 1000)).toISOString();
+  }
+
+  function formatDateTime(value) {
+    if (!value) return 'Dentro de 2 horas';
+    var date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+
+    return new Intl.DateTimeFormat('es-CL', {
+      dateStyle: 'medium',
+      timeStyle: 'short'
+    }).format(date);
+  }
+
+  function getGroupedItems(items) {
+    var groups = [];
+
+    items.forEach(function(item) {
+      var key = [item.product_code, item.format_code, item.grind].join('::');
+      var match = groups.find(function(candidate) {
+        return candidate.key === key;
+      });
+
+      if (match) {
+        match.quantity += Number(item.quantity || 1);
+        return;
+      }
+
+      groups.push({
+        key: key,
+        item: item,
+        quantity: Number(item.quantity || 1)
+      });
+    });
+
+    return groups;
+  }
+
+  function renderConfirmation(payload, customerData) {
+    var shell = document.getElementById('checkoutFormShell');
+    if (!shell) return;
+
+    var orderId = payload.order_id || payload.id || payload.order_number || 'pendiente';
+    var totals = {
+      subtotal: Number(payload.subtotal_clp || getCheckoutTotals().subtotal),
+      shipping: Number(payload.shipping_clp || getCheckoutTotals().shipping || 0),
+      total: Number(payload.total_clp || getCheckoutTotals().total)
+    };
+    var transferDetails = Object.assign({}, BANK_TRANSFER_DETAILS, payload.transfer_details || payload.bank_transfer || {});
+    var expiration = buildTransferExpiration(payload);
+
+    updateSupportLinks(orderId);
+
+    shell.innerHTML = [
+      '<article class="checkout-confirmation-panel" aria-live="polite">',
+      '  <p class="checkout-summary-kicker">Pedido recibido</p>',
+      '  <h2>Confirmación N° ' + escapeHtml(orderId) + '</h2>',
+      '  <p class="checkout-confirmation-id">Gracias, ' + escapeHtml(customerData.first_name) + '. Tu pedido quedó por confirmar.</p>',
+      '  <section class="checkout-confirmation-section">',
+      '    <h3>Datos para transferencia</h3>',
+      '    <p class="checkout-transfer-account-line">' + escapeHtml(transferDetails.account_type + ' ' + transferDetails.account_number) + '</p>',
+      '    <p class="checkout-transfer-account-line">Rut ' + escapeHtml(transferDetails.rut) + '</p>',
+      '    <dl class="checkout-confirmation-list">',
+      '      <div><dt>Banco</dt><dd>' + escapeHtml(transferDetails.bank) + '</dd></div>',
+      '      <div><dt>Tipo de cuenta</dt><dd>' + escapeHtml(transferDetails.account_type) + '</dd></div>',
+      '      <div><dt>Número</dt><dd>' + escapeHtml(transferDetails.account_number) + '</dd></div>',
+      '      <div><dt>Titular</dt><dd>' + escapeHtml(transferDetails.holder) + '</dd></div>',
+      '      <div><dt>RUT</dt><dd>' + escapeHtml(transferDetails.rut) + '</dd></div>',
+      '      <div><dt>Email</dt><dd>' + escapeHtml(transferDetails.email) + '</dd></div>',
+      '    </dl>',
+      '    <p class="checkout-confirmation-note">Tu transferencia vence el ' + escapeHtml(formatDateTime(expiration)) + '.</p>',
+      '  </section>',
+      '  <section class="checkout-confirmation-section">',
+      '    <h3>Entrega validada</h3>',
+      '    <p>' + escapeHtml(customerData.address) + ', ' + escapeHtml(customerData.commune) + '</p>',
+      customerData.address_ref ? '    <p class="checkout-confirmation-note">' + escapeHtml(customerData.address_ref) + '</p>' : '',
+      '  </section>',
+      '  <section class="checkout-confirmation-section">',
+      '    <h3>Detalle del pedido</h3>',
+      '    <ul class="checkout-confirmation-items">' + getGroupedItems(state.items).map(function(group) {
+        var item = group.item;
+        var productLabel = window.RoastShop.PRODUCT_NAME_MAP[item.product_code] || item.product_code;
+        return '<li><span>' + escapeHtml(productLabel + ' · ' + item.format_code + ' · ' + getGrindLabel(item.grind) + ' · x' + group.quantity) + '</span><strong>' + window.RoastShop.formatCurrency(getLiveItemPrice(item) * group.quantity) + '</strong></li>';
+      }).join('') + '</ul>',
+      '    <div class="checkout-review-rows">',
+      '      <div class="checkout-review-row"><span>Subtotal</span><strong>' + window.RoastShop.formatCurrency(totals.subtotal) + '</strong></div>',
+      '      <div class="checkout-review-row"><span>Envío</span><strong>' + (totals.shipping === 0 ? 'Gratis' : window.RoastShop.formatCurrency(totals.shipping)) + '</strong></div>',
+      '      <div class="checkout-review-row checkout-review-row-total"><span>Total</span><strong>' + window.RoastShop.formatCurrency(totals.total) + '</strong></div>',
+      '    </div>',
+      '  </section>',
+      '  <div class="checkout-summary-support">',
+      '    <a href="mailto:' + escapeHtml(window.RoastShop.SUPPORT_EMAIL) + '" class="checkout-summary-email" data-support-email-link>' + escapeHtml(window.RoastShop.SUPPORT_EMAIL) + '</a>',
+      '    <a href="' + escapeHtml(window.RoastShop.buildSupportWhatsAppUrl(window.RoastShop.buildSupportMessage('mi pedido web', orderId))) + '" class="checkout-summary-whatsapp" target="_blank" rel="noopener noreferrer" data-checkout-support-link data-support-whatsapp-link data-support-context="mi pedido web">WhatsApp de soporte</a>',
+      '  </div>',
+      '</article>'
+    ].join('\n');
+
+    updateSupportLinks(orderId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function submitTransferOrder() {
+    var payButton = document.getElementById('checkoutPayButton');
+    var customerData = validateCustomerData();
+    var acceptedTotal = document.getElementById('accept_total');
+    var acceptedTerms = document.getElementById('accept_terms');
+    var method = getSelectedPaymentMethod();
+    var totals = getCheckoutTotals();
+
+    if (!customerData) {
+      setGlobalStatus('Revisa los datos marcados antes de finalizar.', 'error');
+      return;
+    }
+
+    if (method === 'flow') {
+      setInlineError('payment_method', 'Flow está deshabilitado momentáneamente. Selecciona transferencia bancaria.');
+      setGlobalStatus('Flow está deshabilitado momentáneamente.', 'error');
+      updateFinalizeButtonState();
+      return;
+    }
+
+    if (!acceptedTotal.checked || !acceptedTerms.checked) {
+      setGlobalStatus('Necesitas aceptar el total y los términos antes de finalizar.', 'error');
+      updateFinalizeButtonState();
+      return;
+    }
+
+    if (totals.blocked) {
+      setGlobalStatus(totals.blockReason, 'error');
+      return;
+    }
+
+    setGlobalStatus('', 'info');
+    setButtonLoading(payButton, 'Finalizando pedido...', true);
+
+    try {
+      var payload = await fetchJsonOrThrow('/api/checkout-orders', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -406,113 +831,32 @@
           origin: state.origin,
           channel: state.channel,
           items: state.items,
-          customer_name: customerData.customer_name,
+          first_name: customerData.first_name,
+          last_name: customerData.last_name,
           email: customerData.email,
           phone: customerData.phone,
           commune: customerData.commune,
           address: customerData.address,
           address_ref: customerData.address_ref,
-          notes: customerData.notes
-        })
-      }, 'No se pudo crear el borrador del pedido.');
-
-      state.order = payload;
-      updateSupportLinks(payload.order_id);
-      renderReview();
-      window.RoastShop.trackEvent('order_draft_created', {
-        origin: state.origin,
-        channel: state.channel,
-        order_id: payload.order_id,
-        total_clp: payload.total_clp
-      });
-      setStep(3);
-    } catch (error) {
-      setGlobalStatus(error.message || 'No pudimos calcular tu pedido.', 'error');
-      window.RoastShop.trackEvent('order_draft_failed', {
-        origin: state.origin,
-        channel: state.channel
-      });
-    } finally {
-      setButtonLoading(nextButton, 'Continuar a revisión', false);
-    }
-  }
-
-  function renderReview() {
-    if (!state.order) return;
-
-    var subtotal = document.getElementById('reviewSubtotal');
-    var shipping = document.getElementById('reviewShipping');
-    var total = document.getElementById('reviewTotal');
-    var itemsLabel = document.getElementById('reviewItemsLabel');
-    var orderIdNode = document.getElementById('reviewOrderId');
-    var payButton = document.getElementById('checkoutPayButton');
-    var manualReviewBox = document.getElementById('manualReviewBox');
-
-    if (subtotal) subtotal.textContent = window.RoastShop.formatCurrency(state.order.subtotal_clp);
-    if (shipping) shipping.textContent = state.order.shipping_clp === 0 ? 'Gratis / por confirmar' : window.RoastShop.formatCurrency(state.order.shipping_clp);
-    if (total) total.textContent = window.RoastShop.formatCurrency(state.order.total_clp);
-    if (itemsLabel) itemsLabel.textContent = state.order.items_label || 'Pedido web Roast';
-    if (orderIdNode) orderIdNode.textContent = state.order.order_id;
-
-    if (state.order.internal_status === 'manual_review') {
-      if (manualReviewBox) manualReviewBox.hidden = false;
-      if (payButton) payButton.disabled = false;
-      setGlobalStatus('Tu comuna quedó en revisión manual. Envía el pedido y cerramos despacho + pago contigo por WhatsApp o email.', 'info');
-    } else {
-      if (manualReviewBox) manualReviewBox.hidden = true;
-      if (payButton) payButton.disabled = false;
-      setGlobalStatus('', 'info');
-    }
-  }
-
-  async function requestOrderContact() {
-    var payButton = document.getElementById('checkoutPayButton');
-    var acceptedTotal = document.getElementById('accept_total');
-    var acceptedTerms = document.getElementById('accept_terms');
-
-    if (!state.order || !state.order.order_id) {
-      setGlobalStatus('Primero necesitamos calcular tu pedido.', 'error');
-      return;
-    }
-
-    if (!acceptedTotal.checked || !acceptedTerms.checked) {
-      setGlobalStatus('Necesitas aceptar el total y los términos antes de enviar el pedido.', 'error');
-      return;
-    }
-
-    setButtonLoading(payButton, 'Enviando pedido...', true);
-
-    try {
-      var payload = await fetchJsonOrThrow('/api/order-contact-requests', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          order_id: state.order.order_id,
+          notes: customerData.notes,
+          payment_method: 'transfer',
           accept_total: true,
           accept_terms: true
         })
-      }, 'No se pudo enviar el pedido para cierre por contacto.');
+      }, 'No se pudo finalizar el pedido por transferencia.');
 
-      if (!payload.whatsapp_url) {
-        throw new Error('No recibimos el link de WhatsApp para cerrar el pedido.');
-      }
-
-      window.RoastShop.trackEvent('order_contact_requested', {
-        order_id: state.order.order_id,
-        total_clp: state.order.total_clp,
-        internal_status: payload.internal_status || state.order.internal_status
+      state.order = payload;
+      window.RoastShop.trackEvent('checkout_order_created', {
+        order_id: payload.order_id || payload.id,
+        payment_method: 'transfer',
+        total_clp: payload.total_clp || totals.total
       });
-      window.RoastShop.trackEvent('whatsapp_redirected', {
-        order_id: state.order.order_id
-      });
-      window.location.href = payload.whatsapp_url;
+      renderConfirmation(payload, customerData);
     } catch (error) {
-      setGlobalStatus(error.message || 'No pudimos enviar el pedido.', 'error');
+      setGlobalStatus(error.message || 'No pudimos finalizar el pedido.', 'error');
     } finally {
-      setButtonLoading(payButton, 'Enviar pedido', false);
+      setButtonLoading(payButton, 'Finalizar Pedido', false);
+      updateFinalizeButtonState();
     }
   }
 
@@ -520,16 +864,16 @@
     var addItemButton = document.getElementById('addCheckoutItem');
     var step1Next = document.getElementById('checkoutStep1Next');
     var step2Back = document.getElementById('checkoutStep2Back');
-    var step2Next = document.getElementById('checkoutStep2Next');
-    var step3Back = document.getElementById('checkoutStep3Back');
     var payButton = document.getElementById('checkoutPayButton');
 
     state.items = getInitialItems();
     state.currentItem = createDefaultCheckoutItem();
     renderItemsEditor();
     renderLiveSummary();
+    loadCheckoutPublicCatalog();
     updateSupportLinks();
     bindFieldValidation();
+    updatePaymentOptions();
 
     if (addItemButton) {
       addItemButton.addEventListener('click', function() {
@@ -555,21 +899,30 @@
       });
     }
 
-    if (step2Next) {
-      step2Next.addEventListener('click', createDraft);
-    }
-
-    if (step3Back) {
-      step3Back.addEventListener('click', function() {
-        setStep(2);
-      });
-    }
-
     if (payButton) {
-      payButton.addEventListener('click', requestOrderContact);
+      payButton.addEventListener('click', submitTransferOrder);
     }
 
-    document.addEventListener('roast:public-catalog-updated', renderLiveSummary);
+    document.querySelectorAll('input[name="payment_method"]').forEach(function(input) {
+      input.addEventListener('change', function() {
+        setInlineError('payment_method', '');
+        if (input.value === 'flow' && input.checked) {
+          setGlobalStatus('La integración con Flow se encuentra deshabilitada momentáneamente.', 'error');
+        } else {
+          setGlobalStatus('', 'info');
+        }
+        updatePaymentOptions();
+      });
+    });
+
+    ['accept_total', 'accept_terms'].forEach(function(fieldId) {
+      var field = document.getElementById(fieldId);
+      if (field) field.addEventListener('change', updateFinalizeButtonState);
+    });
+
+    document.addEventListener('roast:public-catalog-updated', function() {
+      renderLiveSummary();
+    });
   }
 
   function getStatusConfig(status) {

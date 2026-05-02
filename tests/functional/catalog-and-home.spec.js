@@ -4,6 +4,13 @@ import {
   installMockWorkerApi
 } from './helpers/mockWorkerApi.js';
 
+const GRIND_OPTION_LABELS = [
+  'Molienda Fina (Espresso, Cafetera italiana "Moka")',
+  'Molienda Media (Goteo, Aeropress)',
+  'Molienda Gruesa (Prensa Francesa, Cold Brew)',
+  'Grano Entero'
+];
+
 const quizScenarios = [
   {
     name: 'Downtime',
@@ -66,6 +73,36 @@ async function expectSingleRenderedMediaChild(slider) {
 }
 
 test.describe('home catalog, media, and quiz', () => {
+  test('landing copy and product roast chips match the approved copy', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    await expect(page.locator('.hero-sub')).toHaveText('Café Roast es el paso para dejar el café instantáneo: solo tienes que elegir cuál de nuestros tuestes te acomoda más y contarnos cómo lo quieres tomar. Luego nosotros te lo enviamos en grano, o recién molido.');
+    await expect(page.locator('#hero')).toContainText('Café recién tostado');
+    await expect(page.locator('#hero')).not.toContainText('Pago con Flow');
+    await expect(page.locator('#pain-heading')).toHaveText('Si el café de tarro ya te aburrió, este Café Roast es el siguiente paso.');
+    await expect(page.getByText('Solo tienes que elegir cuál te acompaña mejor. Nosotros te lo mandamos en grano o recién molido, listo para entrar a la rutina.')).toHaveCount(0);
+
+    await expect(page.locator('[data-product-card][data-product-id="downtime"] .product-flavor-list')).toContainText('Tueste Medio-Italiano');
+    await expect(page.locator('[data-product-card][data-product-id="hiperfoco"] .product-flavor-list')).toContainText('Tueste Italiano');
+    await expect(page.locator('[data-product-card] .product-config-stack').getByText(/^Tueste$/)).toHaveCount(0);
+  });
+
+  test('product cards expose the four approved grind choices with whole bean as default', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    for (const productId of ['downtime', 'hiperfoco']) {
+      const grindSelect = page.locator(`[data-product-card][data-product-id="${productId}"] [data-product-grind]`);
+      const labels = await grindSelect.locator('option').evaluateAll(options =>
+        options.map(option => option.textContent.trim())
+      );
+
+      expect(labels).toEqual(GRIND_OPTION_LABELS);
+      await expect(grindSelect).toHaveValue('grano entero');
+    }
+  });
+
   test('hydrates catalog prices from /api/public-catalog', async ({ page }) => {
     await installMockWorkerApi(page);
     await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -152,7 +189,7 @@ test.describe('home catalog, media, and quiz', () => {
     await page.waitForURL(/\/pedido\/\?(.+&)?draft=/);
 
     await expect(page.locator('#checkoutSummaryItems li')).toHaveCount(1);
-    await expect(page.locator('#checkoutSummaryItems')).toContainText(/Hiperfoco.*500g.*espresso/i);
+    await expect(page.locator('#checkoutSummaryItems')).toContainText(/Hiperfoco.*500g.*Grano Entero/i);
   });
 
   test('product media fallback shows only the placeholder when the active image fails', async ({ page }) => {
