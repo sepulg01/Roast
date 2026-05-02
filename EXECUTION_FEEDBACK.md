@@ -458,3 +458,13 @@
 - Parcial: no se pudo ejecutar una prueba real firmada `pending_transfer -> Apps Script -> emails` porque esta sesion no tiene `APPS_SCRIPT_WEBHOOK_URL`, `APPS_SCRIPT_SHARED_SECRET`, `GOOGLE_SHEET_ID`, `GOOGLE_SERVICE_ACCOUNT_JSON` ni `GOOGLE_MAPS_API_KEY` exportados.
 - Pendiente/deferido: actualizar en la planilla productiva `Config.communes` las comunas Poniente listadas para que `dispatchable/covered = TRUE`, desplegar Worker y Apps Script, verificar secretos productivos y confirmar con un pedido real que lleguen email operativo y email de cliente.
 - No se ejecuto refresh de stacks por instruccion explicita de este plan.
+
+## 2026-05-02 - Hotfix cache checkout Pagar ahora
+
+- Se diagnostico que el boton `Pagar ahora` podia quedar deshabilitado cuando el navegador mezclaba HTML nuevo de `/pedido/` con un `assets/checkout.js` antiguo cacheado que aun esperaba el checkbox eliminado `#accept_total`.
+- Se versiono la carga de `/assets/checkout.js` en `pedido/index.html` con query string para forzar descarga del JS actualizado.
+- Se agrego cobertura funcional que exige que `/pedido/` cargue la logica de checkout con URL cache-busted.
+- Se agrego la aprobacion `copy-approvals/2026-05-02-checkout-cache-bust-hotfix.md`; no cambia texto visible.
+- Validacion realizada: ciclo rojo/verde con `npm run test:functional -- tests/functional/checkout.spec.js --project=chromium --grep "cache-busted" --reporter=line`, luego `npm run test:functional -- tests/functional/checkout.spec.js --project=chromium --reporter=line` con 19 pruebas pasando, `npm run test:static`, `npm run check:copy-approval` y `git diff --check`.
+- Completado totalmente: mitigacion del JS stale que bloqueaba el CTA tras retirar la aceptacion de precio.
+- Pendiente/deferido: esperar publicacion/CDN; si algun navegador ya esta en la pagina abierta, debe recargar `/pedido/` para tomar el HTML con la nueva URL versionada.

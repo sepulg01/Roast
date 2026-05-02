@@ -98,6 +98,15 @@ test.describe('checkout 2-step order and transfer flow', () => {
     expect(communeLabels.every(label => !label.includes(' - '))).toBe(true);
   });
 
+  test('loads checkout logic through a cache-busted URL', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.goto('/pedido/', { waitUntil: 'domcontentloaded' });
+
+    const checkoutScriptSrc = await page.locator('script[src*="/assets/checkout.js"]').getAttribute('src');
+
+    expect(checkoutScriptSrc).toMatch(/^\/assets\/checkout\.js\?v=\d{8}/);
+  });
+
   test('checkout selector exposes the four approved grind choices with whole bean as default', async ({ page }) => {
     await installMockWorkerApi(page);
     await page.goto('/pedido/', { waitUntil: 'domcontentloaded' });
