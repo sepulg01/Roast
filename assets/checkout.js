@@ -796,6 +796,21 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  function submitCheckoutOrderRequest(requestPayload) {
+    return fetchJsonOrThrow('/api/checkout-orders', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestPayload)
+    }, 'No se pudo finalizar el pedido por transferencia.');
+  }
+
+  function requiresLegacyAcceptTotal(error) {
+    return /accept_total and accept_terms are required/i.test(String(error && error.message || ''));
+  }
+
   async function submitTransferOrder() {
     var payButton = document.getElementById('checkoutPayButton');
     var customerData = validateCustomerData();
@@ -830,28 +845,34 @@
     setButtonLoading(payButton, 'Finalizando pedido...', true);
 
     try {
-      var payload = await fetchJsonOrThrow('/api/checkout-orders', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          origin: state.origin,
-          channel: state.channel,
-          items: state.items,
-          first_name: customerData.first_name,
-          last_name: customerData.last_name,
-          email: customerData.email,
-          phone: customerData.phone,
-          commune: customerData.commune,
-          address: customerData.address,
-          address_ref: customerData.address_ref,
-          notes: customerData.notes,
-          payment_method: 'transfer',
-          accept_terms: true
-        })
-      }, 'No se pudo finalizar el pedido por transferencia.');
+      var requestPayload = {
+        origin: state.origin,
+        channel: state.channel,
+        items: state.items,
+        first_name: customerData.first_name,
+        last_name: customerData.last_name,
+        email: customerData.email,
+        phone: customerData.phone,
+        commune: customerData.commune,
+        address: customerData.address,
+        address_ref: customerData.address_ref,
+        notes: customerData.notes,
+        payment_method: 'transfer',
+        accept_terms: true
+      };
+      var payload;
+
+      try {
+        payload = await submitCheckoutOrderRequest(requestPayload);
+      } catch (error) {
+        if (!requiresLegacyAcceptTotal(error)) {
+          throw error;
+        }
+
+        payload = await submitCheckoutOrderRequest(Object.assign({}, requestPayload, {
+          accept_total: true
+        }));
+      }
 
       state.order = payload;
       window.RoastShop.trackEvent('checkout_order_created', {

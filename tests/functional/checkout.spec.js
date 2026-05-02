@@ -207,6 +207,21 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await expect(confirmationPanel.locator('a[href^="mailto:"]')).toHaveCount(0);
   });
 
+  test('retries once with legacy accept_total when deployed worker still requires it', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page, { checkoutOrderRequiresAcceptTotal: true });
+    await reachDataStep(page, { quantity: 1, format: '250g' });
+    await fillCustomerData(page, { commune: 'Peñalolén' });
+    await choosePaymentMethod(page, /transferencia/i);
+    await page.locator('#accept_terms').check();
+    await page.getByRole('button', { name: 'Pagar ahora' }).click();
+
+    await expect.poll(() => mockApi.checkoutOrderRequests.length).toBe(2);
+    expect(mockApi.checkoutOrderRequests[0]).not.toHaveProperty('accept_total');
+    expect(mockApi.checkoutOrderRequests[1]).toHaveProperty('accept_total', true);
+    expect(mockApi.checkoutOrderRequests[1]).toHaveProperty('accept_terms', true);
+    await expect(page.getByRole('heading', { name: 'Confirmación N° 0205789' })).toBeVisible();
+  });
+
   test('cart sidebar does not show support email or WhatsApp links', async ({ page }) => {
     await installMockWorkerApi(page);
     await openCheckoutWithItems(page);

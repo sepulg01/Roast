@@ -468,3 +468,14 @@
 - Validacion realizada: ciclo rojo/verde con `npm run test:functional -- tests/functional/checkout.spec.js --project=chromium --grep "cache-busted" --reporter=line`, luego `npm run test:functional -- tests/functional/checkout.spec.js --project=chromium --reporter=line` con 19 pruebas pasando, `npm run test:static`, `npm run check:copy-approval` y `git diff --check`.
 - Completado totalmente: mitigacion del JS stale que bloqueaba el CTA tras retirar la aceptacion de precio.
 - Pendiente/deferido: esperar publicacion/CDN; si algun navegador ya esta en la pagina abierta, debe recargar `/pedido/` para tomar el HTML con la nueva URL versionada.
+
+## 2026-05-02 - Compatibilidad temporal Worker accept_total
+
+- Se confirmo en produccion que `POST /api/checkout-orders` respondia `400` con `accept_total and accept_terms are required` aun cuando la UI nueva enviaba `accept_terms=true`; esto indica Worker productivo anterior al cambio de contrato.
+- Se intento desplegar el Worker actualizado, pero `wrangler` no pudo operar en esta sesion no interactiva sin `CLOUDFLARE_API_TOKEN`.
+- Se agrego compatibilidad defensiva en `assets/checkout.js`: el primer intento mantiene el contrato nuevo sin `accept_total`; si el Worker responde exactamente el error legacy, reintenta una sola vez con `accept_total=true`.
+- Se incremento la version del script de checkout en `/pedido/` a `v=2026050202` para forzar descarga del JS con retry.
+- Se agrego cobertura funcional para el flujo legacy y `copy-approvals/2026-05-02-checkout-legacy-worker-compat.md`; no cambia texto visible ni reintroduce el checkbox de precio.
+- Validacion realizada: ciclo rojo/verde con `npm run test:functional -- tests/functional/checkout.spec.js --project=chromium --grep "legacy accept_total" --reporter=line`, `npm run test:functional -- tests/functional/checkout.spec.js --project=chromium --reporter=line` con 20 pruebas pasando, `npm run test:static`, `npm run check:copy-approval`, `git diff --check` y verificacion productiva previa con `curl` que reprodujo el error legacy.
+- Completado totalmente: el frontend queda compatible con Worker nuevo y viejo mientras se regulariza el despliegue backend.
+- Pendiente/deferido: desplegar el Worker actualizado con credenciales Cloudflare para retirar esta compatibilidad temporal en una futura limpieza.

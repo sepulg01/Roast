@@ -10,6 +10,7 @@ export const publicCatalogPayload = {
     { commune: 'Santiago', sector: 'Centro', dispatchable: true, free_shipping_eligible: true },
     { commune: 'Providencia', sector: 'Oriente', dispatchable: true, free_shipping_eligible: true },
     { commune: 'Las Condes', sector: 'Oriente', dispatchable: true, free_shipping_eligible: true },
+    { commune: 'Peñalolén', sector: 'Oriente', dispatchable: true, free_shipping_eligible: true },
     { commune: 'Quilicura', sector: 'Norte', dispatchable: true, free_shipping_eligible: false },
     { commune: 'La Florida', sector: 'Sur', dispatchable: true, free_shipping_eligible: false },
     { commune: 'Pudahuel', sector: 'Poniente', dispatchable: true, free_shipping_eligible: false }
@@ -217,6 +218,18 @@ export async function installMockWorkerApi(page, options = {}) {
         body: JSON.stringify({
           ok: false,
           error: 'Not found'
+        })
+      });
+      return;
+    }
+
+    if (options.checkoutOrderRequiresAcceptTotal && checkoutOrderRequest.accept_total !== true) {
+      await route.fulfill({
+        status: 400,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ok: false,
+          error: 'accept_total and accept_terms are required'
         })
       });
       return;
