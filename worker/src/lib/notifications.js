@@ -32,5 +32,10 @@ export async function notifyOperationalEvent(env, payload) {
     })
   });
 
-  return response.ok;
+  if (!response.ok) {
+    return false;
+  }
+
+  const responsePayload = await response.json().catch(() => null);
+  return !(responsePayload && responsePayload.ok === false);
 }

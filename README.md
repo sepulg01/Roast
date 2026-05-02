@@ -7,7 +7,7 @@ Sitio estatico y flujo de pedido web para Cafe Roast. El cliente arma el pedido 
 - Website estatico: HTML publico, `assets/site.js` y `assets/checkout.js`.
 - API: Cloudflare Worker en `worker/src/index.js`.
 - Operacion: Google Sheets como fuente de configuracion y registro.
-- Cierre activo: `POST /api/checkout-orders` crea el pedido para `Transferencia Bancaria` y lo deja en `pending_transfer`.
+- Cierre activo: `POST /api/checkout-orders` crea el pedido para `Transferencia Bancaria`, devuelve un numero visible `DDMMRRR` y lo deja en `pending_transfer`.
 - Pagos Flow: endpoints y codigo se mantienen como legado desactivado por defecto mediante `flow_enabled=false`; se reactivan solo con decision operativa explicita.
 - Notificaciones: Apps Script como webhook de email; no escribe en Sheets.
 - Soporte: `contacto@caferoast.cl` y WhatsApp `+56 9 9174 6361`.
@@ -40,6 +40,10 @@ Hojas requeridas:
 
 `Config.status_map` se parsea hoy, pero no debe considerarse contrato productivo hasta que el Worker lo use explicitamente.
 
+El identificador interno `order_id` sigue siendo la llave relacional entre `Ventas`, `Lineas_Pedido`, `Pagos_Flow` y `Eventos`. El numero visible para clientes y soporte es `order_number` / `confirmation_number`, con formato `DDMMRRR` como texto para conservar ceros iniciales.
+
+La regla vigente de envio gratis usa `free_shipping_threshold_clp` para todas las comunas listadas y despachables. El campo historico `free_shipping_eligible` puede venir en `Config.communes`, pero no decide el calculo de despacho gratis.
+
 ## Transferencia Bancaria
 
 El cierre activo muestra estos datos para pago por transferencia:
@@ -55,10 +59,11 @@ Cuando `POST /api/checkout-orders` deja un pedido en `pending_transfer`, el Work
 
 - Subject: `Hemos recibido tu pedido!`
 - Logo publico: `https://caferoast.cl/assets/logos/logo_white.png`
-- Numero de pedido, resumen de productos, subtotal, envio, IVA incluido y total.
+- Numero visible de pedido, resumen de productos, subtotal, envio, IVA incluido y total.
 - Canal de respuesta: `contacto@caferoast.cl` y WhatsApp `+56 9 9174 6361`.
 
 Para que el sender real sea `contacto@caferoast.cl`, el web app de Apps Script debe ejecutarse/autorizarse desde esa cuenta o tener `contacto@caferoast.cl` como alias verificado de Gmail. Si el alias no esta disponible, el script usa `MailApp` con `replyTo` y nombre de remitente `contacto@caferoast.cl`.
+El Worker valida la respuesta JSON del webhook: una respuesta HTTP 200 con `{ "ok": false }` se registra como notificacion fallida.
 
 ## Variables Y Secretos
 

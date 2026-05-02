@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { installMockWorkerApi } from './helpers/mockWorkerApi.js';
+import { expectNoHorizontalOverflow, installMockWorkerApi } from './helpers/mockWorkerApi.js';
 
 const GRIND_OPTION_LABELS = [
   'Molienda Fina (Espresso, Cafetera italiana "Moka")',
@@ -47,7 +47,6 @@ async function finishTransferCheckout(page, mockApi, { commune = 'Providencia' }
   await reachDataStep(page, { quantity: 2, format: '1kg' });
   await fillCustomerData(page, { commune });
   await choosePaymentMethod(page, /transferencia/i);
-  await page.locator('#accept_total').check();
   await page.locator('#accept_terms').check();
   await page.getByRole('button', { name: 'Pagar ahora' }).click();
   await expect.poll(() => mockApi.checkoutOrderRequests.length).toBe(1);
@@ -94,6 +93,7 @@ test.describe('checkout 2-step order and transfer flow', () => {
     );
     expect(communeLabels).toContain('Providencia');
     expect(communeLabels).toContain('Quilicura');
+    expect(communeLabels).toContain('Pudahuel');
     expect(communeLabels).not.toContain('Providencia - Oriente');
     expect(communeLabels.every(label => !label.includes(' - '))).toBe(true);
   });
@@ -124,6 +124,16 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await expect(page.locator('#last_name')).toHaveValue('Roast');
   });
 
+  test('Flow payment label is customer-facing and wraps without horizontal overflow', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 900 });
+    await installMockWorkerApi(page);
+    await reachDataStep(page);
+
+    const flowOption = page.locator('[data-payment-option="flow"]');
+    await expect(flowOption.locator('.checkout-payment-title')).toHaveText('Flow (Tarjetas de débito, crédito y billeteras digitales)');
+    await expectNoHorizontalOverflow(page);
+  });
+
   test('Flow payment is disabled and does not create orders or payment links', async ({ page }) => {
     const mockApi = await installMockWorkerApi(page);
     await reachDataStep(page);
@@ -144,8 +154,10 @@ test.describe('checkout 2-step order and transfer flow', () => {
 
     await choosePaymentMethod(page, /transferencia/i);
     await expect(page.getByText('Tendrás 2 horas para transferir antes que se cierre tu carro de venta.')).toBeVisible();
-    await page.locator('#accept_total').check();
+    await expect(page.locator('#accept_total')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Pagar ahora' })).toBeDisabled();
     await page.locator('#accept_terms').check();
+    await expect(page.getByRole('button', { name: 'Pagar ahora' })).toBeEnabled();
     await page.getByRole('button', { name: 'Pagar ahora' }).click();
 
     await expect.poll(() => mockApi.checkoutOrderRequests.length).toBe(1);
@@ -169,46 +181,75 @@ test.describe('checkout 2-step order and transfer flow', () => {
         })
       ]
     }));
+    expect(mockApi.checkoutOrderRequests[0]).not.toHaveProperty('accept_total');
+    expect(mockApi.checkoutOrderRequests[0]).toHaveProperty('accept_terms', true);
     expect(mockApi.paymentLinkRequests).toHaveLength(0);
 
-    await expect(page.getByRole('heading', { name: 'Confirmación N° ORD_TEST_001' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Confirmación N° 0205789' })).toBeVisible();
     await expect(page.getByText(/BCI/i)).toBeVisible();
     await expect(page.getByText(/Cuenta Corriente\s+61947059/i)).toBeVisible();
     await expect(page.getByText(/^RUT$/i)).toBeVisible();
     await expect(page.locator('dd').filter({ hasText: /^17515638-0$/ })).toBeVisible();
     await expect(page.locator('dd').filter({ hasText: /^contacto@caferoast\.cl$/i })).toBeVisible();
     await expect(page.getByText(/Downtime.*1kg.*x2/i)).toBeVisible();
+
+    const confirmationPanel = page.locator('.checkout-confirmation-panel');
+    await expect(confirmationPanel.getByRole('link', { name: /WhatsApp de soporte/i })).toHaveCount(0);
+    await expect(confirmationPanel.locator('a[href^="mailto:"]')).toHaveCount(0);
   });
 
-  test('Centro and Oriente communes over threshold qualify for free shipping', async ({ page }) => {
-    const mockApi = await installMockWorkerApi(page);
+  test('cart sidebar does not show support email or WhatsApp links', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await openCheckoutWithItems(page);
 
-    await finishTransferCheckout(page, mockApi, { commune: 'Providencia' });
-    expect(mockApi.checkoutOrderRequests[0]).toEqual(expect.objectContaining({
-      commune: 'Providencia'
-    }));
-    await expect(page.getByText(/env[ií]o gratis/i)).toBeVisible();
+    const sidebar = page.getByRole('complementary');
+    await expect(sidebar.getByRole('link', { name: /WhatsApp de soporte/i })).toHaveCount(0);
+    await expect(sidebar).not.toContainText('contacto@caferoast.cl');
   });
 
-  test('Norte and Sur communes keep paid shipping even over threshold', async ({ page }) => {
-    const mockApi = await installMockWorkerApi(page);
+  for (const commune of ['Providencia', 'Quilicura', 'La Florida', 'Pudahuel']) {
+    test(`${commune} qualifies for free shipping over threshold`, async ({ page }) => {
+      const mockApi = await installMockWorkerApi(page);
 
-    await finishTransferCheckout(page, mockApi, { commune: 'Quilicura' });
-    expect(mockApi.checkoutOrderRequests[0]).toEqual(expect.objectContaining({
-      commune: 'Quilicura'
-    }));
+      await finishTransferCheckout(page, mockApi, { commune });
+      expect(mockApi.checkoutOrderRequests[0]).toEqual(expect.objectContaining({
+        commune
+      }));
+      await expect(page.locator('.checkout-review-row').filter({ hasText: 'Envío' })).toContainText('Gratis');
+    });
+  }
+
+  test('listed commune below threshold keeps paid shipping', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await reachDataStep(page, { quantity: 1, format: '250g' });
+    await fillCustomerData(page, { commune: 'Providencia' });
+
     await expect(page.locator('#summaryShipping')).toContainText(/\$3\.500|\$ 3\.500|CLP/);
   });
 
-  test('Poniente or outside-coverage communes block checkout with an error', async ({ page }) => {
-    const mockApi = await installMockWorkerApi(page);
+  test('listed commune at exact threshold gets free shipping', async ({ page }) => {
+    await installMockWorkerApi(page, { freeShippingThresholdClp: 34900 });
+    await reachDataStep(page, { quantity: 1, format: '1kg' });
+    await fillCustomerData(page, { commune: 'Quilicura' });
+
+    await expect(page.locator('#summaryShipping')).toHaveText('Gratis');
+  });
+
+  test('Poniente fallback commune remains selectable and covered', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page, { catalogHtmlError: true });
     await reachDataStep(page, { quantity: 2, format: '1kg' });
     await fillCustomerData(page, { commune: 'Pudahuel' });
     await choosePaymentMethod(page, /transferencia/i);
+    await page.locator('#accept_terms').check();
+    await expect(page.locator('[data-error-for="commune"]')).toHaveText('');
+    await expect(page.locator('#summaryShipping')).toHaveText('Gratis');
+    await expect(page.getByRole('button', { name: 'Pagar ahora' })).toBeEnabled();
+    await page.getByRole('button', { name: 'Pagar ahora' }).click();
 
-    await expect(page.locator('[data-error-for="commune"]')).toContainText(/fuera de cobertura|no tenemos cobertura|no despachamos/i);
-    await expect(page.getByRole('button', { name: 'Pagar ahora' })).toBeDisabled();
-    expect(mockApi.checkoutOrderRequests).toHaveLength(0);
+    await expect.poll(() => mockApi.checkoutOrderRequests.length).toBe(1);
+    expect(mockApi.checkoutOrderRequests[0]).toEqual(expect.objectContaining({
+      commune: 'Pudahuel'
+    }));
   });
 
   test('HTML API response explains checkout-orders backend route misconfiguration', async ({ page }) => {
@@ -216,7 +257,6 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await reachDataStep(page, { quantity: 2, format: '1kg' });
     await fillCustomerData(page);
     await choosePaymentMethod(page, /transferencia/i);
-    await page.locator('#accept_total').check();
     await page.locator('#accept_terms').check();
     await page.getByRole('button', { name: 'Pagar ahora' }).click();
 
@@ -228,7 +268,6 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await reachDataStep(page, { quantity: 2, format: '1kg' });
     await fillCustomerData(page);
     await choosePaymentMethod(page, /transferencia/i);
-    await page.locator('#accept_total').check();
     await page.locator('#accept_terms').check();
     await page.getByRole('button', { name: 'Pagar ahora' }).click();
 

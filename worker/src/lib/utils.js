@@ -192,6 +192,12 @@ export function buildOrderId(date = new Date()) {
   return `roast_${parts.year}${pad(parts.month)}${pad(parts.day)}_${pad(parts.hour)}${pad(parts.minute)}${pad(parts.second)}_${random}`;
 }
 
+export function buildOrderNumber(date = new Date(), randomSource = crypto) {
+  const parts = getZonedDateParts(date, CHILE_TIMEZONE);
+  const random = randomSource.getRandomValues(new Uint32Array(1))[0] % 1000;
+  return `${pad(parts.day)}${pad(parts.month)}${String(random).padStart(3, '0')}`;
+}
+
 export function buildEventId(date = new Date()) {
   return `evt_${buildOrderId(date)}`;
 }

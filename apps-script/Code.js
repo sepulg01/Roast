@@ -43,7 +43,7 @@ function doPost(e) {
 
 function buildOperationalEmail(payload) {
   const recipient = payload.recipient || DEFAULT_SUPPORT_EMAIL;
-  const subject = `[Roast] ${payload.event_type || 'evento'} · ${payload.order_id || 'sin pedido'}`;
+  const subject = `[Roast] ${payload.event_type || 'evento'} · ${getDisplayOrderNumber(payload)}`;
   const htmlBody = buildEmailBody(payload);
 
   return {
@@ -61,13 +61,26 @@ function shouldSendCustomerConfirmation(payload) {
   return payload.event_type === 'pending_transfer' && Boolean(firstValue(details.email, payload.email));
 }
 
+function getDisplayOrderNumber(payload) {
+  const details = payload.payload || {};
+  return firstValue(
+    details.confirmation_number,
+    details.order_number,
+    payload.confirmation_number,
+    payload.order_number,
+    details.order_id,
+    payload.order_id,
+    'sin pedido'
+  );
+}
+
 function buildCustomerConfirmationEmail(payload) {
   const details = payload.payload || {};
   const supportEmail = firstValue(details.support_email, payload.support_email, DEFAULT_SUPPORT_EMAIL);
   const supportWhatsapp = firstValue(details.support_whatsapp, payload.support_whatsapp, DEFAULT_SUPPORT_WHATSAPP);
   const supportWhatsappDisplay = supportWhatsapp === DEFAULT_SUPPORT_WHATSAPP ? DEFAULT_SUPPORT_WHATSAPP_DISPLAY : supportWhatsapp;
   const firstName = firstValue(details.first_name, details.customer_name, payload.customer_name, 'cliente');
-  const orderId = firstValue(details.order_id, payload.order_id, 'Sin pedido');
+  const orderId = getDisplayOrderNumber(payload);
   const logoUrl = firstValue(details.logo_url, DEFAULT_LOGO_URL);
   const items = Array.isArray(details.items) ? details.items : [];
   const itemRows = buildCustomerItemsRows(items);
@@ -174,7 +187,7 @@ function sendEmailMessage(message) {
 function buildEmailBody(payload) {
   const details = payload.payload || {};
   const fields = [
-    ['Pedido', firstValue(details.order_id, payload.order_id, 'Sin order_id')],
+    ['Pedido', getDisplayOrderNumber(payload)],
     ['Evento', payload.event_type || 'Sin tipo'],
     ['Estado destino', firstValue(payload.to_status, details.internal_status, payload.internal_status, 'Sin estado')],
     ['Cliente', firstValue(details.customer_name, payload.customer_name, 'Sin cliente')],

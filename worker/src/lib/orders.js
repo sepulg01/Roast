@@ -4,6 +4,7 @@ import {
   buildCustomerId,
   buildEventId,
   buildOrderId,
+  buildOrderNumber,
   buildPaymentId,
   buildSupportWhatsappMessage,
   getLocalDate,
@@ -67,10 +68,10 @@ const DEFAULT_COMMUNES = [
   ['La Florida', 'Sur', true, false],
   ['Puente Alto', 'Sur', true, false],
   ['San Bernardo', 'Sur', true, false],
-  ['Maipú', 'Poniente', false, false],
-  ['Cerrillos', 'Poniente', false, false],
-  ['Pudahuel', 'Poniente', false, false],
-  ['Lo Prado', 'Poniente', false, false]
+  ['Maipú', 'Poniente', true, false],
+  ['Cerrillos', 'Poniente', true, false],
+  ['Pudahuel', 'Poniente', true, false],
+  ['Lo Prado', 'Poniente', true, false]
 ].map(([commune, sector, dispatchable, freeShippingEligible]) => ({
   commune: normalizeCommune(commune),
   display_name: commune,
@@ -131,7 +132,8 @@ export const SALES_HEADERS = [
   'preparing_at',
   'dispatched_at',
   'delivered_at',
-  'canceled_at'
+  'canceled_at',
+  'order_number'
 ];
 
 export const LINE_HEADERS = [
@@ -432,9 +434,7 @@ function calculateOrderTotals(hydratedItems, commune, config) {
   const communeKey = normalizeCommune(commune);
   const communeMatch = config.communes.find(item => item.commune === communeKey);
   const covered = Boolean(communeMatch && communeMatch.dispatchable);
-  const freeShippingApplied = covered &&
-    Boolean(communeMatch.free_shipping_eligible) &&
-    subtotal >= config.settings.free_shipping_threshold_clp;
+  const freeShippingApplied = covered && subtotal >= config.settings.free_shipping_threshold_clp;
   const shipping = covered ? (freeShippingApplied ? 0 : config.settings.shipping_fee_clp) : 0;
   const internalStatus = covered ? 'draft' : 'manual_review';
   const manualReviewReason = covered ? '' : 'commune_outside_coverage';
@@ -496,8 +496,8 @@ function validateCheckoutCustomerPayload(payload) {
     throw statusError(`Missing required fields: ${missingFields.join(', ')}`);
   }
 
-  if (!isTruthy(payload.accept_total) || !isTruthy(payload.accept_terms)) {
-    throw statusError('accept_total and accept_terms are required');
+  if (!isTruthy(payload.accept_terms)) {
+    throw statusError('accept_terms is required');
   }
 
   const paymentMethod = normalizeKey(payload.payment_method);
@@ -808,8 +808,12 @@ async function getOrderLineItems(env, orderId) {
 }
 
 function buildOrderContactPayload(order, lineItems, whatsappUrl) {
+  const orderNumber = normalizeText(order.order_number || order.confirmation_number);
+
   return {
     order_id: order.order_id,
+    order_number: orderNumber,
+    confirmation_number: orderNumber || order.order_id,
     customer_id: order.customer_id || '',
     customer_name: order.customer_name || '',
     email: order.email || '',
@@ -852,13 +856,17 @@ export function buildPendingTransferNotificationPayload({
   orderMetrics,
   responseItems,
   transferExpiresAt,
-  bankTransfer = BANK_TRANSFER_DETAILS
+  bankTransfer = BANK_TRANSFER_DETAILS,
+  orderNumber
 }) {
   const items = Array.isArray(responseItems) ? responseItems : [];
   const total = toCurrencyNumber(orderMetrics && orderMetrics.total_clp);
+  const confirmationNumber = normalizeText(orderNumber || salesRow?.order_number || salesRow?.confirmation_number);
 
   return {
     order_id: orderId,
+    order_number: confirmationNumber,
+    confirmation_number: confirmationNumber || orderId,
     origin: salesRow?.origin || '',
     channel: salesRow?.channel || '',
     customer_name: customer?.customer_name || '',
@@ -899,6 +907,7 @@ export async function createOrderDraft(env, payload) {
   const orderMetrics = calculateOrderTotals(hydratedItems, customer.commune, config);
   const createdAt = getLocalTimestamp();
   const orderId = buildOrderId();
+  const orderNumber = buildOrderNumber();
   const customerRow = await upsertCustomer(env, customer, orderId);
   const itemsLabel = buildItemsLabel(hydratedItems);
   const salesRow = {
@@ -935,7 +944,8 @@ export async function createOrderDraft(env, payload) {
     preparing_at: '',
     dispatched_at: '',
     delivered_at: '',
-    canceled_at: ''
+    canceled_at: '',
+    order_number: orderNumber
   };
 
   await appendSalesRow(env, salesRow);
@@ -949,6 +959,8 @@ export async function createOrderDraft(env, payload) {
     to_status: orderMetrics.internal_status,
     payload: {
       order_id: orderId,
+      order_number: orderNumber,
+      confirmation_number: orderNumber,
       origin: salesRow.origin,
       channel: salesRow.channel,
       total_clp: salesRow.total_clp,
@@ -961,6 +973,8 @@ export async function createOrderDraft(env, payload) {
   return {
     ok: true,
     order_id: orderId,
+    order_number: orderNumber,
+    confirmation_number: orderNumber,
     subtotal_clp: orderMetrics.subtotal_clp,
     shipping_clp: orderMetrics.shipping_clp,
     total_clp: orderMetrics.total_clp,
@@ -991,6 +1005,7 @@ export async function createCheckoutOrder(env, payload) {
   const createdAt = getLocalTimestamp();
   const acceptedAt = createdAt;
   const orderId = buildOrderId();
+  const orderNumber = buildOrderNumber();
   const transferExpiresAt = new Date(Date.now() + (2 * 60 * 60 * 1000)).toISOString();
   const customerRow = await upsertCustomer(env, customer, orderId);
   const itemsLabel = buildItemsLabel(hydratedItems);
@@ -1038,7 +1053,8 @@ export async function createCheckoutOrder(env, payload) {
     preparing_at: '',
     dispatched_at: '',
     delivered_at: '',
-    canceled_at: ''
+    canceled_at: '',
+    order_number: orderNumber
   };
 
   await appendSalesRow(env, salesRow);
@@ -1072,6 +1088,7 @@ export async function createCheckoutOrder(env, payload) {
       env,
       order_id: orderId,
       orderId,
+      orderNumber,
       customer,
       salesRow,
       communeCoverage,
@@ -1086,7 +1103,8 @@ export async function createCheckoutOrder(env, payload) {
   return {
     ok: true,
     order_id: orderId,
-    confirmation_number: orderId,
+    order_number: orderNumber,
+    confirmation_number: orderNumber,
     internal_status: 'pending_transfer',
     subtotal_clp: orderMetrics.subtotal_clp,
     shipping_clp: orderMetrics.shipping_clp,
@@ -1119,8 +1137,8 @@ export async function createOrderContactRequest(env, request) {
     throw new Error('Missing order_id');
   }
 
-  if (!isTruthy(request.accept_total) || !isTruthy(request.accept_terms)) {
-    throw new Error('accept_total and accept_terms are required');
+  if (!isTruthy(request.accept_terms)) {
+    throw new Error('accept_terms is required');
   }
 
   const existing = await findSheetRowByField(env, 'Ventas', 'order_id', orderId);
@@ -1196,8 +1214,8 @@ export async function createPaymentLink(env, request, publicBaseUrl) {
     throw new Error('Missing order_id');
   }
 
-  if (!isTruthy(request.accept_total) || !isTruthy(request.accept_terms)) {
-    throw new Error('accept_total and accept_terms are required');
+  if (!isTruthy(request.accept_terms)) {
+    throw new Error('accept_terms is required');
   }
 
   const existing = await findSheetRowByField(env, 'Ventas', 'order_id', orderId);
@@ -1376,6 +1394,29 @@ export async function syncPaymentStatus(env, token, source) {
   };
 }
 
+function extractOrderNumberFromEventPayload(row) {
+  try {
+    const payload = JSON.parse(row.payload_json || '{}');
+    return normalizeText(payload.confirmation_number || payload.order_number);
+  } catch (error) {
+    return '';
+  }
+}
+
+async function findOrderNumberFromEvents(env, orderId) {
+  const table = await readSheetTable(env, 'Eventos');
+  const rows = [...table.rows].reverse();
+
+  for (const row of rows) {
+    if (String(row.order_id || '') !== String(orderId || '')) continue;
+
+    const orderNumber = extractOrderNumberFromEventPayload(row);
+    if (orderNumber) return orderNumber;
+  }
+
+  return '';
+}
+
 export async function getPublicOrder(env, orderId) {
   const order = await findSheetRowByField(env, 'Ventas', 'order_id', orderId);
 
@@ -1383,9 +1424,14 @@ export async function getPublicOrder(env, orderId) {
     throw new Error('Order not found');
   }
 
+  const orderNumber = normalizeText(order.row.order_number || order.row.confirmation_number) ||
+    await findOrderNumberFromEvents(env, order.row.order_id).catch(() => '');
+
   return {
     ok: true,
     order_id: order.row.order_id,
+    order_number: orderNumber,
+    confirmation_number: orderNumber || order.row.order_id,
     items_label: order.row.items_label,
     total_clp: toCurrencyNumber(order.row.total_clp),
     internal_status: order.row.internal_status,

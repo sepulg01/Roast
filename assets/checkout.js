@@ -50,10 +50,10 @@
     { name: 'La Florida', sector: 'Sur', covered: true, free_shipping_eligible: false },
     { name: 'Puente Alto', sector: 'Sur', covered: true, free_shipping_eligible: false },
     { name: 'San Bernardo', sector: 'Sur', covered: true, free_shipping_eligible: false },
-    { name: 'Maipú', sector: 'Poniente', covered: false, free_shipping_eligible: false },
-    { name: 'Cerrillos', sector: 'Poniente', covered: false, free_shipping_eligible: false },
-    { name: 'Pudahuel', sector: 'Poniente', covered: false, free_shipping_eligible: false },
-    { name: 'Lo Prado', sector: 'Poniente', covered: false, free_shipping_eligible: false }
+    { name: 'Maipú', sector: 'Poniente', covered: true, free_shipping_eligible: false },
+    { name: 'Cerrillos', sector: 'Poniente', covered: true, free_shipping_eligible: false },
+    { name: 'Pudahuel', sector: 'Poniente', covered: true, free_shipping_eligible: false },
+    { name: 'Lo Prado', sector: 'Poniente', covered: true, free_shipping_eligible: false }
   ];
 
   var DEFAULT_SHIPPING_FEE_CLP = 3500;
@@ -277,9 +277,9 @@
     var blockReason = '';
 
     if (commune) {
-      blocked = !commune.covered || normalizeCommuneName(commune.sector) === 'poniente';
-      blockReason = blocked ? 'Por ahora no tenemos cobertura automática en sector Poniente o fuera de zona.' : '';
-      shipping = blocked ? null : (commune.free_shipping_eligible && subtotal >= threshold ? 0 : state.publicCatalog.shippingFeeClp);
+      blocked = !commune.covered;
+      blockReason = blocked ? 'Por ahora no tenemos cobertura automática en esa comuna.' : '';
+      shipping = blocked ? null : (subtotal >= threshold ? 0 : state.publicCatalog.shippingFeeClp);
     }
 
     var total = subtotal + (Number.isFinite(shipping) ? shipping : 0);
@@ -303,9 +303,9 @@
     var totals = getCheckoutTotals();
     var remaining = Math.max(totals.freeShippingThreshold - totals.subtotal, 0);
 
-    if (totals.commune && !totals.commune.free_shipping_eligible && !totals.blocked) {
+    if (totals.commune && totals.blocked) {
       alert.setAttribute('data-free-shipping-state', 'paid');
-      alert.textContent = 'Tu comuna tiene despacho disponible con envío pagado.';
+      alert.textContent = 'Tu comuna queda fuera de cobertura automática para pedidos web.';
       return;
     }
 
@@ -541,8 +541,8 @@
     } else if (!selectedCommune) {
       setInlineError('commune', 'Selecciona una comuna válida de la lista.');
       valid = false;
-    } else if (!selectedCommune.covered || normalizeCommuneName(selectedCommune.sector) === 'poniente') {
-      setInlineError('commune', 'Por ahora no finalizamos pedidos web para sector Poniente o fuera de cobertura.');
+    } else if (!selectedCommune.covered) {
+      setInlineError('commune', 'Por ahora no finalizamos pedidos web para esa comuna.');
       valid = false;
     }
     if (!data.address) {
@@ -578,8 +578,8 @@
       field.addEventListener('change', function() {
         if (fieldId === 'commune') {
           var selectedCommune = getSelectedCommune();
-          if (selectedCommune && (!selectedCommune.covered || normalizeCommuneName(selectedCommune.sector) === 'poniente')) {
-            setInlineError('commune', 'Por ahora no finalizamos pedidos web para sector Poniente o fuera de cobertura.');
+          if (selectedCommune && !selectedCommune.covered) {
+            setInlineError('commune', 'Por ahora no finalizamos pedidos web para esa comuna.');
           } else {
             setInlineError('commune', '');
           }
@@ -670,6 +670,10 @@
     return selected ? selected.value : '';
   }
 
+  function getCustomerConfirmationNumber(payload) {
+    return payload && (payload.confirmation_number || payload.order_number || payload.order_id || payload.id) || 'pendiente';
+  }
+
   function updatePaymentOptions() {
     document.querySelectorAll('[data-payment-option]').forEach(function(option) {
       var input = option.querySelector('input[type="radio"]');
@@ -684,10 +688,9 @@
     if (!payButton) return;
 
     var acceptedTerms = document.getElementById('accept_terms');
-    var acceptedTotal = document.getElementById('accept_total');
     var totals = getCheckoutTotals();
     var method = getSelectedPaymentMethod();
-    var canSubmit = validateItems() && Boolean(totals.commune) && !totals.blocked && method === 'transfer' && Boolean(acceptedTerms && acceptedTerms.checked) && Boolean(acceptedTotal && acceptedTotal.checked);
+    var canSubmit = validateItems() && Boolean(totals.commune) && !totals.blocked && method === 'transfer' && Boolean(acceptedTerms && acceptedTerms.checked);
 
     payButton.disabled = !canSubmit;
   }
@@ -738,7 +741,7 @@
     var shell = document.getElementById('checkoutFormShell');
     if (!shell) return;
 
-    var orderId = payload.order_id || payload.id || payload.order_number || 'pendiente';
+    var confirmationNumber = getCustomerConfirmationNumber(payload);
     var totals = {
       subtotal: Number(payload.subtotal_clp || getCheckoutTotals().subtotal),
       shipping: Number(payload.shipping_clp || getCheckoutTotals().shipping || 0),
@@ -747,12 +750,12 @@
     var transferDetails = Object.assign({}, BANK_TRANSFER_DETAILS, payload.transfer_details || payload.bank_transfer || {});
     var expiration = buildTransferExpiration(payload);
 
-    updateSupportLinks(orderId);
+    updateSupportLinks(confirmationNumber);
 
     shell.innerHTML = [
       '<article class="checkout-confirmation-panel" aria-live="polite">',
       '  <p class="checkout-summary-kicker">Pedido recibido</p>',
-      '  <h2>Confirmación N° ' + escapeHtml(orderId) + '</h2>',
+      '  <h2>Confirmación N° ' + escapeHtml(confirmationNumber) + '</h2>',
       '  <p class="checkout-confirmation-id">Gracias, ' + escapeHtml(customerData.first_name) + '. Tu pedido quedó por confirmar.</p>',
       '  <section class="checkout-confirmation-section">',
       '    <h3>Datos para transferencia</h3>',
@@ -786,21 +789,16 @@
       '      <div class="checkout-review-row checkout-review-row-total"><span>Total</span><strong>' + window.RoastShop.formatCurrency(totals.total) + '</strong></div>',
       '    </div>',
       '  </section>',
-      '  <div class="checkout-summary-support">',
-      '    <a href="mailto:' + escapeHtml(window.RoastShop.SUPPORT_EMAIL) + '" class="checkout-summary-email" data-support-email-link>' + escapeHtml(window.RoastShop.SUPPORT_EMAIL) + '</a>',
-      '    <a href="' + escapeHtml(window.RoastShop.buildSupportWhatsAppUrl(window.RoastShop.buildSupportMessage('mi pedido web', orderId))) + '" class="checkout-summary-whatsapp" target="_blank" rel="noopener noreferrer" data-checkout-support-link data-support-whatsapp-link data-support-context="mi pedido web">WhatsApp de soporte</a>',
-      '  </div>',
       '</article>'
     ].join('\n');
 
-    updateSupportLinks(orderId);
+    updateSupportLinks(confirmationNumber);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async function submitTransferOrder() {
     var payButton = document.getElementById('checkoutPayButton');
     var customerData = validateCustomerData();
-    var acceptedTotal = document.getElementById('accept_total');
     var acceptedTerms = document.getElementById('accept_terms');
     var method = getSelectedPaymentMethod();
     var totals = getCheckoutTotals();
@@ -817,8 +815,8 @@
       return;
     }
 
-    if (!acceptedTotal.checked || !acceptedTerms.checked) {
-      setGlobalStatus('Necesitas aceptar el total y los términos antes de finalizar.', 'error');
+    if (!acceptedTerms || !acceptedTerms.checked) {
+      setGlobalStatus('Necesitas aceptar los términos antes de finalizar.', 'error');
       updateFinalizeButtonState();
       return;
     }
@@ -851,7 +849,6 @@
           address_ref: customerData.address_ref,
           notes: customerData.notes,
           payment_method: 'transfer',
-          accept_total: true,
           accept_terms: true
         })
       }, 'No se pudo finalizar el pedido por transferencia.');
@@ -926,7 +923,7 @@
       });
     });
 
-    ['accept_total', 'accept_terms'].forEach(function(fieldId) {
+    ['accept_terms'].forEach(function(fieldId) {
       var field = document.getElementById(fieldId);
       if (field) field.addEventListener('change', updateFinalizeButtonState);
     });
@@ -1013,7 +1010,7 @@
 
       if (title) title.textContent = config.title;
       if (copy) copy.textContent = config.copy;
-      if (orderNode) orderNode.textContent = payload.order_id;
+      if (orderNode) orderNode.textContent = getCustomerConfirmationNumber(payload);
       if (total) total.textContent = window.RoastShop.formatCurrency(payload.total_clp);
       if (items) items.textContent = payload.items_label;
       if (statusPill) {

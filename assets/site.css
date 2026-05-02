@@ -2088,6 +2088,8 @@
     .checkout-payment-title {
       color: var(--text-primary);
       font-weight: 700;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
     }
     .checkout-payment-copy {
       color: var(--text-secondary);
@@ -2294,18 +2296,6 @@
     .checkout-summary-row-secondary strong {
       color: var(--text-secondary);
       font-weight: 600;
-    }
-    .checkout-summary-support {
-      margin-top: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-    }
-    .checkout-summary-whatsapp {
-      color: var(--accent-secondary);
-      font-weight: 700;
-      text-decoration: underline;
-      text-underline-offset: 0.18em;
     }
     .result-card {
       padding: clamp(1.6rem, 4vw, 2.5rem);

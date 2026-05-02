@@ -5,6 +5,8 @@ import vm from 'node:vm';
 
 import worker from '../../worker/src/index.js';
 import { buildPendingTransferNotificationPayload } from '../../worker/src/lib/orders.js';
+import { notifyOperationalEvent } from '../../worker/src/lib/notifications.js';
+import { buildOrderNumber } from '../../worker/src/lib/utils.js';
 
 function createContext() {
   return {
@@ -18,6 +20,17 @@ function loadAppsScriptHelpers() {
     `${source}\n({ buildCustomerConfirmationEmail });`,
     {
       console
+    }
+  );
+}
+
+function loadAppsScriptRuntime(context = {}) {
+  const source = readFileSync(new URL('../../apps-script/Code.js', import.meta.url), 'utf8');
+  return vm.runInNewContext(
+    `${source}\n({ doPost, buildCustomerConfirmationEmail });`,
+    {
+      console,
+      ...context
     }
   );
 }
@@ -61,6 +74,7 @@ test('pending transfer notification payload includes customer email data and tot
   const payload = buildPendingTransferNotificationPayload({
     env: { PUBLIC_BASE_URL: 'https://caferoast.cl/' },
     orderId: 'ORD_TEST_001',
+    orderNumber: '0205789',
     customer: {
       customer_name: 'Camila Roast',
       first_name: 'Camila',
@@ -111,6 +125,8 @@ test('pending transfer notification payload includes customer email data and tot
   });
 
   assert.equal(payload.order_id, 'ORD_TEST_001');
+  assert.equal(payload.order_number, '0205789');
+  assert.equal(payload.confirmation_number, '0205789');
   assert.equal(payload.customer_name, 'Camila Roast');
   assert.equal(payload.first_name, 'Camila');
   assert.equal(payload.email, 'cliente@example.com');
@@ -134,6 +150,8 @@ test('Apps Script builds the transfer customer confirmation email', () => {
     support_whatsapp: '+56991746361',
     payload: {
       order_id: 'ORD_TEST_001',
+      order_number: '0205789',
+      confirmation_number: '0205789',
       logo_url: 'https://caferoast.cl/assets/logos/logo_white.png',
       first_name: 'Camila',
       email: 'cliente@example.com',
@@ -159,7 +177,8 @@ test('Apps Script builds the transfer customer confirmation email', () => {
   assert.equal(email.name, 'contacto@caferoast.cl');
   assert.match(email.body, /Hola Camila/);
   assert.match(email.htmlBody, /logo_white\.png/);
-  assert.match(email.htmlBody, /ORD_TEST_001/);
+  assert.match(email.htmlBody, /0205789/);
+  assert.doesNotMatch(email.htmlBody, /ORD_TEST_001/);
   assert.match(email.htmlBody, /Gracias por su preferencia/);
   assert.match(email.htmlBody, /1 a 3 dias hábiles/);
   assert.match(email.htmlBody, /Downtime/);
@@ -169,4 +188,114 @@ test('Apps Script builds the transfer customer confirmation email', () => {
   assert.match(email.htmlBody, /\$15\.400 CLP/);
   assert.match(email.htmlBody, /contacto@caferoast\.cl/);
   assert.match(email.htmlBody, /\+56 9 9174 6361/);
+});
+
+test('buildOrderNumber returns DDMM plus three random digits as text', () => {
+  const orderNumber = buildOrderNumber(new Date('2026-05-02T12:00:00Z'), {
+    getRandomValues(values) {
+      values[0] = 789;
+      return values;
+    }
+  });
+
+  assert.equal(orderNumber, '0205789');
+  assert.match(orderNumber, /^\d{7}$/);
+});
+
+test('notifyOperationalEvent treats Apps Script ok false body as failure', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({ ok: false, error: 'Invalid signature' }), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  try {
+    const sent = await notifyOperationalEvent({
+      APPS_SCRIPT_WEBHOOK_URL: 'https://script.google.test/macros/s/test/exec',
+      APPS_SCRIPT_SHARED_SECRET: 'secret'
+    }, {
+      order_id: 'ORD_TEST_001',
+      event_type: 'pending_transfer'
+    });
+
+    assert.equal(sent, false);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('Apps Script doPost sends operational and customer emails for pending transfer', () => {
+  const sentMessages = [];
+  const { doPost } = loadAppsScriptRuntime({
+    PropertiesService: {
+      getScriptProperties() {
+        return {
+          getProperty() {
+            return 'secret';
+          }
+        };
+      }
+    },
+    Utilities: {
+      computeHmacSha256Signature() {
+        return [1, 2, 3];
+      }
+    },
+    ContentService: {
+      MimeType: {
+        JSON: 'application/json'
+      },
+      createTextOutput(text) {
+        return {
+          text,
+          mimeType: '',
+          setMimeType(mimeType) {
+            this.mimeType = mimeType;
+            return this;
+          }
+        };
+      }
+    },
+    MailApp: {
+      sendEmail(message) {
+        sentMessages.push(message);
+      }
+    }
+  });
+  const payload = {
+    order_id: 'ORD_TEST_001',
+    event_type: 'pending_transfer',
+    recipient: 'contacto@caferoast.cl',
+    payload: {
+      order_id: 'ORD_TEST_001',
+      order_number: '0205789',
+      confirmation_number: '0205789',
+      first_name: 'Camila',
+      email: 'cliente@example.com',
+      items: [],
+      subtotal_clp: 11900,
+      shipping_clp: 3500,
+      tax_included_clp: 2459,
+      total_clp: 15400
+    }
+  };
+
+  const result = doPost({
+    postData: {
+      contents: JSON.stringify({
+        payload,
+        signature: '010203'
+      })
+    }
+  });
+  const body = JSON.parse(result.text);
+
+  assert.equal(body.ok, true);
+  assert.equal(sentMessages.length, 2);
+  assert.equal(sentMessages[0].to, 'contacto@caferoast.cl');
+  assert.equal(sentMessages[1].to, 'cliente@example.com');
+  assert.match(sentMessages[0].htmlBody, /0205789/);
+  assert.match(sentMessages[1].htmlBody, /0205789/);
 });

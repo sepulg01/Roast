@@ -12,7 +12,7 @@ export const publicCatalogPayload = {
     { commune: 'Las Condes', sector: 'Oriente', dispatchable: true, free_shipping_eligible: true },
     { commune: 'Quilicura', sector: 'Norte', dispatchable: true, free_shipping_eligible: false },
     { commune: 'La Florida', sector: 'Sur', dispatchable: true, free_shipping_eligible: false },
-    { commune: 'Pudahuel', sector: 'Poniente', dispatchable: false, free_shipping_eligible: false }
+    { commune: 'Pudahuel', sector: 'Poniente', dispatchable: true, free_shipping_eligible: false }
   ],
   catalog: [
     {
@@ -60,6 +60,15 @@ export const publicCatalogPayload = {
   ]
 };
 
+function buildPublicCatalogPayload(options = {}) {
+  return {
+    ...publicCatalogPayload,
+    free_shipping_threshold_clp: options.freeShippingThresholdClp || publicCatalogPayload.free_shipping_threshold_clp,
+    communes: publicCatalogPayload.communes.map(commune => ({ ...commune })),
+    catalog: publicCatalogPayload.catalog.map(item => ({ ...item }))
+  };
+}
+
 export function collectCriticalConsole(page) {
   const messages = [];
 
@@ -91,6 +100,7 @@ function orderPayload(status = 'paid') {
 }
 
 export async function installMockWorkerApi(page, options = {}) {
+  const catalogPayload = buildPublicCatalogPayload(options);
   const orderDraftRequests = [];
   const orderContactRequests = [];
   const checkoutOrderRequests = [];
@@ -109,7 +119,7 @@ export async function installMockWorkerApi(page, options = {}) {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(publicCatalogPayload)
+      body: JSON.stringify(catalogPayload)
     });
   });
 
@@ -214,18 +224,18 @@ export async function installMockWorkerApi(page, options = {}) {
 
     const requestItems = Array.isArray(checkoutOrderRequest.items) ? checkoutOrderRequest.items : [];
     const subtotalClp = requestItems.reduce((sum, item) => {
-      const catalogItem = publicCatalogPayload.catalog.find(entry => (
+      const catalogItem = catalogPayload.catalog.find(entry => (
         entry.product_code === item.product_code && entry.format_code === item.format_code
       ));
       return sum + ((catalogItem ? catalogItem.price_clp : 0) * Number(item.quantity || 1));
     }, 0);
     const normalizedCommune = String(checkoutOrderRequest.commune || '').trim().toLowerCase();
-    const freeShippingCommunes = new Set(['providencia', 'las condes', 'santiago']);
-    const paidShippingCommunes = new Set(['quilicura', 'la florida']);
-    const qualifiesForFreeShipping = subtotalClp >= publicCatalogPayload.free_shipping_threshold_clp
-      && freeShippingCommunes.has(normalizedCommune);
+    const selectedCommune = catalogPayload.communes.find(entry => (
+      String(entry.commune || '').trim().toLowerCase() === normalizedCommune
+    ));
+    const covered = Boolean(selectedCommune && selectedCommune.dispatchable);
+    const qualifiesForFreeShipping = covered && subtotalClp >= catalogPayload.free_shipping_threshold_clp;
     const shippingClp = qualifiesForFreeShipping ? 0 : 3500;
-    const covered = freeShippingCommunes.has(normalizedCommune) || paidShippingCommunes.has(normalizedCommune);
 
     await route.fulfill({
       status: covered ? 200 : 422,
@@ -233,6 +243,8 @@ export async function installMockWorkerApi(page, options = {}) {
       body: JSON.stringify({
         ok: covered,
         order_id: 'ORD_TEST_001',
+        order_number: '0205789',
+        confirmation_number: '0205789',
         subtotal_clp: subtotalClp,
         shipping_clp: shippingClp,
         total_clp: subtotalClp + shippingClp,
@@ -308,7 +320,7 @@ export async function installMockWorkerApi(page, options = {}) {
     orderDraftRequests,
     orderContactRequests,
     paymentLinkRequests,
-    publicCatalogPayload
+    publicCatalogPayload: catalogPayload
   };
 }
 

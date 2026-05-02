@@ -443,3 +443,18 @@
 - Completado totalmente: cambios UI/copy solicitados, dropdown de comunas, payload de notificacion, email HTML/texto para cliente, cobertura automatizada, documentacion README y aprobacion de copy.
 - Parcial: no se envio un email real desde Apps Script en produccion durante esta ejecucion local.
 - Pendiente/deferido: desplegar/autorizar Apps Script con `contacto@caferoast.cl` como cuenta ejecutora o alias Gmail verificado, ejecutar una compra real por transferencia y confirmar sender real, logo, resumen de productos y totales en el email recibido por el cliente.
+
+## 2026-05-02 - Numero visible, envio gratis ampliado y emails robustos
+
+- Se agrego el numero visible `DDMMRRR` como `order_number` / `confirmation_number`, manteniendo `order_id` como llave interna para `Ventas`, `Lineas_Pedido`, `Pagos_Flow`, `Eventos` y `/api/orders/:order_id`.
+- `/pedido/` muestra `Confirmacion N°` con el numero visible, elimino el checkbox de aceptacion de precio, deja solo aceptacion de terminos, renombra Flow a `Flow (Tarjetas de debito, credito y billeteras digitales)` y quita los links de soporte del carrito/confirmacion.
+- La regla de envio gratis ahora aplica a toda comuna listada y despachable al llegar al umbral vigente de `$36.000 CLP`, incluyendo Norte, Sur y Poniente; bajo el umbral mantiene el despacho de `$3.500 CLP`.
+- El Worker ignora `free_shipping_eligible` para el calculo de precio, deja las comunas Poniente fallback como despachables y registra el numero visible en ventas, respuestas publicas y payloads de notificacion.
+- `GET /api/orders/:order_id` tambien puede recuperar el numero visible desde `Eventos.payload_json` si la planilla productiva todavia no tiene el header `Ventas.order_number`.
+- Apps Script usa el numero visible en emails operativos y de cliente, y el Worker trata una respuesta HTTP 200 con `{ ok:false }` como notificacion fallida.
+- Se actualizaron `README.md`, `scripts/sync-sheet-readme.mjs` y la aprobacion de copy `copy-approvals/2026-05-02-checkout-order-email-shipping.md`.
+- Validacion realizada: `npm run test:static`, `npm run test:worker` con 14 pruebas pasando, `npm run test:functional -- --reporter=line` con 130 pruebas pasando, `npm run check:copy-approval` y `git diff --check`.
+- Completado totalmente: UI checkout, contrato Worker, calculo de despacho, payloads publicos/notificaciones, emails mockeados, documentacion y cobertura automatizada local.
+- Parcial: no se pudo ejecutar una prueba real firmada `pending_transfer -> Apps Script -> emails` porque esta sesion no tiene `APPS_SCRIPT_WEBHOOK_URL`, `APPS_SCRIPT_SHARED_SECRET`, `GOOGLE_SHEET_ID`, `GOOGLE_SERVICE_ACCOUNT_JSON` ni `GOOGLE_MAPS_API_KEY` exportados.
+- Pendiente/deferido: actualizar en la planilla productiva `Config.communes` las comunas Poniente listadas para que `dispatchable/covered = TRUE`, desplegar Worker y Apps Script, verificar secretos productivos y confirmar con un pedido real que lleguen email operativo y email de cliente.
+- No se ejecuto refresh de stacks por instruccion explicita de este plan.
