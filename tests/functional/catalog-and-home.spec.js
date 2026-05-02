@@ -17,21 +17,24 @@ const quizScenarios = [
     cups: '1_taza',
     method: 'prensa_francesa',
     product: 'downtime',
-    expected: /Downtime/i
+    expected: /Downtime/i,
+    expectedPrice: '$11.900'
   },
   {
     name: 'Hiperfoco',
     cups: '2_tazas',
     method: 'espresso',
     product: 'hiperfoco',
-    expected: /Hiperfoco/i
+    expected: /Hiperfoco/i,
+    expectedPrice: '$19.900'
   },
   {
     name: 'combo ambos',
     cups: '3_o_mas',
     method: 'no_se',
     product: 'ambos_250',
-    expected: /Downtime.*Hiperfoco|Hiperfoco.*Downtime/i
+    expected: /Downtime.*Hiperfoco|Hiperfoco.*Downtime/i,
+    expectedPrice: '$23.800'
   }
 ];
 
@@ -107,7 +110,7 @@ test.describe('home catalog, media, and quiz', () => {
     await installMockWorkerApi(page);
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-    await expect(page.locator('#downtime-price')).toContainText('$18.900');
+    await expect(page.locator('#downtime-price')).toContainText('$19.900');
     await expect(page.locator('[data-free-shipping-threshold]').first()).toContainText('$36.000');
   });
 
@@ -115,8 +118,8 @@ test.describe('home catalog, media, and quiz', () => {
     await installMockWorkerApi(page, { catalogHtmlError: true });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-    await expect(page.locator('#downtime-price')).toContainText('$18.900');
-    await expect(page.locator('#hiperfoco-price')).toContainText('$18.900');
+    await expect(page.locator('#downtime-price')).toContainText('$19.900');
+    await expect(page.locator('#hiperfoco-price')).toContainText('$19.900');
     await expect(page.locator('#downtime-price')).toHaveAttribute(
       'title',
       'Precio referencial; se confirma en checkout.'
@@ -265,6 +268,7 @@ test.describe('home catalog, media, and quiz', () => {
 
       await expect(page.locator('#quizStep4')).toHaveClass(/active/);
       await expect(page.locator('#quizResultRec')).toContainText(scenario.expected);
+      await expect(page.locator('#quizResultPrice')).toContainText(scenario.expectedPrice);
       await expect(page.locator('#quizResultPrice')).toContainText('CLP');
       await expect(page.locator('#quizResultCta')).toHaveAttribute('href', /\/pedido\/.*draft=/);
       await expect(page.locator('#quizResultSupport')).toHaveAttribute('href', new RegExp(`^${SUPPORT_WHATSAPP_URL}`));

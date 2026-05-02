@@ -406,3 +406,14 @@
 - Completado totalmente: cambios de copy/UI solicitados, opciones y defaults de molienda, normalizacion de valores antiguos, tests funcionales y registro de aprobacion de copy.
 - Parcial: no quedaron tareas parcialmente implementadas dentro del alcance aprobado.
 - Pendiente/deferido: revision visual manual opcional en navegador real antes de publicar; no se hicieron cambios backend, DB/Sheets, commit, push ni refresh de stacks porque no estaban dentro de la instruccion positiva de esta ejecucion.
+
+## 2026-05-02 - Cambio de precios Downtime e Hiperfoco
+
+- Se actualizaron precios fallback y visibles de ambos productos a `250g=$11.900`, `500g=$19.900`, `1kg=$34.900`; el combo fallback del quiz queda en `$23.800 CLP`.
+- Se actualizo el precio inicial de las cards del home, el copy editorial de `cafe-molido`, los mocks funcionales del catalogo publico y los totales de prueba para el resultado de pago.
+- Se agrego cobertura funcional exacta para los precios del quiz en los caminos `Downtime`, `Hiperfoco` y `250g de Downtime + 250g de Hiperfoco`, ademas de actualizar los asserts del catalogo y resultado de pago.
+- Se agrego la aprobacion de copy `copy-approvals/2026-05-02-price-update.md` para los textos visibles de precios.
+- Validacion realizada: ciclo TDD rojo con 6 fallas esperadas por precios antiguos, ciclo verde con 6 pruebas enfocadas pasando, `npm run test:static`, `npm --prefix worker run check`, `npm run test:functional -- tests/functional/catalog-and-home.spec.js --grep "quiz path" --reporter=line` con 6 pruebas pasando, `npm run test:functional -- tests/functional/catalog-and-home.spec.js tests/functional/payment-result.spec.js tests/functional/checkout.spec.js --reporter=line` con 54 pruebas pasando, `npm run test:functional -- --reporter=line` con 110 pruebas pasando, busqueda exacta de precios antiguos fuera de historial sin resultados y revision paralela de superficies UI/backend.
+- Completado totalmente: repo, fallbacks, UI visible, fixtures, pruebas funcionales y aprobacion de copy quedaron alineados con los nuevos precios.
+- Parcial: no se pudo actualizar la planilla real `Config.catalog` porque este entorno no tiene `GOOGLE_SERVICE_ACCOUNT_JSON`, `GOOGLE_SHEET_ID` ni `worker/.dev.vars` disponibles. Los valores pendientes para `downtime` y `hiperfoco` son `250g=11900`, `500g=19900`, `1kg=34900`.
+- Pendiente/deferido: cargar secretos reales de Google Sheets, actualizar las 6 filas de `Config.catalog`, confirmar que `/api/public-catalog` productivo devuelve los nuevos `price_clp` y probar un checkout real hasta `pending_transfer` para validar `Ventas` y `Lineas_Pedido`.

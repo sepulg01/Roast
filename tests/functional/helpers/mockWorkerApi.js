@@ -20,42 +20,42 @@ export const publicCatalogPayload = {
       product_name: 'Downtime',
       format_code: '250g',
       format_label: '250g',
-      price_clp: 9900
+      price_clp: 11900
     },
     {
       product_code: 'downtime',
       product_name: 'Downtime',
       format_code: '500g',
       format_label: '500g',
-      price_clp: 18900
+      price_clp: 19900
     },
     {
       product_code: 'downtime',
       product_name: 'Downtime',
       format_code: '1kg',
       format_label: '1kg',
-      price_clp: 32900
+      price_clp: 34900
     },
     {
       product_code: 'hiperfoco',
       product_name: 'Hiperfoco',
       format_code: '250g',
       format_label: '250g',
-      price_clp: 9900
+      price_clp: 11900
     },
     {
       product_code: 'hiperfoco',
       product_name: 'Hiperfoco',
       format_code: '500g',
       format_label: '500g',
-      price_clp: 18900
+      price_clp: 19900
     },
     {
       product_code: 'hiperfoco',
       product_name: 'Hiperfoco',
       format_code: '1kg',
       format_label: '1kg',
-      price_clp: 32900
+      price_clp: 34900
     }
   ]
 };
@@ -82,7 +82,7 @@ function orderPayload(status = 'paid') {
     ok: true,
     order_id: 'ORD_TEST_001',
     items_label: 'Downtime 250g',
-    total_clp: 13400,
+    total_clp: 15400,
     internal_status: status,
     flow_checkout_url: ['pending_payment', 'link_sent'].includes(status) ? flowUrl : '',
     support_email: 'contacto@caferoast.cl',
@@ -141,9 +141,9 @@ export async function installMockWorkerApi(page, options = {}) {
       body: JSON.stringify({
         ok: true,
         order_id: 'ORD_TEST_001',
-        subtotal_clp: 9900,
+        subtotal_clp: 11900,
         shipping_clp: manualReview ? 0 : 3500,
-        total_clp: manualReview ? 9900 : 13400,
+        total_clp: manualReview ? 11900 : 15400,
         internal_status: manualReview ? 'manual_review' : 'draft',
         manual_review_reason: manualReview ? 'commune_outside_coverage' : '',
         items_label: 'Downtime 250g',

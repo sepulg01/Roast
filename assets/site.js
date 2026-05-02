@@ -11,15 +11,15 @@ var quizMethod = null;
 var quizProductChoice = null;
 var QUIZ_DESKTOP_BREAKPOINT = 900;
 var QUIZ_RESULT_REFERENCE_TEXT = '250g de Downtime + 250g de Hiperfoco, Molienda Gruesa (Prensa Francesa, Cold Brew)';
-var QUIZ_RESULT_REFERENCE_PRICE = '$19.800 CLP';
+var QUIZ_RESULT_REFERENCE_PRICE = '$23.800 CLP';
 
 var PRICE_MAP = {
-  '1_taza': { format: '250g', price: 9900 },
-  '2_tazas': { format: '500g', price: 18900 },
-  '3_o_mas': { format: '1kg', price: 32900 }
+  '1_taza': { format: '250g', price: 11900 },
+  '2_tazas': { format: '500g', price: 19900 },
+  '3_o_mas': { format: '1kg', price: 34900 }
 };
 
-var QUIZ_COMBO_PRICE = 19800;
+var QUIZ_COMBO_PRICE = 23800;
 
 var METHOD_GRIND_MAP = {
   'moka': 'molienda fina',
@@ -43,9 +43,9 @@ var PRODUCT_NAME_MAP = {
 };
 
 var PRODUCT_PRICE_MAP = {
-  '250g': 9900,
-  '500g': 18900,
-  '1kg': 32900
+  '250g': 11900,
+  '500g': 19900,
+  '1kg': 34900
 };
 
 var publicCatalogState = {
