@@ -66,6 +66,11 @@ async function handleHealth(env) {
   const googleMapsConfigured = hasEnvValue(env, 'GOOGLE_MAPS_API_KEY');
   const resendConfigured = hasEnvValue(env, 'RESEND_API_KEY');
   const appsScriptFallbackConfigured = hasEnvValue(env, 'APPS_SCRIPT_WEBHOOK_URL') && hasEnvValue(env, 'APPS_SCRIPT_SHARED_SECRET');
+  const adminActionsConfigured = hasEnvValue(env, 'ADMIN_ACTION_SECRET');
+  const whatsappConfigured = hasEnvValue(env, 'WHATSAPP_CLOUD_TOKEN')
+    && hasEnvValue(env, 'WHATSAPP_PHONE_NUMBER_ID')
+    && hasEnvValue(env, 'WHATSAPP_NOTIFY_TO')
+    && hasEnvValue(env, 'WHATSAPP_TEMPLATE_ORDER_EVENT');
 
   return jsonResponse({
     ok: true,
@@ -80,7 +85,9 @@ async function handleHealth(env) {
       google_maps: googleMapsConfigured,
       resend: resendConfigured,
       apps_script_fallback: appsScriptFallbackConfigured,
-      notifications: resendConfigured || appsScriptFallbackConfigured
+      notifications: resendConfigured || appsScriptFallbackConfigured,
+      admin_actions: adminActionsConfigured,
+      whatsapp: whatsappConfigured
     }
   });
 }

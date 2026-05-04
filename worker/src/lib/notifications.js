@@ -156,7 +156,7 @@ function buildCustomerPendingTransferEmail(env, payload) {
   const html = `
     <div style="font-family:Arial,sans-serif;background:#0d0d0d;color:#f5f0e8;padding:24px;">
       <div style="max-width:680px;margin:0 auto;background:#151515;border:1px solid #2a2a2a;border-radius:12px;padding:24px;">
-        <p style="margin:0 0 8px;color:#b9afa3;text-transform:uppercase;font-size:12px;font-weight:700;">Pedido recibido</p>
+        ${buildEmailHeader(details, 'Pedido recibido')}
         <h1 style="margin:0 0 16px;font-size:24px;line-height:1.2;color:#f5f0e8;">${escapeHtml(orderNumber)}</h1>
         <p style="margin:0 0 12px;">Hola ${escapeHtml(firstName)}</p>
         <p style="margin:0 0 12px;">Gracias por tu preferencia. Recibimos tu pedido por transferencia bancaria.</p>
@@ -234,13 +234,30 @@ function buildOperationalHtml(payload) {
 
   return `
     <div style="font-family:Arial,sans-serif;background:#0d0d0d;color:#f5f0e8;padding:24px;">
-      <h1 style="font-size:24px;margin:0 0 16px;">Roast - Evento operativo</h1>
+      <div style="max-width:760px;margin:0 auto;background:#151515;border:1px solid #2a2a2a;border-radius:12px;padding:24px;">
+      ${buildEmailHeader(details, 'Roast - Evento operativo')}
+      <h1 style="font-size:24px;margin:0 0 16px;">${escapeHtml(orderNumber)}</h1>
       <p style="margin:0 0 20px;color:#d9d0c5;">Se registro un evento relevante en el flujo web de pedido.</p>
       <table style="border-collapse:collapse;background:#1a1a1a;border-radius:10px;overflow:hidden;">${rows}</table>
       ${itemsTable}
       ${totalsTable}
       ${bankTable}
       ${adminLink ? `<p style="margin:22px 0 0;"><a href="${escapeHtml(adminLink)}" style="display:inline-block;background:#ff5a1f;color:#160c07;text-decoration:none;font-weight:800;padding:12px 18px;border-radius:8px;">Validar transferencia</a></p>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function buildEmailHeader(details, label) {
+  const logoUrl = firstValue(details.logo_url);
+  const logo = logoUrl
+    ? `<img src="${escapeHtml(logoUrl)}" alt="Roast" width="92" style="display:block;width:92px;max-width:34%;height:auto;border-radius:8px;" />`
+    : '';
+
+  return `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:0 0 8px;">
+      <p style="margin:0;color:#b9afa3;text-transform:uppercase;font-size:12px;font-weight:700;">${escapeHtml(label)}</p>
+      ${logo}
     </div>
   `;
 }

@@ -195,14 +195,26 @@ test.describe('checkout 2-step order and transfer flow', () => {
     expect(mockApi.paymentLinkRequests).toHaveLength(0);
 
     await expect(page.getByRole('heading', { name: 'Confirmación N° 0205789' })).toBeVisible();
+    await expect(page.getByRole('img', { name: 'Roast' })).toBeVisible();
+    await expect(page.getByText('Gracias, Camila. Tu pedido está a la espera de transferencia')).toBeVisible();
     await expect(page.getByText(/BCI/i)).toBeVisible();
     await expect(page.getByText(/Cuenta Corriente\s+61947059/i)).toBeVisible();
     await expect(page.getByText(/^RUT$/i)).toBeVisible();
     await expect(page.locator('dd').filter({ hasText: /^17515638-0$/ })).toBeVisible();
     await expect(page.locator('dd').filter({ hasText: /^contacto@caferoast\.cl$/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Dirección de entrega validada' })).toBeVisible();
     await expect(page.getByText(/Downtime.*1kg.*x2/i)).toBeVisible();
 
     const confirmationPanel = page.locator('.checkout-confirmation-panel');
+    const gutters = await confirmationPanel.evaluate(element => {
+      const box = element.getBoundingClientRect();
+      return {
+        left: Math.round(box.left),
+        right: Math.round(window.innerWidth - box.right)
+      };
+    });
+
+    expect(Math.abs(gutters.left - gutters.right)).toBeLessThanOrEqual(32);
     await expect(confirmationPanel.getByRole('link', { name: /WhatsApp de soporte/i })).toHaveCount(0);
     await expect(confirmationPanel.locator('a[href^="mailto:"]')).toHaveCount(0);
     await expect(page.getByRole('complementary')).toHaveCount(0);

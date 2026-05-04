@@ -22,7 +22,7 @@ Sitio estatico y flujo de pedido web para Cafe Roast. El cliente arma el pedido 
 - `POST /api/flow/confirmation`: callback server-to-server de Flow.
 - `POST /pago/retorno`: retorno del navegador desde Flow hacia `/pago/resultado/`.
 - `GET /api/orders/:order_id`: estado publico por ID de pedido.
-- `GET /api/health`: healthcheck productivo con flags de `confirmation_number`, `terms_only_checkout` y `resend_notifications`.
+- `GET /api/health`: healthcheck productivo con flags de `confirmation_number`, `terms_only_checkout`, `resend_notifications` y booleans de configuracion para Google, Resend, admin actions y WhatsApp.
 
 El frontend usa rutas relativas por defecto. Para apuntar a otro Worker se puede configurar `data-api-base` en el `<body>` o `window.ROAST_API_BASE`.
 
@@ -81,6 +81,8 @@ El link seguro requiere `ADMIN_ACTION_SECRET`; si no existe, el email se envia s
 El Worker puede enviar notificaciones best-effort via Meta WhatsApp Cloud API para `pending_transfer` y `paid`. WhatsApp no bloquea la creacion del pedido si falla; el resultado queda en `Eventos.notification_results_json`.
 
 Se requieren templates aprobados en Meta. Parametros enviados al body del template: numero visible, evento, cliente, total y estado.
+
+`GET /api/health` reporta `configuration.whatsapp=true` solo cuando estan configurados `WHATSAPP_CLOUD_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_NOTIFY_TO` y `WHATSAPP_TEMPLATE_ORDER_EVENT`. Si aparece `false`, el Worker omitira el canal WhatsApp aunque los emails Resend funcionen.
 
 ## Deploy Persistente
 

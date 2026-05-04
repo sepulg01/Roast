@@ -780,9 +780,12 @@
 
     shell.innerHTML = [
       '<article class="checkout-confirmation-panel" aria-live="polite">',
-      '  <p class="checkout-summary-kicker">Pedido recibido</p>',
+      '  <div class="checkout-confirmation-heading">',
+      '    <p class="checkout-summary-kicker">Pedido recibido</p>',
+      '    <img class="checkout-confirmation-logo" src="/assets/logos/logo_black.png" alt="Roast" width="92" height="68" loading="lazy" decoding="async" />',
+      '  </div>',
       '  <h2>Confirmación N° ' + escapeHtml(confirmationNumber) + '</h2>',
-      '  <p class="checkout-confirmation-id">Gracias, ' + escapeHtml(customerData.first_name) + '. Tu pedido quedó por confirmar.</p>',
+      '  <p class="checkout-confirmation-id">Gracias, ' + escapeHtml(customerData.first_name) + '. Tu pedido está a la espera de transferencia</p>',
       '  <section class="checkout-confirmation-section">',
       '    <h3>Datos para transferencia</h3>',
       '    <p class="checkout-transfer-account-line">' + escapeHtml(transferDetails.account_type + ' ' + transferDetails.account_number) + '</p>',
@@ -798,7 +801,7 @@
       '    <p class="checkout-confirmation-note">Tu transferencia vence el ' + escapeHtml(formatDateTime(expiration)) + '.</p>',
       '  </section>',
       '  <section class="checkout-confirmation-section">',
-      '    <h3>Entrega validada</h3>',
+      '    <h3>Dirección de entrega validada</h3>',
       '    <p>' + escapeHtml(customerData.address) + ', ' + escapeHtml(customerData.commune) + '</p>',
       customerData.address_ref ? '    <p class="checkout-confirmation-note">' + escapeHtml(customerData.address_ref) + '</p>' : '',
       '  </section>',

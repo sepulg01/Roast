@@ -93,7 +93,9 @@ test('GET /api/health returns worker feature flags', async () => {
       google_maps: false,
       resend: false,
       apps_script_fallback: false,
-      notifications: false
+      notifications: false,
+      admin_actions: false,
+      whatsapp: false
     }
   });
 });
@@ -107,7 +109,12 @@ test('GET /api/health reports configured notification and backend dependencies w
       GOOGLE_MAPS_API_KEY: 'maps_secret',
       RESEND_API_KEY: 'resend_secret',
       APPS_SCRIPT_WEBHOOK_URL: 'https://script.google.test/macros/s/test/exec',
-      APPS_SCRIPT_SHARED_SECRET: 'apps_secret'
+      APPS_SCRIPT_SHARED_SECRET: 'apps_secret',
+      ADMIN_ACTION_SECRET: 'admin_secret',
+      WHATSAPP_CLOUD_TOKEN: 'whatsapp_secret',
+      WHATSAPP_PHONE_NUMBER_ID: 'phone_number_id',
+      WHATSAPP_NOTIFY_TO: '+56911112222',
+      WHATSAPP_TEMPLATE_ORDER_EVENT: 'roast_order_event'
     },
     createContext()
   );
@@ -119,9 +126,11 @@ test('GET /api/health reports configured notification and backend dependencies w
     google_maps: true,
     resend: true,
     apps_script_fallback: true,
-    notifications: true
+    notifications: true,
+    admin_actions: true,
+    whatsapp: true
   });
-  assert.doesNotMatch(JSON.stringify(payload), /secret|sheet_123/);
+  assert.doesNotMatch(JSON.stringify(payload), /secret|sheet_123|phone_number_id|roast_order_event/);
 });
 
 test('pending transfer notification payload includes customer email data and totals', () => {
@@ -184,7 +193,7 @@ test('pending transfer notification payload includes customer email data and tot
   assert.equal(payload.customer_name, 'Camila Roast');
   assert.equal(payload.first_name, 'Camila');
   assert.equal(payload.email, 'cliente@example.com');
-  assert.equal(payload.logo_url, 'https://caferoast.cl/assets/logos/logo_white.png');
+  assert.equal(payload.logo_url, 'https://caferoast.cl/assets/logos/logo_black.png');
   assert.equal(payload.subtotal_clp, 11900);
   assert.equal(payload.shipping_clp, 3500);
   assert.equal(payload.tax_included_clp, 2459);

@@ -262,6 +262,7 @@ test('notifyOperationalEvent sends pending transfer operational and customer ema
         shipping_clp: 0,
         tax_included_clp: 5748,
         total_clp: 36000,
+        logo_url: 'https://caferoast.cl/assets/logos/logo_black.png',
         transfer_expires_at: '2026-05-02T15:00:00.000Z',
         bank_transfer: {
           bank: 'BCI',
@@ -291,12 +292,14 @@ test('notifyOperationalEvent sends pending transfer operational and customer ema
   assert.deepEqual(requests[0].body.to, ['operaciones@caferoast.cl']);
   assert.match(requests[0].body.subject, /0205789/);
   assert.match(requests[0].body.html, /0205789/);
+  assert.match(requests[0].body.html, /logo_black\.png/);
   assert.match(requests[0].body.html, /Downtime/);
   assert.match(requests[0].body.html, /\$36\.000 CLP/);
   assert.match(requests[0].body.html, /Validar transferencia/);
   assert.deepEqual(requests[1].body.to, ['cliente@example.com']);
   assert.match(requests[1].body.subject, /0205789/);
   assert.match(requests[1].body.html, /0205789/);
+  assert.match(requests[1].body.html, /logo_black\.png/);
   assert.match(requests[1].body.html, /Downtime/);
   assert.match(requests[1].body.html, /BCI/);
   assert.match(requests[1].body.html, /61947059/);

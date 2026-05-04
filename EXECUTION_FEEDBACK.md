@@ -518,3 +518,17 @@
 - Parcial: WhatsApp no se probo en produccion porque requiere configurar templates aprobados de Meta y secretos `WHATSAPP_*`; el link real de validacion manual requiere cargar `ADMIN_ACTION_SECRET` en Cloudflare y GitHub Environment `production`.
 - Pendiente/deferido: agregar `notification_results_json` al header de `Eventos` en Sheets si falta, configurar `ADMIN_ACTION_SECRET`, configurar templates y secretos Meta WhatsApp, desplegar y crear un pedido `NO PREPARAR` para validar email completo, WhatsApp operativo y flujo `pending_transfer -> paid`.
 - No se ejecuto refresh de stacks por instruccion explicita de este plan.
+
+## 2026-05-04 - Confirmacion con logo y diagnostico WhatsApp
+
+- Se agrego `assets/logos/logo_black.png` a la confirmacion web y a los emails HTML de Resend, usando `logo_url` desde el payload del Worker.
+- La tarjeta de pedido recibido queda centrada en desktop aun cuando el layout confirmado cae dentro del breakpoint de dos columnas.
+- Se cambio el mensaje visible de confirmacion a `Gracias, {nombre}. Tu pedido está a la espera de transferencia`.
+- Se cambio el titulo `Entrega validada` por `Dirección de entrega validada`.
+- Se incremento el cache-bust de `/assets/checkout.js` en `/pedido/`.
+- `GET /api/health` ahora reporta `configuration.admin_actions` y `configuration.whatsapp` sin exponer secretos, para diagnosticar rapidamente si el link seguro y Meta WhatsApp estan configurados.
+- Se actualizo `README.md`, `scripts/sync-sheet-readme.mjs` y la aprobacion `copy-approvals/2026-05-04-confirmation-logo-whatsapp-health.md`.
+- Validacion realizada: ciclo rojo/verde Worker para health/logo en emails; ciclo rojo/verde funcional para logo, copy, direccion y centrado; `node --test tests/worker/index.test.mjs tests/worker/orders-notifications.test.mjs`; `npm run test:functional -- tests/functional/checkout.spec.js --reporter=line`.
+- Completado totalmente: UI de confirmacion, copy solicitado, logo en HTML, health de diagnostico y cobertura automatizada enfocada.
+- Parcial: WhatsApp no se valido en produccion en esta iteracion; sin `configuration.whatsapp=true` el Worker omite ese canal por diseno.
+- Pendiente/deferido: configurar en Cloudflare/GitHub los secretos Meta WhatsApp y el template aprobado, desplegar, revisar `/api/health` y crear un pedido `NO PREPARAR` para confirmar recepcion en WhatsApp operativo.

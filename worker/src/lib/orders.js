@@ -928,7 +928,7 @@ export function buildPendingTransferNotificationPayload({
     admin_transfer_url: adminTransferUrl,
     support_email: SUPPORT_EMAIL,
     support_whatsapp: SUPPORT_WHATSAPP,
-    logo_url: buildPublicAssetUrl(env, '/assets/logos/logo_white.png')
+    logo_url: buildPublicAssetUrl(env, '/assets/logos/logo_black.png')
   };
 }
 

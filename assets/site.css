@@ -2201,6 +2201,21 @@
       width: min(100%, 820px);
       margin: 0 auto;
     }
+    .checkout-confirmation-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.35rem;
+    }
+    .checkout-confirmation-logo {
+      display: block;
+      width: clamp(72px, 14vw, 102px);
+      height: auto;
+      border-radius: 10px;
+      object-fit: contain;
+      flex: 0 0 auto;
+    }
     .checkout-summary-list {
       list-style: none;
       padding: 0;
@@ -2440,8 +2455,15 @@
       .checkout-layout {
         grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
       }
+      .checkout-layout.checkout-layout-confirmed {
+        grid-template-columns: minmax(0, 1fr);
+      }
       .checkout-primary {
         min-width: 0;
+      }
+      .checkout-layout-confirmed .checkout-primary,
+      .checkout-layout-confirmed .checkout-confirmation-panel {
+        margin-inline: auto;
       }
     }
     @media (max-width: 767px) {
