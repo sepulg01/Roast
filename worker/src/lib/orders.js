@@ -7,6 +7,7 @@ import {
   buildOrderNumber,
   buildPaymentId,
   buildSupportWhatsappMessage,
+  buildAdminActionToken,
   getLocalDate,
   getLocalTimestamp,
   getWeekKey,
@@ -15,7 +16,8 @@ import {
   parseInteger,
   safeJsonStringify,
   toCurrencyNumber,
-  isTruthy
+  isTruthy,
+  verifyAdminActionToken
 } from './utils.js';
 import {
   appendSheetObject,
@@ -25,7 +27,7 @@ import {
   updateSheetObjectRow
 } from './google.js';
 import { createFlowPayment, getFlowPaymentStatus, mapFlowStatus } from './flow.js';
-import { notifyOperationalEvent, shouldNotifyEvent } from './notifications.js';
+import { notifyOperationalEventWithResults, shouldNotifyEvent } from './notifications.js';
 
 const CONTACT_REQUEST_ALLOWED_STATUSES = new Set(['draft', 'manual_review']);
 const BANK_TRANSFER_DETAILS = {
@@ -183,7 +185,8 @@ export const EVENT_HEADERS = [
   'from_status',
   'to_status',
   'payload_json',
-  'notification_sent'
+  'notification_sent',
+  'notification_results_json'
 ];
 
 const SECTION_NAMES = new Set(['settings', 'communes', 'catalog', 'status_map']);
@@ -671,28 +674,45 @@ async function appendLineRows(env, lines, createdAt) {
 
 async function notifyEvent(env, event) {
   if (!shouldNotifyEvent(event.event_type)) {
-    return false;
+    return {
+      ok: false,
+      skipped: true,
+      reason: 'event_not_notifiable'
+    };
   }
 
   try {
-    return await notifyOperationalEvent(env, {
+    return await notifyOperationalEventWithResults(env, {
       recipient: SUPPORT_EMAIL,
       support_email: SUPPORT_EMAIL,
       support_whatsapp: SUPPORT_WHATSAPP,
       ...event
     });
   } catch (error) {
-    return false;
+    return {
+      ok: false,
+      error: error.message || 'notification_failed'
+    };
   }
 }
 
 async function appendEvent(env, event, options = {}) {
   let notificationSent = false;
+  let notificationResult = {
+    ok: false,
+    skipped: true,
+    reason: 'notification_not_requested'
+  };
 
   if (options.notificationSent === true) {
     notificationSent = true;
+    notificationResult = options.notificationResult || {
+      ok: true,
+      source: 'pre_sent'
+    };
   } else if (options.notify !== false) {
-    notificationSent = await notifyEvent(env, event);
+    notificationResult = await notifyEvent(env, event);
+    notificationSent = Boolean(notificationResult && notificationResult.ok);
   }
 
   if (options.requireNotification && !notificationSent) {
@@ -708,7 +728,8 @@ async function appendEvent(env, event, options = {}) {
     from_status: event.from_status || '',
     to_status: event.to_status || '',
     payload_json: safeJsonStringify(event.payload || {}),
-    notification_sent: notificationSent
+    notification_sent: notificationSent,
+    notification_results_json: safeJsonStringify(notificationResult)
   });
 }
 
@@ -846,6 +867,16 @@ function buildPublicAssetUrl(env, path) {
   return baseUrl.replace(/\/+$/, '') + (normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`);
 }
 
+async function buildAdminTransferConfirmationUrl(env, orderId) {
+  if (!env || !env.ADMIN_ACTION_SECRET) return '';
+
+  const token = await buildAdminActionToken(env.ADMIN_ACTION_SECRET, 'confirm-transfer', orderId);
+  return buildPublicAssetUrl(
+    env,
+    `/operaciones/transferencia/?order_id=${encodeURIComponent(orderId)}&token=${encodeURIComponent(token)}`
+  );
+}
+
 export function buildPendingTransferNotificationPayload({
   env,
   orderId,
@@ -857,7 +888,8 @@ export function buildPendingTransferNotificationPayload({
   responseItems,
   transferExpiresAt,
   bankTransfer = BANK_TRANSFER_DETAILS,
-  orderNumber
+  orderNumber,
+  adminTransferUrl = ''
 }) {
   const items = Array.isArray(responseItems) ? responseItems : [];
   const total = toCurrencyNumber(orderMetrics && orderMetrics.total_clp);
@@ -893,6 +925,7 @@ export function buildPendingTransferNotificationPayload({
     transfer_expires_at: transferExpiresAt,
     payment_method: 'transfer',
     bank_transfer: bankTransfer,
+    admin_transfer_url: adminTransferUrl,
     support_email: SUPPORT_EMAIL,
     support_whatsapp: SUPPORT_WHATSAPP,
     logo_url: buildPublicAssetUrl(env, '/assets/logos/logo_white.png')
@@ -1006,6 +1039,7 @@ export async function createCheckoutOrder(env, payload) {
   const acceptedAt = createdAt;
   const orderId = buildOrderId();
   const orderNumber = buildOrderNumber();
+  const adminTransferUrl = await buildAdminTransferConfirmationUrl(env, orderId);
   const transferExpiresAt = new Date(Date.now() + (2 * 60 * 60 * 1000)).toISOString();
   const customerRow = await upsertCustomer(env, customer, orderId);
   const itemsLabel = buildItemsLabel(hydratedItems);
@@ -1096,7 +1130,8 @@ export async function createCheckoutOrder(env, payload) {
       orderMetrics,
       responseItems,
       transferExpiresAt,
-      bankTransfer: BANK_TRANSFER_DETAILS
+      bankTransfer: BANK_TRANSFER_DETAILS,
+      adminTransferUrl
     })
   });
 
@@ -1180,7 +1215,8 @@ export async function createOrderContactRequest(env, request) {
     to_status: 'contact_requested',
     payload: buildOrderContactPayload(nextOrder, lineItems, whatsappUrl)
   };
-  const notificationSent = await notifyEvent(env, event);
+  const notificationResult = await notifyEvent(env, event);
+  const notificationSent = Boolean(notificationResult && notificationResult.ok);
 
   if (!notificationSent) {
     throw new Error('Order contact notification could not be sent');
@@ -1195,7 +1231,7 @@ export async function createOrderContactRequest(env, request) {
   await appendEvent(env, {
     ...event,
     payload: buildOrderContactPayload(updatedOrder, lineItems, whatsappUrl)
-  }, { notify: false, notificationSent });
+  }, { notify: false, notificationSent, notificationResult });
 
   return {
     ok: true,
@@ -1203,6 +1239,114 @@ export async function createOrderContactRequest(env, request) {
     internal_status: 'contact_requested',
     support_email: SUPPORT_EMAIL,
     whatsapp_url: whatsappUrl
+  };
+}
+
+function buildManualTransferPaidPayload(order, lineItems, paidAt) {
+  const orderNumber = normalizeText(order.order_number || order.confirmation_number);
+
+  return {
+    order_id: order.order_id,
+    order_number: orderNumber,
+    confirmation_number: orderNumber || order.order_id,
+    customer_id: order.customer_id || '',
+    customer_name: order.customer_name || '',
+    email: order.email || '',
+    phone: order.phone || '',
+    commune: order.commune || '',
+    address: order.address || '',
+    address_ref: order.address_ref || '',
+    notes: order.notes || '',
+    items_label: order.items_label || '',
+    items: lineItems,
+    subtotal_clp: toCurrencyNumber(order.subtotal_clp),
+    shipping_clp: toCurrencyNumber(order.shipping_clp),
+    total_clp: toCurrencyNumber(order.total_clp),
+    internal_status: 'paid',
+    payment_method: 'transfer',
+    paid_at: paidAt,
+    support_email: SUPPORT_EMAIL,
+    support_whatsapp: SUPPORT_WHATSAPP
+  };
+}
+
+export async function confirmTransferReceived(env, orderId, token) {
+  if (!env.ADMIN_ACTION_SECRET) {
+    throw statusError('ADMIN_ACTION_SECRET is required', 500);
+  }
+
+  const tokenValid = await verifyAdminActionToken(env.ADMIN_ACTION_SECRET, 'confirm-transfer', orderId, token);
+
+  if (!tokenValid) {
+    throw statusError('Invalid admin action token', 403);
+  }
+
+  const existing = await findSheetRowByField(env, 'Ventas', 'order_id', orderId);
+
+  if (!existing.row) {
+    throw statusError('Order not found', 404);
+  }
+
+  const previousStatus = normalizeText(existing.row.internal_status);
+  const orderNumber = normalizeText(existing.row.order_number || existing.row.confirmation_number);
+
+  if (previousStatus === 'paid') {
+    return {
+      ok: true,
+      order_id: orderId,
+      order_number: orderNumber,
+      confirmation_number: orderNumber || orderId,
+      internal_status: 'paid',
+      already_paid: true,
+      paid_at: existing.row.paid_at || ''
+    };
+  }
+
+  if (previousStatus !== 'pending_transfer') {
+    throw statusError(`Order status ${previousStatus || 'unknown'} cannot confirm transfer`, 409);
+  }
+
+  const paidAt = getLocalTimestamp();
+  const lineItems = await getOrderLineItems(env, orderId);
+  const updatedOrder = await updateSalesOrder(env, orderId, {
+    internal_status: 'paid',
+    paid_at: paidAt
+  });
+
+  await upsertPaymentRow(env, {
+    order_id: orderId,
+    internal_status: 'paid',
+    amount_clp: toCurrencyNumber(existing.row.total_clp),
+    payer_email: existing.row.email || '',
+    payment_method: 'transfer',
+    confirmed_at: paidAt,
+    last_checked_at: paidAt,
+    raw_status_json: safeJsonStringify({
+      payment_method: 'transfer',
+      confirmed_manually: true,
+      confirmed_at: paidAt
+    })
+  });
+
+  await updateCustomerPaymentStats(env, existing.row.customer_id, toCurrencyNumber(existing.row.total_clp), paidAt);
+
+  await appendEvent(env, {
+    order_id: orderId,
+    source: 'api/admin/confirm-transfer',
+    event_type: 'paid',
+    from_status: previousStatus,
+    to_status: 'paid',
+    payload: buildManualTransferPaidPayload(updatedOrder, lineItems, paidAt)
+  });
+
+  return {
+    ok: true,
+    order_id: orderId,
+    order_number: orderNumber,
+    confirmation_number: orderNumber || orderId,
+    internal_status: 'paid',
+    already_paid: false,
+    paid_at: paidAt
   };
 }
 

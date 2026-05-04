@@ -13,7 +13,8 @@ import {
   SALES_HEADERS,
   buildPendingTransferNotificationPayload
 } from '../../worker/src/lib/orders.js';
-import { notifyOperationalEvent } from '../../worker/src/lib/notifications.js';
+import { notifyOperationalEvent, notifyOperationalEventWithResults } from '../../worker/src/lib/notifications.js';
+import { hmacSha256Hex } from '../../worker/src/lib/utils.js';
 
 let serviceAccountJson;
 
@@ -243,8 +244,34 @@ test('notifyOperationalEvent sends pending transfer operational and customer ema
         order_number: '0205789',
         confirmation_number: '0205789',
         first_name: 'Camila',
+        customer_name: 'Camila Roast',
         email: 'cliente@example.com',
-        total_clp: 36000
+        phone: '+56991746361',
+        commune: 'Providencia',
+        address: 'Av. Siempre Viva 123',
+        items: [
+          {
+            product_name: 'Downtime',
+            format_label: '1 kg',
+            grind: 'Grano entero',
+            quantity: 1,
+            line_subtotal_clp: 36000
+          }
+        ],
+        subtotal_clp: 36000,
+        shipping_clp: 0,
+        tax_included_clp: 5748,
+        total_clp: 36000,
+        transfer_expires_at: '2026-05-02T15:00:00.000Z',
+        bank_transfer: {
+          bank: 'BCI',
+          account_type: 'Cuenta Corriente',
+          account_number: '61947059',
+          holder: 'Gonzalo Sepúlveda Hermosilla',
+          rut: '17515638-0',
+          email: 'contacto@caferoast.cl'
+        },
+        admin_transfer_url: 'https://caferoast.cl/operaciones/transferencia/?order_id=roast_internal_001&token=test-token'
       }
     }
   );
@@ -264,10 +291,113 @@ test('notifyOperationalEvent sends pending transfer operational and customer ema
   assert.deepEqual(requests[0].body.to, ['operaciones@caferoast.cl']);
   assert.match(requests[0].body.subject, /0205789/);
   assert.match(requests[0].body.html, /0205789/);
+  assert.match(requests[0].body.html, /Downtime/);
+  assert.match(requests[0].body.html, /\$36\.000 CLP/);
+  assert.match(requests[0].body.html, /Validar transferencia/);
   assert.deepEqual(requests[1].body.to, ['cliente@example.com']);
   assert.match(requests[1].body.subject, /0205789/);
   assert.match(requests[1].body.html, /0205789/);
+  assert.match(requests[1].body.html, /Downtime/);
+  assert.match(requests[1].body.html, /BCI/);
+  assert.match(requests[1].body.html, /61947059/);
+  assert.match(requests[1].body.html, /17515638-0/);
+  assert.match(requests[1].body.html, /transferencia vence/i);
   assert.doesNotMatch(requests[1].body.html, /roast_internal_001/);
+});
+
+test('notifyOperationalEventWithResults sends WhatsApp order notifications without blocking successful email', async t => {
+  const requests = [];
+  installFetchMock(t, async (url, init = {}) => {
+    requests.push({
+      url,
+      headers: init.headers,
+      body: JSON.parse(init.body)
+    });
+
+    if (url === 'https://api.resend.com/emails') {
+      return jsonResponse({ id: `email_${requests.length}` }, 202);
+    }
+
+    if (url === 'https://graph.facebook.com/v20.0/phone_123/messages') {
+      return jsonResponse({ messages: [{ id: 'wamid.test' }] }, 200);
+    }
+
+    throw new Error(`Unexpected fetch: ${url}`);
+  });
+
+  const result = await notifyOperationalEventWithResults(
+    {
+      RESEND_API_KEY: 'resend_test_key',
+      WHATSAPP_CLOUD_TOKEN: 'whatsapp_test_token',
+      WHATSAPP_PHONE_NUMBER_ID: 'phone_123',
+      WHATSAPP_NOTIFY_TO: '+56911112222',
+      WHATSAPP_TEMPLATE_ORDER_EVENT: 'roast_order_event'
+    },
+    {
+      event_type: 'pending_transfer',
+      order_id: 'roast_internal_001',
+      payload: {
+        order_number: '0205789',
+        confirmation_number: '0205789',
+        customer_name: 'Camila Roast',
+        email: 'cliente@example.com',
+        total_clp: 36000
+      }
+    }
+  );
+
+  assert.equal(result.ok, true);
+  assert.equal(result.channels.email.ok, true);
+  assert.equal(result.channels.whatsapp.ok, true);
+
+  const whatsappRequest = requests.find(request => request.url.includes('graph.facebook.com'));
+  assert.equal(whatsappRequest.headers.Authorization, 'Bearer whatsapp_test_token');
+  assert.equal(whatsappRequest.body.messaging_product, 'whatsapp');
+  assert.equal(whatsappRequest.body.to, '56911112222');
+  assert.equal(whatsappRequest.body.template.name, 'roast_order_event');
+  assert.deepEqual(
+    whatsappRequest.body.template.components[0].parameters.map(parameter => parameter.text),
+    ['0205789', 'pending_transfer', 'Camila Roast', '$36.000 CLP', 'pending_transfer']
+  );
+});
+
+test('notifyOperationalEventWithResults treats WhatsApp failure as best-effort when email succeeds', async t => {
+  installFetchMock(t, async (url) => {
+    if (url === 'https://api.resend.com/emails') {
+      return jsonResponse({ id: 'email_test' }, 202);
+    }
+
+    if (url === 'https://graph.facebook.com/v20.0/phone_123/messages') {
+      return jsonResponse({ error: { message: 'Template missing' } }, 400);
+    }
+
+    throw new Error(`Unexpected fetch: ${url}`);
+  });
+
+  const result = await notifyOperationalEventWithResults(
+    {
+      RESEND_API_KEY: 'resend_test_key',
+      WHATSAPP_CLOUD_TOKEN: 'whatsapp_test_token',
+      WHATSAPP_PHONE_NUMBER_ID: 'phone_123',
+      WHATSAPP_NOTIFY_TO: '+56911112222',
+      WHATSAPP_TEMPLATE_ORDER_EVENT: 'roast_order_event'
+    },
+    {
+      event_type: 'pending_transfer',
+      order_id: 'roast_internal_001',
+      payload: {
+        order_number: '0205789',
+        confirmation_number: '0205789',
+        customer_name: 'Camila Roast',
+        email: 'cliente@example.com',
+        total_clp: 36000
+      }
+    }
+  );
+
+  assert.equal(result.ok, true);
+  assert.equal(result.channels.email.ok, true);
+  assert.equal(result.channels.whatsapp.ok, false);
 });
 
 test('notifyOperationalEvent returns false when any required Resend pending transfer email fails', async t => {
@@ -457,10 +587,14 @@ test('checkout order accepts terms without accept_total, returns order number, a
 
   const eventRow = objectFromRow(EVENT_HEADERS, appended.Eventos[0]);
   assert.equal(eventRow.order_id, payload.order_id);
+  assert.equal(EVENT_HEADERS.includes('notification_results_json'), true);
   const eventPayload = JSON.parse(eventRow.payload_json);
+  const notificationResult = JSON.parse(eventRow.notification_results_json);
   assert.equal(eventPayload.order_id, payload.order_id);
   assert.equal(eventPayload.order_number, payload.order_number);
   assert.equal(eventPayload.confirmation_number, payload.order_number);
+  assert.equal(notificationResult.channels.email.provider, 'apps_script');
+  assert.equal(notificationResult.channels.email.ok, true);
 
   assert.equal(webhookRequests.length, 1);
   assert.equal(webhookRequests[0].payload.order_id, payload.order_id);
@@ -564,6 +698,247 @@ test('public order lookup can recover confirmation number from event payload whe
   assert.equal(payload.order_id, 'roast_internal_001');
   assert.equal(payload.order_number, '0205789');
   assert.equal(payload.confirmation_number, '0205789');
+});
+
+test('admin transfer confirmation rejects invalid token before touching Sheets', async () => {
+  const response = await worker.fetch(
+    new Request('https://caferoast.cl/api/admin/orders/roast_internal_001/confirm-transfer', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        token: 'bad-token'
+      })
+    }),
+    {
+      ADMIN_ACTION_SECRET: 'admin-secret'
+    },
+    createContext()
+  );
+  const payload = await response.json();
+
+  assert.equal(response.status, 403);
+  assert.equal(payload.ok, false);
+  assert.match(payload.error, /Invalid admin action token/);
+});
+
+test('admin transfer confirmation marks pending transfer orders as paid and is idempotent', async t => {
+  const appended = {
+    Eventos: []
+  };
+  const updates = [];
+  const paidAtPattern = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+
+  installFetchMock(t, async (url, init = {}) => {
+    if (url === 'https://oauth2.googleapis.com/token') {
+      return jsonResponse({ access_token: 'test-access-token', expires_in: 3600 });
+    }
+
+    const sheetName = sheetNameFromAppendUrl(url);
+    if (sheetName) {
+      const body = JSON.parse(init.body);
+      appended[sheetName].push(body.values[0]);
+      return jsonResponse({ updates: { updatedRows: 1 } });
+    }
+
+    if (init.method === 'PUT' && url.includes('/values/Ventas!')) {
+      const row = objectFromRow(SALES_HEADERS, JSON.parse(init.body).values[0]);
+      updates.push({ sheet: 'Ventas', row });
+      return jsonResponse({ updatedRows: 1 });
+    }
+
+    if (init.method === 'PUT' && url.includes('/values/Pagos_Flow!')) {
+      const row = objectFromRow(PAYMENT_HEADERS, JSON.parse(init.body).values[0]);
+      updates.push({ sheet: 'Pagos_Flow', row });
+      return jsonResponse({ updatedRows: 1 });
+    }
+
+    if (init.method === 'PUT' && url.includes('/values/Clientes!')) {
+      const row = objectFromRow(CLIENT_HEADERS, JSON.parse(init.body).values[0]);
+      updates.push({ sheet: 'Clientes', row });
+      return jsonResponse({ updatedRows: 1 });
+    }
+
+    if (url.includes('/values/Ventas!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(SALES_HEADERS, [
+          {
+            order_id: 'roast_internal_001',
+            order_number: '0205789',
+            customer_id: 'cus_001',
+            customer_name: 'Camila Roast',
+            email: 'cliente@example.com',
+            phone: '+56991746361',
+            commune: 'Providencia',
+            address: 'Av. Siempre Viva 123',
+            items_label: 'Downtime 1 kg',
+            subtotal_clp: '36000',
+            shipping_clp: '0',
+            total_clp: '36000',
+            internal_status: 'pending_transfer'
+          }
+        ])
+      });
+    }
+
+    if (url.includes('/values/Pagos_Flow!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(PAYMENT_HEADERS, [
+          {
+            payment_id: 'pay_001',
+            order_id: 'roast_internal_001',
+            internal_status: 'pending_transfer',
+            amount_clp: '36000',
+            payer_email: 'cliente@example.com',
+            payment_method: 'transfer'
+          }
+        ])
+      });
+    }
+
+    if (url.includes('/values/Clientes!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(CLIENT_HEADERS, [
+          {
+            customer_id: 'cus_001',
+            full_name: 'Camila Roast',
+            email: 'cliente@example.com',
+            order_count: '1',
+            total_paid_clp: '0'
+          }
+        ])
+      });
+    }
+
+    if (url.includes('/values/Lineas_Pedido!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(LINE_HEADERS, [
+          {
+            order_id: 'roast_internal_001',
+            product_name: 'Downtime',
+            format_label: '1 kg',
+            grind: 'grano entero',
+            quantity: '1',
+            unit_price_clp: '36000',
+            line_subtotal_clp: '36000'
+          }
+        ])
+      });
+    }
+
+    throw new Error(`Unexpected fetch: ${url}`);
+  });
+
+  const token = await hmacSha256Hex('admin-secret', 'confirm-transfer:roast_internal_001');
+  const request = new Request('https://caferoast.cl/api/admin/orders/roast_internal_001/confirm-transfer', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ token })
+  });
+  const env = {
+    GOOGLE_SHEET_ID: 'test-sheet',
+    GOOGLE_SERVICE_ACCOUNT_JSON: getServiceAccountJson(),
+    ADMIN_ACTION_SECRET: 'admin-secret'
+  };
+
+  const response = await worker.fetch(request, env, createContext());
+  const payload = await response.json();
+
+  assert.equal(response.status, 200, payload.error);
+  assert.equal(payload.ok, true);
+  assert.equal(payload.internal_status, 'paid');
+
+  const salesUpdate = updates.find(update => update.sheet === 'Ventas').row;
+  assert.equal(salesUpdate.internal_status, 'paid');
+  assert.match(salesUpdate.paid_at, paidAtPattern);
+
+  const paymentUpdate = updates.find(update => update.sheet === 'Pagos_Flow').row;
+  assert.equal(paymentUpdate.internal_status, 'paid');
+  assert.equal(paymentUpdate.confirmed_at, salesUpdate.paid_at);
+
+  const customerUpdate = updates.find(update => update.sheet === 'Clientes').row;
+  assert.equal(customerUpdate.total_paid_clp, '36000');
+  assert.equal(customerUpdate.last_paid_at, salesUpdate.paid_at);
+
+  assert.equal(appended.Eventos.length, 1);
+  const eventRow = objectFromRow(EVENT_HEADERS, appended.Eventos[0]);
+  assert.equal(eventRow.event_type, 'paid');
+  assert.equal(eventRow.from_status, 'pending_transfer');
+  assert.equal(eventRow.to_status, 'paid');
+  assert.equal(JSON.parse(eventRow.payload_json).confirmation_number, '0205789');
+});
+
+test('admin transfer confirmation is idempotent for already paid orders', async t => {
+  const updates = [];
+  const appended = {
+    Eventos: []
+  };
+
+  installFetchMock(t, async (url, init = {}) => {
+    if (url === 'https://oauth2.googleapis.com/token') {
+      return jsonResponse({ access_token: 'test-access-token', expires_in: 3600 });
+    }
+
+    const sheetName = sheetNameFromAppendUrl(url);
+    if (sheetName) {
+      const body = JSON.parse(init.body);
+      appended[sheetName].push(body.values[0]);
+      return jsonResponse({ updates: { updatedRows: 1 } });
+    }
+
+    if (init.method === 'PUT') {
+      updates.push({ url, row: JSON.parse(init.body).values[0] });
+      return jsonResponse({ updatedRows: 1 });
+    }
+
+    if (url.includes('/values/Ventas!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(SALES_HEADERS, [
+          {
+            order_id: 'roast_internal_001',
+            order_number: '0205789',
+            customer_id: 'cus_001',
+            customer_name: 'Camila Roast',
+            email: 'cliente@example.com',
+            items_label: 'Downtime 1 kg',
+            total_clp: '36000',
+            internal_status: 'paid',
+            paid_at: '2026-05-04 15:30:00'
+          }
+        ])
+      });
+    }
+
+    throw new Error(`Unexpected fetch: ${url}`);
+  });
+
+  const token = await hmacSha256Hex('admin-secret', 'confirm-transfer:roast_internal_001');
+  const response = await worker.fetch(
+    new Request('https://caferoast.cl/api/admin/orders/roast_internal_001/confirm-transfer', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ token })
+    }),
+    {
+      GOOGLE_SHEET_ID: 'test-sheet',
+      GOOGLE_SERVICE_ACCOUNT_JSON: getServiceAccountJson(),
+      ADMIN_ACTION_SECRET: 'admin-secret'
+    },
+    createContext()
+  );
+  const payload = await response.json();
+
+  assert.equal(response.status, 200, payload.error);
+  assert.equal(payload.ok, true);
+  assert.equal(payload.internal_status, 'paid');
+  assert.equal(payload.already_paid, true);
+  assert.equal(updates.length, 0);
+  assert.equal(appended.Eventos.length, 0);
 });
 
 test('Apps Script doPost sends operational and customer pending transfer emails with confirmation number', () => {

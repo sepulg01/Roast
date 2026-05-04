@@ -222,6 +222,29 @@ export async function hmacSha256Hex(secret, input) {
   return Array.from(new Uint8Array(signature), byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
+export async function buildAdminActionToken(secret, action, orderId) {
+  return hmacSha256Hex(secret, `${action}:${orderId}`);
+}
+
+export function timingSafeEqual(value, expected) {
+  const left = String(value || '');
+  const right = String(expected || '');
+  let diff = left.length === right.length ? 0 : 1;
+  const maxLength = Math.max(left.length, right.length);
+
+  for (let index = 0; index < maxLength; index += 1) {
+    diff |= (left.charCodeAt(index) || 0) ^ (right.charCodeAt(index) || 0);
+  }
+
+  return diff === 0;
+}
+
+export async function verifyAdminActionToken(secret, action, orderId, token) {
+  if (!secret || !token) return false;
+  const expected = await buildAdminActionToken(secret, action, orderId);
+  return timingSafeEqual(token, expected);
+}
+
 export function base64UrlEncodeString(value) {
   return base64UrlEncodeBytes(encoder.encode(value));
 }

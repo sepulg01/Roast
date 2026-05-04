@@ -756,6 +756,8 @@
   function renderConfirmation(payload, customerData) {
     var shell = document.getElementById('checkoutFormShell');
     if (!shell) return;
+    var layout = shell.closest('.checkout-layout');
+    var summary = layout ? layout.querySelector('.checkout-summary-card') : document.querySelector('.checkout-summary-card');
 
     var confirmationNumber = getCustomerConfirmationNumber(payload);
     var totals = {
@@ -767,6 +769,14 @@
     var expiration = buildTransferExpiration(payload);
 
     updateSupportLinks(confirmationNumber);
+
+    if (summary) {
+      summary.remove();
+    }
+
+    if (layout) {
+      layout.classList.add('checkout-layout-confirmed');
+    }
 
     shell.innerHTML = [
       '<article class="checkout-confirmation-panel" aria-live="polite">',

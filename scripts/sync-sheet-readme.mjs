@@ -90,7 +90,8 @@ function buildReadmeRows() {
     ['Arquitectura', 'Checkout', '2 pasos Pedido/Datos', 'El Worker calcula total y valida datos antes de crear el pedido'],
     ['Arquitectura', 'Cierre activo', 'Transferencia Bancaria', 'POST /api/checkout-orders deja el pedido en pending_transfer'],
     ['Arquitectura', 'Flow', 'Proveedor de pago legado/desactivado', 'El codigo queda disponible, pero flow_enabled=false lo mantiene apagado por defecto'],
-    ['Arquitectura', 'Resend', 'Email transaccional desde Worker', 'Envia email operativo y confirmacion de cliente para pending_transfer'],
+    ['Arquitectura', 'Resend', 'Email transaccional desde Worker', 'Envia emails con productos, totales, datos BCI y link de validacion manual'],
+    ['Arquitectura', 'WhatsApp Cloud API', 'Notificacion operativa best-effort', 'Envia alertas para pending_transfer y paid si los secretos Meta estan configurados'],
     ['Arquitectura', 'Apps Script', 'Fallback legado de email', 'Solo se usa si RESEND_API_KEY no esta configurado; no escribe la planilla'],
     ['', '', '', ''],
     ['Hojas requeridas', 'Config', 'Configuracion seccionada en A:Z', 'Secciones: settings, communes, catalog, status_map'],
@@ -108,6 +109,7 @@ function buildReadmeRows() {
     ['Config.settings', 'coverage_mode', 'Modo de cobertura', 'Default: covered_communes_only'],
     ['Config.communes', 'commune + covered', 'Comunas cubiertas', 'covered acepta true/1/si/sí/yes/y/activo; free_shipping_eligible queda historico/deprecado'],
     ['Ventas', 'order_number', 'Numero visible de pedido', 'Formato DDMMRRR como texto; order_id sigue siendo la llave interna'],
+    ['Eventos', 'notification_results_json', 'Resultado de canales de notificacion', 'JSON con email/WhatsApp; agregar header en la hoja si falta'],
     ['Config.catalog', 'product_code + format_code + price_clp', 'Catalogo publico y calculo backend', 'unit_cost_clp y format_bucket son opcionales para operacion'],
     ['Config.status_map', 'key/value', 'Parseado por el Worker', 'Actualmente no promete comportamiento productivo'],
     ['', '', '', ''],
@@ -115,6 +117,7 @@ function buildReadmeRows() {
     ['Worker endpoints', 'POST /api/checkout-orders', 'Checkout 2 pasos y transferencia bancaria', 'Crea pedido pending_transfer, devuelve confirmation_number y datos BCI'],
     ['Worker endpoints', 'POST /api/order-drafts', 'Crea borrador, cliente, lineas y evento', 'No es idempotente; un retry puede duplicar borradores'],
     ['Worker endpoints', 'POST /api/order-contact-requests', 'Ruta previa de contacto manual', 'No es el cierre activo mientras transferencia bancaria este vigente'],
+    ['Worker endpoints', 'POST /api/admin/orders/:order_id/confirm-transfer', 'Validacion manual de transferencia', 'Requiere token HMAC y marca pending_transfer como paid'],
     ['Worker endpoints', 'POST /api/payment-links', 'Codigo legado Flow', 'No usar como cierre activo mientras flow_enabled=false'],
     ['Worker endpoints', 'POST /api/flow/confirmation', 'Callback server-to-server de Flow', 'Responde ok y sincroniza con waitUntil'],
     ['Worker endpoints', 'POST /pago/retorno', 'Retorno navegador desde Flow', 'Redirige a /pago/resultado/?order_id=...'],
@@ -131,6 +134,13 @@ function buildReadmeRows() {
     ['Variables y secretos', 'RESEND_API_KEY', 'Worker secret requerido', 'Activa emails productivos por Resend'],
     ['Variables y secretos', 'RESEND_FROM', 'Worker secret requerido', 'Recomendado: Cafe Roast <contacto@caferoast.cl>'],
     ['Variables y secretos', 'RESEND_REPLY_TO', 'Worker secret requerido', 'Recomendado: contacto@caferoast.cl'],
+    ['Variables y secretos', 'ADMIN_ACTION_SECRET', 'Worker secret', 'Firma links seguros de validacion manual de transferencia'],
+    ['Variables y secretos', 'WHATSAPP_CLOUD_TOKEN', 'Worker secret opcional', 'Token Meta WhatsApp Cloud API para alertas operativas'],
+    ['Variables y secretos', 'WHATSAPP_PHONE_NUMBER_ID', 'Worker secret opcional', 'Phone Number ID emisor en Meta WhatsApp Cloud API'],
+    ['Variables y secretos', 'WHATSAPP_NOTIFY_TO', 'Worker secret opcional', 'Numero operativo receptor de alertas'],
+    ['Variables y secretos', 'WHATSAPP_TEMPLATE_ORDER_EVENT', 'Worker secret opcional', 'Template Meta para pending_transfer'],
+    ['Variables y secretos', 'WHATSAPP_TEMPLATE_PAID_EVENT', 'Worker secret opcional', 'Template Meta para paid'],
+    ['Variables y secretos', 'WHATSAPP_TEMPLATE_LANGUAGE', 'Worker variable opcional', 'Default recomendado es_CL'],
     ['Variables y secretos', 'APPS_SCRIPT_WEBHOOK_URL', 'Worker secret legado opcional', 'Fallback si Resend no esta configurado'],
     ['Variables y secretos', 'APPS_SCRIPT_SHARED_SECRET', 'Worker secret y Script Property legado opcional', 'Debe coincidir entre Worker y Apps Script si el fallback se usa'],
     ['', '', '', ''],
@@ -151,8 +161,9 @@ function buildReadmeRows() {
     ['Checklist de prueba', '1', 'Abrir /api/public-catalog', 'Debe devolver ok true, catalogo activo, shipping_fee_clp y communes'],
     ['Checklist de prueba', '2', 'Completar checkout 2 pasos desde /pedido/', 'Debe validar Pedido/Datos y llamar POST /api/checkout-orders'],
     ['Checklist de prueba', '3', 'Confirmar transferencia', 'Debe escribir Clientes, Ventas, Lineas_Pedido y Eventos con estado pending_transfer y numero visible DDMMRRR'],
-    ['Checklist de prueba', '4', 'Validar direccion', 'Debe usar GOOGLE_MAPS_API_KEY/Google Geocoding cuando corresponda'],
-    ['Checklist de prueba', '5', 'Confirmar Flow apagado', 'flow_enabled=false debe mantener Flow como legado/desactivado por defecto']
+    ['Checklist de prueba', '4', 'Validar transferencia manual', 'Link operativo debe cambiar pending_transfer a paid sin duplicar pagos si se reintenta'],
+    ['Checklist de prueba', '5', 'Validar direccion', 'Debe usar GOOGLE_MAPS_API_KEY/Google Geocoding cuando corresponda'],
+    ['Checklist de prueba', '6', 'Confirmar Flow apagado', 'flow_enabled=false debe mantener Flow como legado/desactivado por defecto']
   ];
 }
 

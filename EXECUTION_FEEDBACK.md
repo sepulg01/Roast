@@ -503,3 +503,18 @@
 - Parcial: no se pudo confirmar visualmente la llegada del email a `gosepulvedah@gmail.com` desde esta sesion porque no hay acceso al inbox; el pedido productivo con Resend configurado fue creado para disparar la notificacion.
 - Pendiente/deferido: revisar en Gmail la llegada del email de cliente y revisar/anotar/cancelar operacionalmente los pedidos tecnicos `roast_20260504_114349_ypoz2` y `roast_20260504_123912_1wwx6` para evitar preparacion accidental.
 - No se ejecuto refresh de stacks por instruccion explicita de este plan.
+
+## 2026-05-04 - Confirmacion limpia, emails completos, WhatsApp y validacion manual
+
+- Se oculto el carrito lateral cuando `/pedido/` renderiza la confirmacion, dejando una pantalla de confirmacion de una columna sin resumen editable ni botones `Eliminar`.
+- Se enriquecieron los emails Resend de `pending_transfer`: cliente y operativo incluyen numero visible, productos, totales, datos BCI, monto a transferir, vencimiento, direccion y, para operacion, link `Validar transferencia`.
+- Se agrego la pagina interna `/operaciones/transferencia/` y el endpoint `POST /api/admin/orders/:order_id/confirm-transfer` con token HMAC `ADMIN_ACTION_SECRET` para marcar manualmente transferencias como `paid`.
+- Al confirmar transferencia, el Worker actualiza `Ventas`, `Pagos_Flow`, estadisticas de `Clientes` y agrega evento `paid`; reintentos de pedidos ya pagados son idempotentes y no duplican eventos ni estadisticas.
+- Se agrego notificacion operativa best-effort por Meta WhatsApp Cloud API para `pending_transfer` y `paid`; fallas de WhatsApp no bloquean el pedido si el email fue enviado correctamente.
+- `Eventos` suma el header `notification_results_json` para auditar resultados por canal; la planilla productiva debe agregar este header si aun no existe.
+- Se actualizaron `.github/workflows/worker-deploy.yml`, `.github/workflows/worker-secrets-sync.yml`, `README.md`, `scripts/sync-sheet-readme.mjs`, `worker/.dev.vars.example` y la aprobacion `copy-approvals/2026-05-04-transfer-ops-emails-whatsapp.md`.
+- Validacion realizada: ciclo rojo/verde funcional para ocultar carrito confirmado; ciclo rojo/verde Worker para emails completos, WhatsApp best-effort y confirmacion manual; `npm run test:worker` con 24 pruebas pasando; `npm run test:functional -- tests/functional/checkout.spec.js --project=chromium --reporter=line` con 22 pruebas pasando; `npm run test:functional -- tests/functional/static-routes.spec.js --project=chromium --grep "operaciones/transferencia.*responds" --reporter=line`; `npm run test:static`; `npm run test:functional -- --reporter=line` con 140 pruebas pasando; `git diff --check`.
+- Completado totalmente: UI de confirmacion, emails Resend versionados en repo, endpoint y pagina de validacion manual, auditoria de notificaciones, workflows/secrets opcionales y cobertura automatizada local.
+- Parcial: WhatsApp no se probo en produccion porque requiere configurar templates aprobados de Meta y secretos `WHATSAPP_*`; el link real de validacion manual requiere cargar `ADMIN_ACTION_SECRET` en Cloudflare y GitHub Environment `production`.
+- Pendiente/deferido: agregar `notification_results_json` al header de `Eventos` en Sheets si falta, configurar `ADMIN_ACTION_SECRET`, configurar templates y secretos Meta WhatsApp, desplegar y crear un pedido `NO PREPARAR` para validar email completo, WhatsApp operativo y flujo `pending_transfer -> paid`.
+- No se ejecuto refresh de stacks por instruccion explicita de este plan.

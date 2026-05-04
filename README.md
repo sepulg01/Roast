@@ -59,10 +59,28 @@ El cierre activo muestra estos datos para pago por transferencia:
 Cuando `POST /api/checkout-orders` deja un pedido en `pending_transfer`, el Worker envia con Resend un email operativo a `contacto@caferoast.cl` y una confirmacion al cliente con:
 
 - Subject: `Hemos recibido tu pedido {confirmation_number}`
-- Numero visible de pedido y total del pedido.
+- Numero visible de pedido, detalle de productos, subtotal, envio, total, datos BCI, monto a transferir y vencimiento de la transferencia.
+- El email operativo incluye link seguro para validar manualmente la transferencia recibida.
 - Canal de respuesta: `contacto@caferoast.cl` y WhatsApp `+56 9 9174 6361`.
 
 Resend usa `RESEND_FROM`, `RESEND_REPLY_TO` e `Idempotency-Key` por email (`roast:{order_id}:operational` y `roast:{order_id}:customer`) para reducir duplicados si el Worker reintenta una notificacion. Apps Script se mantiene como fallback legado: si `RESEND_API_KEY` no existe y las variables de Apps Script estan presentes, el Worker sigue validando la respuesta JSON del webhook y registra como fallida una respuesta HTTP 200 con `{ "ok": false }`.
+
+## Operacion de transferencias
+
+El pago por transferencia se valida manualmente contra el banco. El flujo operativo es:
+
+1. Revisar la transferencia bancaria recibida usando monto, cliente y numero visible.
+2. Abrir el link `Validar transferencia` del email operativo.
+3. La pagina `/operaciones/transferencia/` muestra el pedido y llama a `POST /api/admin/orders/:order_id/confirm-transfer` con token HMAC.
+4. El Worker marca `Ventas.internal_status=paid`, actualiza `Pagos_Flow.confirmed_at`, actualiza estadisticas del cliente y registra evento `paid`.
+
+El link seguro requiere `ADMIN_ACTION_SECRET`; si no existe, el email se envia sin accion de validacion. Los eventos guardan `notification_results_json` para auditar email y WhatsApp.
+
+## WhatsApp operativo
+
+El Worker puede enviar notificaciones best-effort via Meta WhatsApp Cloud API para `pending_transfer` y `paid`. WhatsApp no bloquea la creacion del pedido si falla; el resultado queda en `Eventos.notification_results_json`.
+
+Se requieren templates aprobados en Meta. Parametros enviados al body del template: numero visible, evento, cliente, total y estado.
 
 ## Deploy Persistente
 
@@ -86,6 +104,13 @@ Worker:
 - `RESEND_API_KEY`, requerido para emails productivos
 - `RESEND_FROM`, requerido; usar `Cafe Roast <contacto@caferoast.cl>`
 - `RESEND_REPLY_TO`, requerido; usar `contacto@caferoast.cl`
+- `ADMIN_ACTION_SECRET`, requerido para links seguros de validacion manual de transferencias
+- `WHATSAPP_CLOUD_TOKEN`, opcional para notificaciones Meta WhatsApp Cloud API
+- `WHATSAPP_PHONE_NUMBER_ID`, opcional junto a WhatsApp Cloud API
+- `WHATSAPP_NOTIFY_TO`, opcional; numero operativo que recibe alertas
+- `WHATSAPP_TEMPLATE_ORDER_EVENT`, opcional; template para pedidos `pending_transfer`
+- `WHATSAPP_TEMPLATE_PAID_EVENT`, opcional; template para pagos confirmados
+- `WHATSAPP_TEMPLATE_LANGUAGE`, opcional; default recomendado `es_CL`
 - `APPS_SCRIPT_WEBHOOK_URL`, fallback legado opcional
 - `APPS_SCRIPT_SHARED_SECRET`, fallback legado opcional junto al webhook de Apps Script
 

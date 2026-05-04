@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Validar transferencia | Roast</title>
+  <link rel="stylesheet" href="/assets/site.css" />
+</head>
+<body data-page="admin-transfer">
+<header class="site-header">
+  <div class="nav-shell">
+    <a class="brand" href="/" aria-label="Roast inicio">Roast<span>.</span></a>
+    <a class="checkout-nav-link" href="mailto:contacto@caferoast.cl">contacto@caferoast.cl</a>
+  </div>
+</header>
+
+<main>
+  <section class="section checkout-main">
+    <div class="container">
+      <article class="result-card" aria-live="polite">
+        <p class="checkout-summary-kicker">Operación Roast</p>
+        <h1 id="adminTransferTitle">Validar transferencia</h1>
+        <p class="muted" id="adminTransferCopy">Cargando pedido.</p>
+
+        <section class="checkout-confirmation-section">
+          <h2>Pedido</h2>
+          <dl class="checkout-confirmation-list">
+            <div><dt>Número</dt><dd id="adminOrderNumber">—</dd></div>
+            <div><dt>Estado</dt><dd id="adminOrderStatus">—</dd></div>
+            <div><dt>Total</dt><dd id="adminOrderTotal">—</dd></div>
+            <div><dt>Productos</dt><dd id="adminOrderItems">—</dd></div>
+          </dl>
+        </section>
+
+        <div class="checkout-step-actions">
+          <button type="button" class="btn btn-primary" id="adminConfirmTransferButton">Marcar transferencia recibida</button>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<script>
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var orderId = params.get('order_id') || '';
+    var token = params.get('token') || '';
+    var title = document.getElementById('adminTransferTitle');
+    var copy = document.getElementById('adminTransferCopy');
+    var button = document.getElementById('adminConfirmTransferButton');
+    var number = document.getElementById('adminOrderNumber');
+    var status = document.getElementById('adminOrderStatus');
+    var total = document.getElementById('adminOrderTotal');
+    var items = document.getElementById('adminOrderItems');
+    var formatter = new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
+      maximumFractionDigits: 0
+    });
+
+    function setMessage(message) {
+      if (copy) copy.textContent = message;
+    }
+
+    function setDisabled(disabled) {
+      if (button) button.disabled = disabled;
+    }
+
+    async function fetchJson(url, options) {
+      var response = await fetch(url, options || {});
+      var payload = await response.json().catch(function() { return {}; });
+
+      if (!response.ok || payload.ok === false) {
+        throw new Error(payload.error || 'No se pudo completar la operación.');
+      }
+
+      return payload;
+    }
+
+    async function loadOrder() {
+      if (!orderId || !token) {
+        setDisabled(true);
+        setMessage('Falta información para validar esta transferencia.');
+        return;
+      }
+
+      var payload = await fetchJson('/api/orders/' + encodeURIComponent(orderId));
+      if (number) number.textContent = payload.confirmation_number || payload.order_number || payload.order_id;
+      if (status) status.textContent = payload.internal_status || 'Sin estado';
+      if (total) total.textContent = formatter.format(Number(payload.total_clp || 0));
+      if (items) items.textContent = payload.items_label || 'Sin detalle';
+      setMessage('Revisa el banco antes de marcar este pedido como pagado.');
+      setDisabled(payload.internal_status === 'paid');
+
+      if (payload.internal_status === 'paid') {
+        setMessage('Este pedido ya está marcado como pagado.');
+      }
+    }
+
+    async function confirmTransfer() {
+      setDisabled(true);
+      setMessage('Marcando transferencia como recibida.');
+
+      try {
+        var payload = await fetchJson('/api/admin/orders/' + encodeURIComponent(orderId) + '/confirm-transfer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ token: token })
+        });
+        if (status) status.textContent = payload.internal_status || 'paid';
+        if (title) title.textContent = 'Transferencia validada';
+        setMessage(payload.already_paid ? 'Este pedido ya estaba marcado como pagado.' : 'Pedido marcado como pagado.');
+      } catch (error) {
+        setDisabled(false);
+        setMessage(error.message || 'No se pudo validar la transferencia.');
+      }
+    }
+
+    if (button) {
+      button.addEventListener('click', confirmTransfer);
+    }
+
+    loadOrder().catch(function(error) {
+      setDisabled(true);
+      setMessage(error.message || 'No se pudo cargar el pedido.');
+    });
+  }());
+</script>
+</body>
+</html>

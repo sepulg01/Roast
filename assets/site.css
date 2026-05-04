@@ -2194,6 +2194,13 @@
       font-size: 1.45rem;
       margin-bottom: 0.9rem;
     }
+    .checkout-layout-confirmed {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .checkout-layout-confirmed .checkout-primary {
+      width: min(100%, 820px);
+      margin: 0 auto;
+    }
     .checkout-summary-list {
       list-style: none;
       padding: 0;

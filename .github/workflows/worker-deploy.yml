@@ -25,6 +25,13 @@ jobs:
       RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
       RESEND_FROM: ${{ secrets.RESEND_FROM }}
       RESEND_REPLY_TO: ${{ secrets.RESEND_REPLY_TO }}
+      ADMIN_ACTION_SECRET: ${{ secrets.ADMIN_ACTION_SECRET }}
+      WHATSAPP_CLOUD_TOKEN: ${{ secrets.WHATSAPP_CLOUD_TOKEN }}
+      WHATSAPP_PHONE_NUMBER_ID: ${{ secrets.WHATSAPP_PHONE_NUMBER_ID }}
+      WHATSAPP_NOTIFY_TO: ${{ secrets.WHATSAPP_NOTIFY_TO }}
+      WHATSAPP_TEMPLATE_ORDER_EVENT: ${{ secrets.WHATSAPP_TEMPLATE_ORDER_EVENT }}
+      WHATSAPP_TEMPLATE_PAID_EVENT: ${{ secrets.WHATSAPP_TEMPLATE_PAID_EVENT }}
+      WHATSAPP_TEMPLATE_LANGUAGE: ${{ secrets.WHATSAPP_TEMPLATE_LANGUAGE }}
       APPS_SCRIPT_WEBHOOK_URL: ${{ secrets.APPS_SCRIPT_WEBHOOK_URL }}
       APPS_SCRIPT_SHARED_SECRET: ${{ secrets.APPS_SCRIPT_SHARED_SECRET }}
       FLOW_API_KEY: ${{ secrets.FLOW_API_KEY }}
@@ -91,6 +98,13 @@ jobs:
 
           put_optional_secret APPS_SCRIPT_WEBHOOK_URL
           put_optional_secret APPS_SCRIPT_SHARED_SECRET
+          put_optional_secret ADMIN_ACTION_SECRET
+          put_optional_secret WHATSAPP_CLOUD_TOKEN
+          put_optional_secret WHATSAPP_PHONE_NUMBER_ID
+          put_optional_secret WHATSAPP_NOTIFY_TO
+          put_optional_secret WHATSAPP_TEMPLATE_ORDER_EVENT
+          put_optional_secret WHATSAPP_TEMPLATE_PAID_EVENT
+          put_optional_secret WHATSAPP_TEMPLATE_LANGUAGE
           put_optional_secret FLOW_API_KEY
           put_optional_secret FLOW_SECRET_KEY
           put_optional_secret FLOW_BASE_URL

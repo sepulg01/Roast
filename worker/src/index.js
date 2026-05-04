@@ -1,5 +1,6 @@
 import {
   createCheckoutOrder,
+  confirmTransferReceived,
   createOrderContactRequest,
   createOrderDraft,
   createPaymentLink,
@@ -18,6 +19,11 @@ import {
 
 function extractOrderId(pathname) {
   const match = pathname.match(/^\/api\/orders\/([^/]+)$/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function extractAdminConfirmTransferOrderId(pathname) {
+  const match = pathname.match(/^\/api\/admin\/orders\/([^/]+)\/confirm-transfer$/);
   return match ? decodeURIComponent(match[1]) : null;
 }
 
@@ -42,6 +48,12 @@ async function handleOrderContactRequest(request, env) {
 async function handleCheckoutOrder(request, env) {
   const payload = await parseRequestBody(request);
   const result = await createCheckoutOrder(env, payload);
+  return jsonResponse(result);
+}
+
+async function handleAdminConfirmTransfer(request, env, orderId) {
+  const payload = await parseRequestBody(request);
+  const result = await confirmTransferReceived(env, orderId, payload.token || '');
   return jsonResponse(result);
 }
 
@@ -139,6 +151,10 @@ export default {
 
       if (request.method === 'POST' && url.pathname === '/api/checkout-orders') {
         return await handleCheckoutOrder(request, env);
+      }
+
+      if (request.method === 'POST' && extractAdminConfirmTransferOrderId(url.pathname)) {
+        return await handleAdminConfirmTransfer(request, env, extractAdminConfirmTransferOrderId(url.pathname));
       }
 
       if (request.method === 'GET' && url.pathname === '/api/health') {

@@ -15,7 +15,8 @@ const routes = [
   { path: '/cafe-de-especialidad/', heading: /café de especialidad/i },
   { path: '/cafe-a-domicilio/', heading: /café a domicilio/i },
   { path: '/pedido/', heading: /pedido web roast/i },
-  { path: '/pago/resultado/?order_id=ORD_TEST_001', heading: /revisando tu pedido|pago recibido/i }
+  { path: '/pago/resultado/?order_id=ORD_TEST_001', heading: /revisando tu pedido|pago recibido/i },
+  { path: '/operaciones/transferencia/?order_id=ORD_TEST_001&token=test-token', heading: /validar transferencia/i }
 ];
 
 const overflowWidths = [390, 540, 768, 1024, 1280];

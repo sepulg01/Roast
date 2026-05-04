@@ -205,6 +205,8 @@ test.describe('checkout 2-step order and transfer flow', () => {
     const confirmationPanel = page.locator('.checkout-confirmation-panel');
     await expect(confirmationPanel.getByRole('link', { name: /WhatsApp de soporte/i })).toHaveCount(0);
     await expect(confirmationPanel.locator('a[href^="mailto:"]')).toHaveCount(0);
+    await expect(page.getByRole('complementary')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /Eliminar/i })).toHaveCount(0);
   });
 
   test('retries once with legacy accept_total when deployed worker still requires it', async ({ page }) => {
