@@ -87,8 +87,41 @@ test('GET /api/health returns worker feature flags', async () => {
       confirmation_number: true,
       terms_only_checkout: true,
       resend_notifications: true
+    },
+    configuration: {
+      google_sheets: false,
+      google_maps: false,
+      resend: false,
+      apps_script_fallback: false,
+      notifications: false
     }
   });
+});
+
+test('GET /api/health reports configured notification and backend dependencies without exposing secret values', async () => {
+  const response = await worker.fetch(
+    new Request('https://caferoast.cl/api/health'),
+    {
+      GOOGLE_SERVICE_ACCOUNT_JSON: '{"client_email":"worker@example.com","private_key":"secret"}',
+      GOOGLE_SHEET_ID: 'sheet_123',
+      GOOGLE_MAPS_API_KEY: 'maps_secret',
+      RESEND_API_KEY: 'resend_secret',
+      APPS_SCRIPT_WEBHOOK_URL: 'https://script.google.test/macros/s/test/exec',
+      APPS_SCRIPT_SHARED_SECRET: 'apps_secret'
+    },
+    createContext()
+  );
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(payload.configuration, {
+    google_sheets: true,
+    google_maps: true,
+    resend: true,
+    apps_script_fallback: true,
+    notifications: true
+  });
+  assert.doesNotMatch(JSON.stringify(payload), /secret|sheet_123/);
 });
 
 test('pending transfer notification payload includes customer email data and totals', () => {

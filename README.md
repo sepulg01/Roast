@@ -69,8 +69,8 @@ Resend usa `RESEND_FROM`, `RESEND_REPLY_TO` e `Idempotency-Key` por email (`roas
 El deploy productivo del Worker no depende de variables locales. GitHub Actions usa el Environment `production`:
 
 - `.github/workflows/worker-secrets-sync.yml`: manual; sincroniza secretos persistentes de GitHub hacia Cloudflare Worker con `wrangler secret put`.
-- `.github/workflows/worker-deploy.yml`: automatico en push a `main` y manual; corre checks, funcionales, `wrangler deploy` y smoke productivo.
-- `npm run smoke:worker-production`: valida `/api/health`, `/api/public-catalog` y que `/api/checkout-orders` ya no exija `accept_total`.
+- `.github/workflows/worker-deploy.yml`: automatico en push a `main` y manual; corre checks, funcionales, sincroniza secretos requeridos, ejecuta `wrangler deploy` y smoke productivo.
+- `npm run smoke:worker-production`: valida `/api/health`, que Google/Resend esten configurados, `/api/public-catalog` y que `/api/checkout-orders` ya no exija `accept_total`.
 
 ## Variables Y Secretos
 

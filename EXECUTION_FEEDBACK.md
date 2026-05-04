@@ -483,6 +483,10 @@
 ## 2026-05-04 - Deploy persistente Worker y emails Resend
 
 - Se agrego `GET /api/health` al Worker con flags `confirmation_number`, `terms_only_checkout` y `resend_notifications`, para detectar en produccion si sigue corriendo una version vieja.
+- Tras confirmar que el email real no llego a `gosepulvedah@gmail.com`, se identifico la brecha: el healthcheck anterior decia que Resend estaba implementado, pero no verificaba que `RESEND_API_KEY` estuviera realmente configurado en Cloudflare.
+- Se extendio `GET /api/health` con booleans `configuration.google_sheets`, `configuration.google_maps`, `configuration.resend`, `configuration.apps_script_fallback` y `configuration.notifications`, sin exponer valores de secretos.
+- Se endurecio `scripts/smoke-worker-production.mjs` para fallar si Resend/Google no estan configurados; antes del nuevo despliegue falla contra produccion en `GET /api/health expected Google Sheets to be configured`, lo que confirma que produccion aun no reporta la configuracion nueva.
+- Se actualizo `worker-deploy.yml` para sincronizar automaticamente secretos requeridos del GitHub Environment `production` hacia Cloudflare Worker antes de `wrangler deploy`, evitando depender del workflow manual `worker-secrets-sync.yml`.
 - Se migro la ruta activa de notificaciones del Worker a Resend cuando existe `RESEND_API_KEY`: el evento `pending_transfer` envia email operativo y email de cliente, usa `RESEND_FROM`, `RESEND_REPLY_TO` e `Idempotency-Key` por mensaje; Apps Script queda como fallback legado si Resend no esta configurado.
 - Se agregaron workflows GitHub Actions: `worker-deploy.yml` para testear, desplegar y ejecutar smoke en push a `main`, y `worker-secrets-sync.yml` para sincronizar secretos persistentes del Environment `production` hacia Cloudflare Worker desde el directorio `worker/`.
 - Se agrego `scripts/smoke-worker-production.mjs` y `npm run smoke:worker-production` para validar `/api/health`, `/api/public-catalog` y que `/api/checkout-orders` ya no exige `accept_total`.

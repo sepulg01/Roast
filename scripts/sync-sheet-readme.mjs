@@ -119,7 +119,7 @@ function buildReadmeRows() {
     ['Worker endpoints', 'POST /api/flow/confirmation', 'Callback server-to-server de Flow', 'Responde ok y sincroniza con waitUntil'],
     ['Worker endpoints', 'POST /pago/retorno', 'Retorno navegador desde Flow', 'Redirige a /pago/resultado/?order_id=...'],
     ['Worker endpoints', 'GET /api/orders/:order_id', 'Estado publico por ID de pedido', 'Expone estado, total, items y link Flow si corresponde'],
-    ['Worker endpoints', 'GET /api/health', 'Healthcheck productivo', 'Expone flags confirmation_number, terms_only_checkout y resend_notifications'],
+    ['Worker endpoints', 'GET /api/health', 'Healthcheck productivo', 'Expone flags y booleans de configuracion sin filtrar secretos'],
     ['', '', '', ''],
     ['Variables y secretos', 'FLOW_API_KEY', 'Worker secret', 'Requerido para Flow real'],
     ['Variables y secretos', 'FLOW_SECRET_KEY', 'Worker secret', 'Requerido para Flow real'],

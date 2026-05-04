@@ -73,6 +73,12 @@ async function checkHealth(baseUrl) {
   for (const feature of ['confirmation_number', 'terms_only_checkout', 'resend_notifications']) {
     assert(features[feature] === true, `${label} expected feature flag ${feature}=true`);
   }
+
+  const configuration = payload?.configuration || {};
+  assert(configuration.google_sheets === true, `${label} expected Google Sheets to be configured`);
+  assert(configuration.google_maps === true, `${label} expected Google Maps to be configured`);
+  assert(configuration.resend === true, `${label} expected Resend notifications to be configured`);
+  assert(configuration.notifications === true, `${label} expected notifications to be configured`);
 }
 
 async function checkPublicCatalog(baseUrl) {

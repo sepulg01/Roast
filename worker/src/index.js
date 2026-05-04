@@ -45,7 +45,16 @@ async function handleCheckoutOrder(request, env) {
   return jsonResponse(result);
 }
 
-async function handleHealth() {
+function hasEnvValue(env, name) {
+  return Boolean(String(env && env[name] || '').trim());
+}
+
+async function handleHealth(env) {
+  const googleSheetsConfigured = hasEnvValue(env, 'GOOGLE_SERVICE_ACCOUNT_JSON') && hasEnvValue(env, 'GOOGLE_SHEET_ID');
+  const googleMapsConfigured = hasEnvValue(env, 'GOOGLE_MAPS_API_KEY');
+  const resendConfigured = hasEnvValue(env, 'RESEND_API_KEY');
+  const appsScriptFallbackConfigured = hasEnvValue(env, 'APPS_SCRIPT_WEBHOOK_URL') && hasEnvValue(env, 'APPS_SCRIPT_SHARED_SECRET');
+
   return jsonResponse({
     ok: true,
     service: 'roast-worker',
@@ -53,6 +62,13 @@ async function handleHealth() {
       confirmation_number: true,
       terms_only_checkout: true,
       resend_notifications: true
+    },
+    configuration: {
+      google_sheets: googleSheetsConfigured,
+      google_maps: googleMapsConfigured,
+      resend: resendConfigured,
+      apps_script_fallback: appsScriptFallbackConfigured,
+      notifications: resendConfigured || appsScriptFallbackConfigured
     }
   });
 }
@@ -126,7 +142,7 @@ export default {
       }
 
       if (request.method === 'GET' && url.pathname === '/api/health') {
-        return await handleHealth();
+        return await handleHealth(env);
       }
 
       if (request.method === 'GET' && url.pathname === '/api/public-catalog') {
