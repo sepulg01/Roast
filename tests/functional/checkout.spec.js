@@ -222,6 +222,30 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await expect(page.getByRole('heading', { name: 'Confirmación N° 0205789' })).toBeVisible();
   });
 
+  test('confirmation number is displayed as customer-safe digits when worker sends a raw roast id', async ({ page }) => {
+    await installMockWorkerApi(page, { checkoutOrderRawConfirmationNumber: true });
+    await reachDataStep(page, { quantity: 1, format: '250g' });
+    await fillCustomerData(page, { commune: 'Peñalolén' });
+    await choosePaymentMethod(page, /transferencia/i);
+    await page.locator('#accept_terms').check();
+    await page.getByRole('button', { name: 'Pagar ahora' }).click();
+
+    await expect(page.getByRole('heading', { name: 'Confirmación N° 0205789' })).toBeVisible();
+    await expect(page.locator('.checkout-confirmation-panel')).not.toContainText('roast_0205789_live');
+  });
+
+  test('confirmation fallback avoids rendering a legacy raw roast order id', async ({ page }) => {
+    await installMockWorkerApi(page, { checkoutOrderLegacyRawOrderId: true });
+    await reachDataStep(page, { quantity: 1, format: '250g' });
+    await fillCustomerData(page, { commune: 'Peñalolén' });
+    await choosePaymentMethod(page, /transferencia/i);
+    await page.locator('#accept_terms').check();
+    await page.getByRole('button', { name: 'Pagar ahora' }).click();
+
+    await expect(page.getByRole('heading', { name: 'Confirmación N° 20260502' })).toBeVisible();
+    await expect(page.locator('.checkout-confirmation-panel')).not.toContainText('roast_20260502_161221_qd5qs');
+  });
+
   test('cart sidebar does not show support email or WhatsApp links', async ({ page }) => {
     await installMockWorkerApi(page);
     await openCheckoutWithItems(page);

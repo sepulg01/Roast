@@ -45,6 +45,18 @@ async function handleCheckoutOrder(request, env) {
   return jsonResponse(result);
 }
 
+async function handleHealth() {
+  return jsonResponse({
+    ok: true,
+    service: 'roast-worker',
+    features: {
+      confirmation_number: true,
+      terms_only_checkout: true,
+      resend_notifications: true
+    }
+  });
+}
+
 async function handleFlowConfirmation(request, env, ctx) {
   const payload = await parseRequestBody(request);
   const token = payload.token || new URL(request.url).searchParams.get('token');
@@ -111,6 +123,10 @@ export default {
 
       if (request.method === 'POST' && url.pathname === '/api/checkout-orders') {
         return await handleCheckoutOrder(request, env);
+      }
+
+      if (request.method === 'GET' && url.pathname === '/api/health') {
+        return await handleHealth();
       }
 
       if (request.method === 'GET' && url.pathname === '/api/public-catalog') {

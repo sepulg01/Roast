@@ -70,6 +70,27 @@ test('POST /api/checkout-orders returns a JSON error when request JSON is invali
   assert.equal(payload.error, 'Invalid JSON body');
 });
 
+test('GET /api/health returns worker feature flags', async () => {
+  const response = await worker.fetch(
+    new Request('https://caferoast.cl/api/health'),
+    {},
+    createContext()
+  );
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('content-type'), /application\/json/);
+  assert.deepEqual(payload, {
+    ok: true,
+    service: 'roast-worker',
+    features: {
+      confirmation_number: true,
+      terms_only_checkout: true,
+      resend_notifications: true
+    }
+  });
+});
+
 test('pending transfer notification payload includes customer email data and totals', () => {
   const payload = buildPendingTransferNotificationPayload({
     env: { PUBLIC_BASE_URL: 'https://caferoast.cl/' },

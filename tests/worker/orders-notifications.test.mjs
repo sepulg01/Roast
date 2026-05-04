@@ -216,6 +216,122 @@ test('notifyOperationalEvent treats HTTP 200 with ok:false JSON as a failed noti
   assert.equal(result, false);
 });
 
+test('notifyOperationalEvent sends pending transfer operational and customer emails through Resend', async t => {
+  const requests = [];
+  installFetchMock(t, async (url, init = {}) => {
+    requests.push({
+      url,
+      headers: init.headers,
+      body: JSON.parse(init.body)
+    });
+    return jsonResponse({ id: `email_${requests.length}` }, 202);
+  });
+
+  const result = await notifyOperationalEvent(
+    {
+      RESEND_API_KEY: 'resend_test_key',
+      RESEND_FROM: 'Roast <orders@caferoast.cl>',
+      RESEND_REPLY_TO: 'soporte@caferoast.cl'
+    },
+    {
+      event_type: 'pending_transfer',
+      order_id: 'roast_internal_001',
+      recipient: 'operaciones@caferoast.cl',
+      support_email: 'contacto@caferoast.cl',
+      payload: {
+        order_id: 'roast_internal_001',
+        order_number: '0205789',
+        confirmation_number: '0205789',
+        first_name: 'Camila',
+        email: 'cliente@example.com',
+        total_clp: 36000
+      }
+    }
+  );
+
+  assert.equal(result, true);
+  assert.equal(requests.length, 2);
+  assert.deepEqual(requests.map(request => request.url), [
+    'https://api.resend.com/emails',
+    'https://api.resend.com/emails'
+  ]);
+  assert.equal(requests[0].headers.Authorization, 'Bearer resend_test_key');
+  assert.equal(requests[0].headers['Content-Type'], 'application/json');
+  assert.equal(requests[0].headers['Idempotency-Key'], 'roast:roast_internal_001:operational');
+  assert.equal(requests[1].headers['Idempotency-Key'], 'roast:roast_internal_001:customer');
+  assert.equal(requests[0].body.from, 'Roast <orders@caferoast.cl>');
+  assert.equal(requests[0].body.reply_to, 'soporte@caferoast.cl');
+  assert.deepEqual(requests[0].body.to, ['operaciones@caferoast.cl']);
+  assert.match(requests[0].body.subject, /0205789/);
+  assert.match(requests[0].body.html, /0205789/);
+  assert.deepEqual(requests[1].body.to, ['cliente@example.com']);
+  assert.match(requests[1].body.subject, /0205789/);
+  assert.match(requests[1].body.html, /0205789/);
+  assert.doesNotMatch(requests[1].body.html, /roast_internal_001/);
+});
+
+test('notifyOperationalEvent returns false when any required Resend pending transfer email fails', async t => {
+  const requests = [];
+  installFetchMock(t, async (url, init = {}) => {
+    requests.push({ url, body: JSON.parse(init.body) });
+    if (requests.length === 2) {
+      return jsonResponse({ error: 'Invalid recipient' }, 422);
+    }
+    return jsonResponse({ id: 'email_operational' }, 202);
+  });
+
+  const result = await notifyOperationalEvent(
+    {
+      RESEND_API_KEY: 'resend_test_key'
+    },
+    {
+      event_type: 'pending_transfer',
+      order_id: 'roast_internal_001',
+      recipient: 'operaciones@caferoast.cl',
+      payload: {
+        order_id: 'roast_internal_001',
+        order_number: '0205789',
+        confirmation_number: '0205789',
+        email: 'cliente@example.com'
+      }
+    }
+  );
+
+  assert.equal(result, false);
+  assert.equal(requests.length, 2);
+});
+
+test('notifyOperationalEvent does not expose a raw roast order id in Resend customer email fallback', async t => {
+  const requests = [];
+  installFetchMock(t, async (url, init = {}) => {
+    requests.push({
+      url,
+      body: JSON.parse(init.body)
+    });
+    return jsonResponse({ id: `email_${requests.length}` }, 202);
+  });
+
+  const result = await notifyOperationalEvent(
+    {
+      RESEND_API_KEY: 'resend_test_key'
+    },
+    {
+      event_type: 'pending_transfer',
+      order_id: 'roast_20260502_161221_qd5qs',
+      recipient: 'operaciones@caferoast.cl',
+      payload: {
+        order_id: 'roast_20260502_161221_qd5qs',
+        email: 'cliente@example.com'
+      }
+    }
+  );
+
+  assert.equal(result, true);
+  assert.equal(requests.length, 2);
+  assert.match(requests[1].body.html, /20260502/);
+  assert.doesNotMatch(requests[1].body.html, /roast_20260502_161221_qd5qs/);
+});
+
 test('checkout order accepts terms without accept_total, returns order number, and keeps order_id for sheet relations', async t => {
   const appended = {
     Clientes: [],

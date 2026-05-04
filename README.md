@@ -9,7 +9,7 @@ Sitio estatico y flujo de pedido web para Cafe Roast. El cliente arma el pedido 
 - Operacion: Google Sheets como fuente de configuracion y registro.
 - Cierre activo: `POST /api/checkout-orders` crea el pedido para `Transferencia Bancaria`, devuelve un numero visible `DDMMRRR` y lo deja en `pending_transfer`.
 - Pagos Flow: endpoints y codigo se mantienen como legado desactivado por defecto mediante `flow_enabled=false`; se reactivan solo con decision operativa explicita.
-- Notificaciones: Apps Script como webhook de email; no escribe en Sheets.
+- Notificaciones: Resend desde el Worker; Apps Script queda como fallback legado si Resend no esta configurado.
 - Soporte: `contacto@caferoast.cl` y WhatsApp `+56 9 9174 6361`.
 
 ## Rutas Del Worker
@@ -22,6 +22,7 @@ Sitio estatico y flujo de pedido web para Cafe Roast. El cliente arma el pedido 
 - `POST /api/flow/confirmation`: callback server-to-server de Flow.
 - `POST /pago/retorno`: retorno del navegador desde Flow hacia `/pago/resultado/`.
 - `GET /api/orders/:order_id`: estado publico por ID de pedido.
+- `GET /api/health`: healthcheck productivo con flags de `confirmation_number`, `terms_only_checkout` y `resend_notifications`.
 
 El frontend usa rutas relativas por defecto. Para apuntar a otro Worker se puede configurar `data-api-base` en el `<body>` o `window.ROAST_API_BASE`.
 
@@ -55,15 +56,21 @@ El cierre activo muestra estos datos para pago por transferencia:
 - RUT: `17515638-0`
 - Email: `contacto@caferoast.cl`
 
-Cuando `POST /api/checkout-orders` deja un pedido en `pending_transfer`, el Worker envia un evento `pending_transfer` enriquecido al webhook de Apps Script. Apps Script mantiene el email operativo a `contacto@caferoast.cl` y envia tambien una confirmacion al cliente con:
+Cuando `POST /api/checkout-orders` deja un pedido en `pending_transfer`, el Worker envia con Resend un email operativo a `contacto@caferoast.cl` y una confirmacion al cliente con:
 
-- Subject: `Hemos recibido tu pedido!`
-- Logo publico: `https://caferoast.cl/assets/logos/logo_white.png`
-- Numero visible de pedido, resumen de productos, subtotal, envio, IVA incluido y total.
+- Subject: `Hemos recibido tu pedido {confirmation_number}`
+- Numero visible de pedido y total del pedido.
 - Canal de respuesta: `contacto@caferoast.cl` y WhatsApp `+56 9 9174 6361`.
 
-Para que el sender real sea `contacto@caferoast.cl`, el web app de Apps Script debe ejecutarse/autorizarse desde esa cuenta o tener `contacto@caferoast.cl` como alias verificado de Gmail. Si el alias no esta disponible, el script usa `MailApp` con `replyTo` y nombre de remitente `contacto@caferoast.cl`.
-El Worker valida la respuesta JSON del webhook: una respuesta HTTP 200 con `{ "ok": false }` se registra como notificacion fallida.
+Resend usa `RESEND_FROM`, `RESEND_REPLY_TO` e `Idempotency-Key` por email (`roast:{order_id}:operational` y `roast:{order_id}:customer`) para reducir duplicados si el Worker reintenta una notificacion. Apps Script se mantiene como fallback legado: si `RESEND_API_KEY` no existe y las variables de Apps Script estan presentes, el Worker sigue validando la respuesta JSON del webhook y registra como fallida una respuesta HTTP 200 con `{ "ok": false }`.
+
+## Deploy Persistente
+
+El deploy productivo del Worker no depende de variables locales. GitHub Actions usa el Environment `production`:
+
+- `.github/workflows/worker-secrets-sync.yml`: manual; sincroniza secretos persistentes de GitHub hacia Cloudflare Worker con `wrangler secret put`.
+- `.github/workflows/worker-deploy.yml`: automatico en push a `main` y manual; corre checks, funcionales, `wrangler deploy` y smoke productivo.
+- `npm run smoke:worker-production`: valida `/api/health`, `/api/public-catalog` y que `/api/checkout-orders` ya no exija `accept_total`.
 
 ## Variables Y Secretos
 
@@ -76,12 +83,15 @@ Worker:
 - `GOOGLE_SHEET_ID`
 - `GOOGLE_MAPS_API_KEY`, requerido para validacion backend de direcciones mediante Google Geocoding
 - `PUBLIC_BASE_URL`
-- `APPS_SCRIPT_WEBHOOK_URL`, requerido solo para notificaciones o flujos de contacto manual que usen Apps Script
-- `APPS_SCRIPT_SHARED_SECRET`, requerido junto al webhook de Apps Script
+- `RESEND_API_KEY`, requerido para emails productivos
+- `RESEND_FROM`, requerido; usar `Cafe Roast <contacto@caferoast.cl>`
+- `RESEND_REPLY_TO`, requerido; usar `contacto@caferoast.cl`
+- `APPS_SCRIPT_WEBHOOK_URL`, fallback legado opcional
+- `APPS_SCRIPT_SHARED_SECRET`, fallback legado opcional junto al webhook de Apps Script
 
 Apps Script:
 
-- `APPS_SCRIPT_SHARED_SECRET`, igual al secreto del Worker.
+- `APPS_SCRIPT_SHARED_SECRET`, igual al secreto del Worker solo si se usa el fallback legado.
 - OAuth: el script usa `MailApp` y, si existe alias de Gmail, `GmailApp` para intentar enviar desde `contacto@caferoast.cl`; al desplegar puede requerir reautorizacion de envio de correo.
 
 No versionar `.dev.vars`, service accounts, claves Flow ni URLs privadas de webhook.
@@ -129,6 +139,7 @@ npm run test:functional -- --reporter=line
 npm run test:static
 npm --prefix worker run check
 npm run test:functional -- --reporter=line
+node scripts/smoke-worker-production.mjs --base-url https://caferoast.cl
 git diff --check
 ROAST_OLD_SUPPORT_PATTERN='numero-antiguo-o-wa-me-antiguo'
 rg "$ROAST_OLD_SUPPORT_PATTERN" --glob '!EXECUTION_FEEDBACK.md'

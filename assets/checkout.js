@@ -671,7 +671,23 @@
   }
 
   function getCustomerConfirmationNumber(payload) {
-    return payload && (payload.confirmation_number || payload.order_number || payload.order_id || payload.id) || 'pendiente';
+    var candidates = payload ? [
+      payload.confirmation_number,
+      payload.order_number,
+      payload.order_id,
+      payload.id
+    ] : [];
+
+    for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = String(candidates[index] || '').trim();
+      var exactDigits = candidate.match(/^\d{7,8}$/);
+      if (exactDigits) return exactDigits[0];
+
+      var embeddedDigits = candidate.match(/\d{7,8}/);
+      if (embeddedDigits) return embeddedDigits[0];
+    }
+
+    return 'pendiente';
   }
 
   function updatePaymentOptions() {

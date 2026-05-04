@@ -250,14 +250,17 @@ export async function installMockWorkerApi(page, options = {}) {
     const qualifiesForFreeShipping = covered && subtotalClp >= catalogPayload.free_shipping_threshold_clp;
     const shippingClp = qualifiesForFreeShipping ? 0 : 3500;
 
+    const confirmationNumber = options.checkoutOrderRawConfirmationNumber ? 'roast_0205789_live' : '0205789';
+    const orderId = options.checkoutOrderLegacyRawOrderId ? 'roast_20260502_161221_qd5qs' : 'ORD_TEST_001';
+
     await route.fulfill({
       status: covered ? 200 : 422,
       contentType: 'application/json',
       body: JSON.stringify({
         ok: covered,
-        order_id: 'ORD_TEST_001',
-        order_number: '0205789',
-        confirmation_number: '0205789',
+        order_id: orderId,
+        order_number: options.checkoutOrderLegacyRawOrderId ? '' : confirmationNumber,
+        confirmation_number: options.checkoutOrderLegacyRawOrderId ? '' : confirmationNumber,
         subtotal_clp: subtotalClp,
         shipping_clp: shippingClp,
         total_clp: subtotalClp + shippingClp,
