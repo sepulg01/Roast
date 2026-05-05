@@ -30,6 +30,11 @@ import { createFlowPayment, getFlowPaymentStatus, mapFlowStatus } from './flow.j
 import { notifyOperationalEventWithResults, shouldNotifyEvent } from './notifications.js';
 
 const CONTACT_REQUEST_ALLOWED_STATUSES = new Set(['draft', 'manual_review']);
+const ADMIN_STATUS_TRANSITIONS = {
+  paid: new Set(['pending_transfer']),
+  expired: new Set(['pending_transfer']),
+  delivering: new Set(['paid'])
+};
 const BANK_TRANSFER_DETAILS = {
   bank: 'BCI',
   account_type: 'Cuenta Corriente',
@@ -868,12 +873,21 @@ function buildPublicAssetUrl(env, path) {
 }
 
 async function buildAdminTransferConfirmationUrl(env, orderId) {
+  return buildAdminStatusUrl(env, orderId, 'paid');
+}
+
+function buildAdminStatusAction(status) {
+  return `set-status:${normalizeText(status)}`;
+}
+
+async function buildAdminStatusUrl(env, orderId, status) {
   if (!env || !env.ADMIN_ACTION_SECRET) return '';
 
-  const token = await buildAdminActionToken(env.ADMIN_ACTION_SECRET, 'confirm-transfer', orderId);
+  const targetStatus = normalizeText(status);
+  const token = await buildAdminActionToken(env.ADMIN_ACTION_SECRET, buildAdminStatusAction(targetStatus), orderId);
   return buildPublicAssetUrl(
     env,
-    `/operaciones/transferencia/?order_id=${encodeURIComponent(orderId)}&token=${encodeURIComponent(token)}`
+    `/operaciones/transferencia/?order_id=${encodeURIComponent(orderId)}&action=${encodeURIComponent(targetStatus)}&token=${encodeURIComponent(token)}`
   );
 }
 
@@ -889,7 +903,8 @@ export function buildPendingTransferNotificationPayload({
   transferExpiresAt,
   bankTransfer = BANK_TRANSFER_DETAILS,
   orderNumber,
-  adminTransferUrl = ''
+  adminTransferUrl = '',
+  adminExpireUrl = ''
 }) {
   const items = Array.isArray(responseItems) ? responseItems : [];
   const total = toCurrencyNumber(orderMetrics && orderMetrics.total_clp);
@@ -926,6 +941,7 @@ export function buildPendingTransferNotificationPayload({
     payment_method: 'transfer',
     bank_transfer: bankTransfer,
     admin_transfer_url: adminTransferUrl,
+    admin_expire_url: adminExpireUrl,
     support_email: SUPPORT_EMAIL,
     support_whatsapp: SUPPORT_WHATSAPP,
     logo_url: buildPublicAssetUrl(env, '/assets/logos/logo_black.png')
@@ -1040,6 +1056,7 @@ export async function createCheckoutOrder(env, payload) {
   const orderId = buildOrderId();
   const orderNumber = buildOrderNumber();
   const adminTransferUrl = await buildAdminTransferConfirmationUrl(env, orderId);
+  const adminExpireUrl = await buildAdminStatusUrl(env, orderId, 'expired');
   const transferExpiresAt = new Date(Date.now() + (2 * 60 * 60 * 1000)).toISOString();
   const customerRow = await upsertCustomer(env, customer, orderId);
   const itemsLabel = buildItemsLabel(hydratedItems);
@@ -1131,7 +1148,8 @@ export async function createCheckoutOrder(env, payload) {
       responseItems,
       transferExpiresAt,
       bankTransfer: BANK_TRANSFER_DETAILS,
-      adminTransferUrl
+      adminTransferUrl,
+      adminExpireUrl
     })
   });
 
@@ -1242,10 +1260,9 @@ export async function createOrderContactRequest(env, request) {
   };
 }
 
-function buildManualTransferPaidPayload(order, lineItems, paidAt) {
+async function buildAdminStatusPayload(env, order, lineItems, targetStatus, changedAt) {
   const orderNumber = normalizeText(order.order_number || order.confirmation_number);
-
-  return {
+  const payload = {
     order_id: order.order_id,
     order_number: orderNumber,
     confirmation_number: orderNumber || order.order_id,
@@ -1262,12 +1279,28 @@ function buildManualTransferPaidPayload(order, lineItems, paidAt) {
     subtotal_clp: toCurrencyNumber(order.subtotal_clp),
     shipping_clp: toCurrencyNumber(order.shipping_clp),
     total_clp: toCurrencyNumber(order.total_clp),
-    internal_status: 'paid',
+    internal_status: targetStatus,
     payment_method: 'transfer',
-    paid_at: paidAt,
+    status_changed_at: changedAt,
     support_email: SUPPORT_EMAIL,
-    support_whatsapp: SUPPORT_WHATSAPP
+    support_whatsapp: SUPPORT_WHATSAPP,
+    logo_url: buildPublicAssetUrl(env, '/assets/logos/logo_black.png')
   };
+
+  if (targetStatus === 'paid') {
+    payload.paid_at = changedAt;
+    payload.admin_delivering_url = await buildAdminStatusUrl(env, order.order_id, 'delivering');
+  }
+
+  if (targetStatus === 'delivering') {
+    payload.dispatched_at = changedAt;
+  }
+
+  if (targetStatus === 'expired') {
+    payload.expired_at = changedAt;
+  }
+
+  return payload;
 }
 
 export async function confirmTransferReceived(env, orderId, token) {
@@ -1275,12 +1308,42 @@ export async function confirmTransferReceived(env, orderId, token) {
     throw statusError('ADMIN_ACTION_SECRET is required', 500);
   }
 
-  const tokenValid = await verifyAdminActionToken(env.ADMIN_ACTION_SECRET, 'confirm-transfer', orderId, token);
+  const tokenValid = await verifyAdminActionToken(env.ADMIN_ACTION_SECRET, 'confirm-transfer', orderId, token) ||
+    await verifyAdminActionToken(env.ADMIN_ACTION_SECRET, buildAdminStatusAction('paid'), orderId, token);
 
   if (!tokenValid) {
     throw statusError('Invalid admin action token', 403);
   }
 
+  return applyAdminOrderStatus(env, orderId, 'paid', 'api/admin/confirm-transfer');
+}
+
+export async function updateAdminOrderStatus(env, orderId, status, token) {
+  if (!env.ADMIN_ACTION_SECRET) {
+    throw statusError('ADMIN_ACTION_SECRET is required', 500);
+  }
+
+  const targetStatus = normalizeText(status);
+
+  if (!ADMIN_STATUS_TRANSITIONS[targetStatus]) {
+    throw statusError(`Unsupported admin status ${targetStatus || 'unknown'}`, 400);
+  }
+
+  const tokenValid = await verifyAdminActionToken(
+    env.ADMIN_ACTION_SECRET,
+    buildAdminStatusAction(targetStatus),
+    orderId,
+    token
+  );
+
+  if (!tokenValid) {
+    throw statusError('Invalid admin action token', 403);
+  }
+
+  return applyAdminOrderStatus(env, orderId, targetStatus, `api/admin/status/${targetStatus}`);
+}
+
+async function applyAdminOrderStatus(env, orderId, targetStatus, source) {
   const existing = await findSheetRowByField(env, 'Ventas', 'order_id', orderId);
 
   if (!existing.row) {
@@ -1290,53 +1353,70 @@ export async function confirmTransferReceived(env, orderId, token) {
   const previousStatus = normalizeText(existing.row.internal_status);
   const orderNumber = normalizeText(existing.row.order_number || existing.row.confirmation_number);
 
-  if (previousStatus === 'paid') {
+  if (previousStatus === targetStatus) {
     return {
       ok: true,
       order_id: orderId,
       order_number: orderNumber,
       confirmation_number: orderNumber || orderId,
-      internal_status: 'paid',
-      already_paid: true,
-      paid_at: existing.row.paid_at || ''
+      internal_status: targetStatus,
+      already_status: true,
+      already_paid: targetStatus === 'paid',
+      paid_at: existing.row.paid_at || '',
+      dispatched_at: existing.row.dispatched_at || ''
     };
   }
 
-  if (previousStatus !== 'pending_transfer') {
-    throw statusError(`Order status ${previousStatus || 'unknown'} cannot confirm transfer`, 409);
+  if (!ADMIN_STATUS_TRANSITIONS[targetStatus].has(previousStatus)) {
+    throw statusError(`Order status ${previousStatus || 'unknown'} cannot move to ${targetStatus}`, 409);
   }
 
-  const paidAt = getLocalTimestamp();
+  const changedAt = getLocalTimestamp();
   const lineItems = await getOrderLineItems(env, orderId);
-  const updatedOrder = await updateSalesOrder(env, orderId, {
-    internal_status: 'paid',
-    paid_at: paidAt
-  });
+  const salesUpdates = {
+    internal_status: targetStatus
+  };
 
-  await upsertPaymentRow(env, {
-    order_id: orderId,
-    internal_status: 'paid',
-    amount_clp: toCurrencyNumber(existing.row.total_clp),
-    payer_email: existing.row.email || '',
-    payment_method: 'transfer',
-    confirmed_at: paidAt,
-    last_checked_at: paidAt,
-    raw_status_json: safeJsonStringify({
+  if (targetStatus === 'paid') {
+    salesUpdates.paid_at = changedAt;
+  }
+
+  if (targetStatus === 'delivering') {
+    salesUpdates.dispatched_at = changedAt;
+  }
+
+  const updatedOrder = await updateSalesOrder(env, orderId, salesUpdates);
+
+  if (targetStatus === 'paid' || targetStatus === 'expired') {
+    await upsertPaymentRow(env, {
+      order_id: orderId,
+      internal_status: targetStatus,
+      amount_clp: toCurrencyNumber(existing.row.total_clp),
+      payer_email: existing.row.email || '',
       payment_method: 'transfer',
-      confirmed_manually: true,
-      confirmed_at: paidAt
-    })
-  });
+      confirmed_at: targetStatus === 'paid' ? changedAt : '',
+      last_checked_at: changedAt,
+      raw_status_json: safeJsonStringify({
+        payment_method: 'transfer',
+        confirmed_manually: targetStatus === 'paid',
+        expired_manually: targetStatus === 'expired',
+        confirmed_at: targetStatus === 'paid' ? changedAt : '',
+        expired_at: targetStatus === 'expired' ? changedAt : ''
+      })
+    });
+  }
 
-  await updateCustomerPaymentStats(env, existing.row.customer_id, toCurrencyNumber(existing.row.total_clp), paidAt);
+  if (targetStatus === 'paid') {
+    await updateCustomerPaymentStats(env, existing.row.customer_id, toCurrencyNumber(existing.row.total_clp), changedAt);
+  }
 
   await appendEvent(env, {
     order_id: orderId,
-    source: 'api/admin/confirm-transfer',
-    event_type: 'paid',
+    source,
+    event_type: targetStatus,
     from_status: previousStatus,
-    to_status: 'paid',
-    payload: buildManualTransferPaidPayload(updatedOrder, lineItems, paidAt)
+    to_status: targetStatus,
+    payload: await buildAdminStatusPayload(env, updatedOrder, lineItems, targetStatus, changedAt)
   });
 
   return {
@@ -1344,9 +1424,11 @@ export async function confirmTransferReceived(env, orderId, token) {
     order_id: orderId,
     order_number: orderNumber,
     confirmation_number: orderNumber || orderId,
-    internal_status: 'paid',
+    internal_status: targetStatus,
+    already_status: false,
     already_paid: false,
-    paid_at: paidAt
+    paid_at: targetStatus === 'paid' ? changedAt : existing.row.paid_at || '',
+    dispatched_at: targetStatus === 'delivering' ? changedAt : existing.row.dispatched_at || ''
   };
 }
 

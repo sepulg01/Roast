@@ -91,6 +91,8 @@ function orderPayload(status = 'paid') {
   return {
     ok: true,
     order_id: 'ORD_TEST_001',
+    order_number: '0205789',
+    confirmation_number: '0205789',
     items_label: 'Downtime 250g',
     total_clp: 15400,
     internal_status: status,
@@ -106,6 +108,7 @@ export async function installMockWorkerApi(page, options = {}) {
   const orderContactRequests = [];
   const checkoutOrderRequests = [];
   const paymentLinkRequests = [];
+  const adminStatusRequests = [];
 
   await page.route('**/api/public-catalog', async route => {
     if (options.catalogHtmlError) {
@@ -315,6 +318,62 @@ export async function installMockWorkerApi(page, options = {}) {
     });
   });
 
+  await page.route('**/api/admin/orders/*/status', async route => {
+    const request = route.request();
+    const postData = request.postData();
+    let statusRequest = {};
+
+    if (postData) {
+      try {
+        statusRequest = JSON.parse(postData);
+      } catch (error) {
+        statusRequest = { parseError: error.message, raw: postData };
+      }
+    }
+
+    adminStatusRequests.push(statusRequest);
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        order_id: 'ORD_TEST_001',
+        order_number: '0205789',
+        confirmation_number: '0205789',
+        internal_status: statusRequest.status || 'paid',
+        already_status: false
+      })
+    });
+  });
+
+  await page.route('**/api/admin/orders/*/confirm-transfer', async route => {
+    const request = route.request();
+    const postData = request.postData();
+    let statusRequest = {};
+
+    if (postData) {
+      try {
+        statusRequest = JSON.parse(postData);
+      } catch (error) {
+        statusRequest = { parseError: error.message, raw: postData };
+      }
+    }
+
+    adminStatusRequests.push({ ...statusRequest, status: 'paid', legacy: true });
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        order_id: 'ORD_TEST_001',
+        order_number: '0205789',
+        confirmation_number: '0205789',
+        internal_status: 'paid',
+        already_paid: false
+      })
+    });
+  });
+
   await page.route('**/api/orders/*', async route => {
     await route.fulfill({
       status: 200,
@@ -336,6 +395,7 @@ export async function installMockWorkerApi(page, options = {}) {
     orderDraftRequests,
     orderContactRequests,
     paymentLinkRequests,
+    adminStatusRequests,
     publicCatalogPayload: catalogPayload
   };
 }

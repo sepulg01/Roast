@@ -6,7 +6,8 @@ import {
   createPaymentLink,
   getPublicCatalog,
   getPublicOrder,
-  syncPaymentStatus
+  syncPaymentStatus,
+  updateAdminOrderStatus
 } from './lib/orders.js';
 import {
   errorResponse,
@@ -24,6 +25,11 @@ function extractOrderId(pathname) {
 
 function extractAdminConfirmTransferOrderId(pathname) {
   const match = pathname.match(/^\/api\/admin\/orders\/([^/]+)\/confirm-transfer$/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function extractAdminStatusOrderId(pathname) {
+  const match = pathname.match(/^\/api\/admin\/orders\/([^/]+)\/status$/);
   return match ? decodeURIComponent(match[1]) : null;
 }
 
@@ -54,6 +60,12 @@ async function handleCheckoutOrder(request, env) {
 async function handleAdminConfirmTransfer(request, env, orderId) {
   const payload = await parseRequestBody(request);
   const result = await confirmTransferReceived(env, orderId, payload.token || '');
+  return jsonResponse(result);
+}
+
+async function handleAdminStatus(request, env, orderId) {
+  const payload = await parseRequestBody(request);
+  const result = await updateAdminOrderStatus(env, orderId, payload.status || '', payload.token || '');
   return jsonResponse(result);
 }
 
@@ -162,6 +174,10 @@ export default {
 
       if (request.method === 'POST' && extractAdminConfirmTransferOrderId(url.pathname)) {
         return await handleAdminConfirmTransfer(request, env, extractAdminConfirmTransferOrderId(url.pathname));
+      }
+
+      if (request.method === 'POST' && extractAdminStatusOrderId(url.pathname)) {
+        return await handleAdminStatus(request, env, extractAdminStatusOrderId(url.pathname));
       }
 
       if (request.method === 'GET' && url.pathname === '/api/health') {

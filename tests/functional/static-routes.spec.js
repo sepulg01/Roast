@@ -142,6 +142,76 @@ test.describe('static routes', () => {
     }
   });
 
+  test('admin transfer page marks pending transfers as paid through status action links', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page, { orderStatus: 'pending_transfer' });
+    await page.goto('/operaciones/transferencia/?order_id=ORD_TEST_001&action=paid&token=paid-token', { waitUntil: 'domcontentloaded' });
+
+    await expect(page.locator('#adminTransferTitle')).toContainText('Validar transferencia');
+    await expect(page.locator('#adminTransferCopy')).toContainText('Revisa el banco');
+    await expect(page.locator('#adminConfirmTransferButton')).toHaveText('Marcar transferencia recibida');
+    await expect(page.locator('#adminConfirmTransferButton')).toBeEnabled();
+
+    await page.locator('#adminConfirmTransferButton').click();
+
+    expect(mockApi.adminStatusRequests).toEqual([
+      expect.objectContaining({
+        token: 'paid-token',
+        status: 'paid'
+      })
+    ]);
+    await expect(page.locator('#adminOrderStatus')).toHaveText('paid');
+    await expect(page.locator('#adminTransferTitle')).toContainText('Transferencia validada');
+  });
+
+  test('admin transfer page marks pending transfers as expired through status action links', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page, { orderStatus: 'pending_transfer' });
+    await page.goto('/operaciones/transferencia/?order_id=ORD_TEST_001&action=expired&token=expired-token', { waitUntil: 'domcontentloaded' });
+
+    await expect(page.locator('#adminTransferTitle')).toContainText('Marcar pedido vencido');
+    await expect(page.locator('#adminConfirmTransferButton')).toHaveText('Marcar pedido vencido');
+    await expect(page.locator('#adminConfirmTransferButton')).toBeEnabled();
+
+    await page.locator('#adminConfirmTransferButton').click();
+
+    expect(mockApi.adminStatusRequests).toEqual([
+      expect.objectContaining({
+        token: 'expired-token',
+        status: 'expired'
+      })
+    ]);
+    await expect(page.locator('#adminOrderStatus')).toHaveText('expired');
+    await expect(page.locator('#adminTransferTitle')).toContainText('Pedido vencido');
+  });
+
+  test('admin transfer page marks paid orders as delivering through status action links', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page, { orderStatus: 'paid' });
+    await page.goto('/operaciones/transferencia/?order_id=ORD_TEST_001&action=delivering&token=delivering-token', { waitUntil: 'domcontentloaded' });
+
+    await expect(page.locator('#adminTransferTitle')).toContainText('Marcar pedido en despacho');
+    await expect(page.locator('#adminConfirmTransferButton')).toHaveText('Marcar en despacho');
+    await expect(page.locator('#adminConfirmTransferButton')).toBeEnabled();
+
+    await page.locator('#adminConfirmTransferButton').click();
+
+    expect(mockApi.adminStatusRequests).toEqual([
+      expect.objectContaining({
+        token: 'delivering-token',
+        status: 'delivering'
+      })
+    ]);
+    await expect(page.locator('#adminOrderStatus')).toHaveText('delivering');
+    await expect(page.locator('#adminTransferTitle')).toContainText('Pedido en despacho');
+  });
+
+  test('admin transfer page disables actions that do not match the current status', async ({ page }) => {
+    await installMockWorkerApi(page, { orderStatus: 'pending_transfer' });
+    await page.goto('/operaciones/transferencia/?order_id=ORD_TEST_001&action=delivering&token=delivering-token', { waitUntil: 'domcontentloaded' });
+
+    await expect(page.locator('#adminTransferTitle')).toContainText('Marcar pedido en despacho');
+    await expect(page.locator('#adminTransferCopy')).toContainText('no está disponible');
+    await expect(page.locator('#adminConfirmTransferButton')).toBeDisabled();
+  });
+
   for (const width of overflowWidths) {
     test(`no horizontal overflow at ${width}px`, async ({ page }) => {
       await installMockWorkerApi(page, { orderStatus: 'paid' });

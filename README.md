@@ -21,6 +21,8 @@ Sitio estatico y flujo de pedido web para Cafe Roast. El cliente arma el pedido 
 - `POST /api/payment-links`: codigo legado Flow; permanece desactivado por defecto con `flow_enabled=false` y solo debe operar si Flow se reactiva.
 - `POST /api/flow/confirmation`: callback server-to-server de Flow.
 - `POST /pago/retorno`: retorno del navegador desde Flow hacia `/pago/resultado/`.
+- `POST /api/admin/orders/:order_id/status`: accion operativa firmada para mover `pending_transfer -> paid|expired` y `paid -> delivering`.
+- `POST /api/admin/orders/:order_id/confirm-transfer`: compatibilidad legacy; equivale a `status=paid`.
 - `GET /api/orders/:order_id`: estado publico por ID de pedido.
 - `GET /api/health`: healthcheck productivo con flags de `confirmation_number`, `terms_only_checkout`, `resend_notifications` y booleans de configuracion para Google, Resend, admin actions y WhatsApp.
 
@@ -60,10 +62,11 @@ Cuando `POST /api/checkout-orders` deja un pedido en `pending_transfer`, el Work
 
 - Subject: `Hemos recibido tu pedido {confirmation_number}`
 - Numero visible de pedido, detalle de productos, subtotal, envio, total, datos BCI, monto a transferir y vencimiento de la transferencia.
-- El email operativo incluye link seguro para validar manualmente la transferencia recibida.
+- El email operativo incluye links seguros para validar la transferencia o marcar el pedido vencido.
+- Cuando la transferencia se marca como recibida, el cliente recibe `Confirmamos tu transferencia {confirmation_number}` con detalle del pedido y el mensaje de preparacion.
 - Canal de respuesta: `contacto@caferoast.cl` y WhatsApp `+56 9 9174 6361`.
 
-Resend usa `RESEND_FROM`, `RESEND_REPLY_TO` e `Idempotency-Key` por email (`roast:{order_id}:operational` y `roast:{order_id}:customer`) para reducir duplicados si el Worker reintenta una notificacion. Apps Script se mantiene como fallback legado: si `RESEND_API_KEY` no existe y las variables de Apps Script estan presentes, el Worker sigue validando la respuesta JSON del webhook y registra como fallida una respuesta HTTP 200 con `{ "ok": false }`.
+Resend usa `RESEND_FROM`, `RESEND_REPLY_TO` e `Idempotency-Key` por email (`roast:{order_id}:{event_type}:operational` y `roast:{order_id}:{event_type}:customer`) para reducir duplicados si el Worker reintenta una notificacion. Apps Script se mantiene como fallback legado: si `RESEND_API_KEY` no existe y las variables de Apps Script estan presentes, el Worker sigue validando la respuesta JSON del webhook y registra como fallida una respuesta HTTP 200 con `{ "ok": false }`.
 
 ## Operacion de transferencias
 
@@ -71,8 +74,10 @@ El pago por transferencia se valida manualmente contra el banco. El flujo operat
 
 1. Revisar la transferencia bancaria recibida usando monto, cliente y numero visible.
 2. Abrir el link `Validar transferencia` del email operativo.
-3. La pagina `/operaciones/transferencia/` muestra el pedido y llama a `POST /api/admin/orders/:order_id/confirm-transfer` con token HMAC.
-4. El Worker marca `Ventas.internal_status=paid`, actualiza `Pagos_Flow.confirmed_at`, actualiza estadisticas del cliente y registra evento `paid`.
+3. La pagina `/operaciones/transferencia/` muestra el pedido y llama a `POST /api/admin/orders/:order_id/status` con token HMAC y accion (`paid`, `expired` o `delivering`).
+4. El Worker permite solo `pending_transfer -> paid|expired` y `paid -> delivering`.
+5. Al marcar `paid`, actualiza `Ventas.internal_status=paid`, `Pagos_Flow.confirmed_at`, estadisticas del cliente, evento `paid` y email de confirmacion al cliente.
+6. Desde el email operativo de evento `paid`, el boton `Marcar en despacho` mueve el pedido a `delivering` y guarda `Ventas.dispatched_at`.
 
 El link seguro requiere `ADMIN_ACTION_SECRET`; si no existe, el email se envia sin accion de validacion. Los eventos guardan `notification_results_json` para auditar email y WhatsApp.
 

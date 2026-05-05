@@ -46,6 +46,9 @@
     var params = new URLSearchParams(window.location.search);
     var orderId = params.get('order_id') || '';
     var token = params.get('token') || '';
+    var actionParam = params.get('action') || '';
+    var action = 'paid';
+    var isLegacyConfirmLink = !actionParam;
     var title = document.getElementById('adminTransferTitle');
     var copy = document.getElementById('adminTransferCopy');
     var button = document.getElementById('adminConfirmTransferButton');
@@ -58,6 +61,41 @@
       currency: 'CLP',
       maximumFractionDigits: 0
     });
+    var actionConfig = {
+      paid: {
+        title: 'Validar transferencia',
+        button: 'Marcar transferencia recibida',
+        loading: 'Marcando transferencia como recibida.',
+        successTitle: 'Transferencia validada',
+        success: 'Pedido marcado como pagado.',
+        already: 'Este pedido ya está marcado como pagado.',
+        allowedFrom: ['pending_transfer']
+      },
+      expired: {
+        title: 'Marcar pedido vencido',
+        button: 'Marcar pedido vencido',
+        loading: 'Marcando pedido como vencido.',
+        successTitle: 'Pedido vencido',
+        success: 'Pedido marcado como vencido.',
+        already: 'Este pedido ya está marcado como vencido.',
+        allowedFrom: ['pending_transfer']
+      },
+      delivering: {
+        title: 'Marcar pedido en despacho',
+        button: 'Marcar en despacho',
+        loading: 'Marcando pedido en despacho.',
+        successTitle: 'Pedido en despacho',
+        success: 'Pedido marcado en despacho.',
+        already: 'Este pedido ya está en despacho.',
+        allowedFrom: ['paid']
+      }
+    };
+    action = normalizeAction(actionParam || 'paid');
+
+    function normalizeAction(value) {
+      var normalized = String(value || '').trim().toLowerCase();
+      return actionConfig && actionConfig[normalized] ? normalized : 'paid';
+    }
 
     function setMessage(message) {
       if (copy) copy.textContent = message;
@@ -65,6 +103,22 @@
 
     function setDisabled(disabled) {
       if (button) button.disabled = disabled;
+    }
+
+    function getActionConfig() {
+      return actionConfig[action] || actionConfig.paid;
+    }
+
+    function syncActionCopy() {
+      var config = getActionConfig();
+
+      if (title) title.textContent = config.title;
+      if (button) button.textContent = config.button;
+    }
+
+    function canRunAction(currentStatus) {
+      var config = getActionConfig();
+      return config.allowedFrom.indexOf(currentStatus) !== -1;
     }
 
     async function fetchJson(url, options) {
@@ -79,9 +133,11 @@
     }
 
     async function loadOrder() {
+      syncActionCopy();
+
       if (!orderId || !token) {
         setDisabled(true);
-        setMessage('Falta información para validar esta transferencia.');
+        setMessage('Falta información para ejecutar esta acción.');
         return;
       }
 
@@ -90,37 +146,53 @@
       if (status) status.textContent = payload.internal_status || 'Sin estado';
       if (total) total.textContent = formatter.format(Number(payload.total_clp || 0));
       if (items) items.textContent = payload.items_label || 'Sin detalle';
-      setMessage('Revisa el banco antes de marcar este pedido como pagado.');
-      setDisabled(payload.internal_status === 'paid');
+      var currentStatus = payload.internal_status || '';
+      var config = getActionConfig();
 
-      if (payload.internal_status === 'paid') {
-        setMessage('Este pedido ya está marcado como pagado.');
+      if (currentStatus === action) {
+        setMessage(config.already);
+        setDisabled(true);
+        return;
       }
+
+      if (!canRunAction(currentStatus)) {
+        setMessage('Esta acción no está disponible para pedidos en estado ' + (currentStatus || 'desconocido') + '.');
+        setDisabled(true);
+        return;
+      }
+
+      setMessage(action === 'paid' ? 'Revisa el banco antes de marcar este pedido como pagado.' : 'Revisa el pedido antes de ejecutar esta acción.');
+      setDisabled(false);
     }
 
-    async function confirmTransfer() {
+    async function runAction() {
+      var config = getActionConfig();
       setDisabled(true);
-      setMessage('Marcando transferencia como recibida.');
+      setMessage(config.loading);
 
       try {
-        var payload = await fetchJson('/api/admin/orders/' + encodeURIComponent(orderId) + '/confirm-transfer', {
+        var endpoint = isLegacyConfirmLink
+          ? '/api/admin/orders/' + encodeURIComponent(orderId) + '/confirm-transfer'
+          : '/api/admin/orders/' + encodeURIComponent(orderId) + '/status';
+        var body = isLegacyConfirmLink ? { token: token } : { token: token, status: action };
+        var payload = await fetchJson(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ token: token })
+          body: JSON.stringify(body)
         });
-        if (status) status.textContent = payload.internal_status || 'paid';
-        if (title) title.textContent = 'Transferencia validada';
-        setMessage(payload.already_paid ? 'Este pedido ya estaba marcado como pagado.' : 'Pedido marcado como pagado.');
+        if (status) status.textContent = payload.internal_status || action;
+        if (title) title.textContent = config.successTitle;
+        setMessage(payload.already_status || payload.already_paid ? config.already : config.success);
       } catch (error) {
         setDisabled(false);
-        setMessage(error.message || 'No se pudo validar la transferencia.');
+        setMessage(error.message || 'No se pudo completar la acción.');
       }
     }
 
     if (button) {
-      button.addEventListener('click', confirmTransfer);
+      button.addEventListener('click', runAction);
     }
 
     loadOrder().catch(function(error) {

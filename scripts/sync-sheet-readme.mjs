@@ -118,6 +118,7 @@ function buildReadmeRows() {
     ['Worker endpoints', 'POST /api/order-drafts', 'Crea borrador, cliente, lineas y evento', 'No es idempotente; un retry puede duplicar borradores'],
     ['Worker endpoints', 'POST /api/order-contact-requests', 'Ruta previa de contacto manual', 'No es el cierre activo mientras transferencia bancaria este vigente'],
     ['Worker endpoints', 'POST /api/admin/orders/:order_id/confirm-transfer', 'Validacion manual de transferencia', 'Requiere token HMAC y marca pending_transfer como paid'],
+    ['Worker endpoints', 'POST /api/admin/orders/:order_id/status', 'Acciones operativas firmadas', 'Permite pending_transfer -> paid|expired y paid -> delivering'],
     ['Worker endpoints', 'POST /api/payment-links', 'Codigo legado Flow', 'No usar como cierre activo mientras flow_enabled=false'],
     ['Worker endpoints', 'POST /api/flow/confirmation', 'Callback server-to-server de Flow', 'Responde ok y sincroniza con waitUntil'],
     ['Worker endpoints', 'POST /pago/retorno', 'Retorno navegador desde Flow', 'Redirige a /pago/resultado/?order_id=...'],
@@ -150,7 +151,8 @@ function buildReadmeRows() {
     ['Estados operativos', 'pending_transfer', 'Pedido esperando transferencia bancaria', 'Estado activo despues de POST /api/checkout-orders'],
     ['Estados operativos', 'link_sent', 'Link Flow generado', 'Puede reusarse mientras siga activo'],
     ['Estados operativos', 'pending_payment', 'Flow aun no confirma pago final', 'Medios asincronos pueden quedar aqui temporalmente'],
-    ['Estados operativos', 'paid', 'Pago confirmado', 'Actualiza estadisticas del cliente'],
+    ['Estados operativos', 'paid', 'Pago confirmado', 'Actualiza estadisticas del cliente y envia email de pago confirmado'],
+    ['Estados operativos', 'delivering', 'Pedido en despacho', 'Se marca desde email operativo paid y usa Ventas.dispatched_at'],
     ['Estados operativos', 'payment_failed', 'Intento fallido', 'Mostrar soporte y permitir reactivacion manual'],
     ['Estados operativos', 'canceled / expired', 'Pago cancelado o vencido', 'Soporte puede recrear flujo si corresponde'],
     ['', '', '', ''],
@@ -161,7 +163,7 @@ function buildReadmeRows() {
     ['Checklist de prueba', '1', 'Abrir /api/public-catalog', 'Debe devolver ok true, catalogo activo, shipping_fee_clp y communes'],
     ['Checklist de prueba', '2', 'Completar checkout 2 pasos desde /pedido/', 'Debe validar Pedido/Datos y llamar POST /api/checkout-orders'],
     ['Checklist de prueba', '3', 'Confirmar transferencia', 'Debe escribir Clientes, Ventas, Lineas_Pedido y Eventos con estado pending_transfer y numero visible DDMMRRR'],
-    ['Checklist de prueba', '4', 'Validar transferencia manual', 'Link operativo debe cambiar pending_transfer a paid sin duplicar pagos si se reintenta'],
+    ['Checklist de prueba', '4', 'Validar acciones operativas', 'Links operativos deben cambiar pending_transfer a paid|expired y paid a delivering sin duplicar eventos criticos'],
     ['Checklist de prueba', '5', 'Validar direccion', 'Debe usar GOOGLE_MAPS_API_KEY/Google Geocoding cuando corresponda'],
     ['Checklist de prueba', '6', 'Confirmar Flow apagado', 'flow_enabled=false debe mantener Flow como legado/desactivado por defecto']
   ];

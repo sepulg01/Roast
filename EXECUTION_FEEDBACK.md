@@ -532,3 +532,16 @@
 - Completado totalmente: UI de confirmacion, copy solicitado, logo en HTML, health de diagnostico y cobertura automatizada enfocada.
 - Parcial: WhatsApp no se valido en produccion en esta iteracion; sin `configuration.whatsapp=true` el Worker omite ese canal por diseno.
 - Pendiente/deferido: configurar en Cloudflare/GitHub los secretos Meta WhatsApp y el template aprobado, desplegar, revisar `/api/health` y crear un pedido `NO PREPARAR` para confirmar recepcion en WhatsApp operativo.
+
+## 2026-05-05 - Estados operativos y email de pago confirmado
+
+- Se agrego `POST /api/admin/orders/:order_id/status` para acciones HMAC por estado: `pending_transfer -> paid|expired` y `paid -> delivering`.
+- `POST /api/admin/orders/:order_id/confirm-transfer` queda como compatibilidad legacy para `paid`, aceptando tokens antiguos y los nuevos tokens `set-status:paid`.
+- El email operativo de `pending_transfer` incluye botones `Validar transferencia` y `Marcar pedido vencido`; el email operativo de `paid` incluye `Marcar en despacho`.
+- La pagina `/operaciones/transferencia/` lee `action=paid|expired|delivering`, adapta titulo/copy/boton y deshabilita acciones incompatibles con el estado actual.
+- Al marcar `paid`, Resend envia al cliente el email `Confirmamos tu transferencia {confirmation_number}` con detalle del pedido, total, entrega y mensaje de preparacion.
+- `expired` y `delivering` no envian email al cliente en esta iteracion; quedan registrados en `Eventos`.
+- Se actualizo `README.md`, `scripts/sync-sheet-readme.mjs` y la aprobacion `copy-approvals/2026-05-05-admin-status-paid-email.md`.
+- Validacion enfocada realizada: ciclo rojo/verde Worker con `node --test tests/worker/orders-notifications.test.mjs`; ciclo rojo/verde funcional con `npm run test:functional -- tests/functional/static-routes.spec.js --project=chromium --grep "admin transfer page" --reporter=line`.
+- Completado totalmente: endpoint generico de estado, tokens por accion, UI operativa multi-accion, email cliente para pago confirmado y documentacion.
+- Pendiente/deferido: validar en produccion con un pedido `NO PREPARAR` despues del deploy automatico y confirmar visualmente la llegada del email de pago confirmado.

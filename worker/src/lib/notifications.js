@@ -83,10 +83,11 @@ async function notifyAppsScriptEvent(env, payload) {
 
 async function notifyResendEvent(env, payload) {
   const orderId = firstValue(payload.order_id, getDetails(payload).order_id, getDisplayOrderNumber(payload));
+  const eventType = firstValue(payload.event_type, 'event');
   const results = {};
   const messages = [{
     name: 'operational',
-    idempotencyKey: `roast:${orderId}:operational`,
+    idempotencyKey: `roast:${orderId}:${eventType}:operational`,
     email: buildOperationalResendEmail(env, payload)
   }];
 
@@ -107,9 +108,20 @@ async function notifyResendEvent(env, payload) {
     }
     messages.push({
       name: 'customer',
-      idempotencyKey: `roast:${orderId}:customer`,
+      idempotencyKey: `roast:${orderId}:${eventType}:customer`,
       email: customerEmail
     });
+  }
+
+  if (payload.event_type === 'paid') {
+    const customerEmail = buildCustomerPaidEmail(env, payload);
+    if (customerEmail) {
+      messages.push({
+        name: 'customer',
+        idempotencyKey: `roast:${orderId}:${eventType}:customer`,
+        email: customerEmail
+      });
+    }
   }
 
   for (const message of messages) {
@@ -182,6 +194,43 @@ function buildCustomerPendingTransferEmail(env, payload) {
   };
 }
 
+function buildCustomerPaidEmail(env, payload) {
+  const details = getDetails(payload);
+  const recipient = firstValue(details.email, payload.email);
+
+  if (!recipient) {
+    return null;
+  }
+
+  const orderNumber = getDisplayOrderNumber(payload);
+  const firstName = firstValue(details.first_name, details.customer_name, payload.customer_name, 'cliente');
+  const itemsTable = buildItemsTable(details.items);
+  const html = `
+    <div style="font-family:Arial,sans-serif;background:#0d0d0d;color:#f5f0e8;padding:24px;">
+      <div style="max-width:680px;margin:0 auto;background:#151515;border:1px solid #2a2a2a;border-radius:12px;padding:24px;">
+        ${buildEmailHeader(details, 'Transferencia confirmada')}
+        <h1 style="margin:0 0 16px;font-size:24px;line-height:1.2;color:#f5f0e8;">${escapeHtml(orderNumber)}</h1>
+        <p style="margin:0 0 12px;">Hola ${escapeHtml(firstName)}</p>
+        <p style="margin:0 0 12px;">Confirmamos tu transferencia. Tu pedido está siendo preparado.</p>
+        <p style="margin:0 0 20px;color:#d9d0c5;">Usa el numero ${escapeHtml(orderNumber)} si necesitas comunicarte con nosotros sobre este pedido.</p>
+        ${itemsTable}
+        ${buildTotalsTable(details)}
+        ${buildDeliveryBlock(details)}
+        <p style="margin:20px 0 0;color:#d9d0c5;">Responderemos desde ${escapeHtml(getResendReplyTo(env))}.</p>
+      </div>
+    </div>
+  `;
+
+  return {
+    from: getResendFrom(env),
+    reply_to: getResendReplyTo(env),
+    to: [recipient],
+    subject: `Confirmamos tu transferencia ${orderNumber}`,
+    html,
+    text: stripHtml(html)
+  };
+}
+
 async function sendResendEmail(env, message, idempotencyKey) {
   const response = await fetch(RESEND_EMAILS_URL, {
     method: 'POST',
@@ -214,7 +263,7 @@ function buildOperationalHtml(payload) {
   const itemsTable = buildItemsTable(details.items);
   const totalsTable = buildTotalsTable(details);
   const bankTable = details.bank_transfer ? buildBankTransferTable(details.bank_transfer, formatCurrency(details.total_clp), formatDateTime(details.transfer_expires_at)) : '';
-  const adminLink = firstValue(details.admin_transfer_url, payload.admin_transfer_url);
+  const actionLinks = buildOperationalActionLinks(details, payload);
   const fields = [
     ['Pedido', orderNumber],
     ['Evento', payload.event_type || 'Sin tipo'],
@@ -242,10 +291,26 @@ function buildOperationalHtml(payload) {
       ${itemsTable}
       ${totalsTable}
       ${bankTable}
-      ${adminLink ? `<p style="margin:22px 0 0;"><a href="${escapeHtml(adminLink)}" style="display:inline-block;background:#ff5a1f;color:#160c07;text-decoration:none;font-weight:800;padding:12px 18px;border-radius:8px;">Validar transferencia</a></p>` : ''}
+      ${actionLinks}
       </div>
     </div>
   `;
+}
+
+function buildOperationalActionLinks(details, payload) {
+  const actions = [
+    ['Validar transferencia', firstValue(details.admin_transfer_url, payload.admin_transfer_url)],
+    ['Marcar pedido vencido', firstValue(details.admin_expire_url, payload.admin_expire_url)],
+    ['Marcar en despacho', firstValue(details.admin_delivering_url, payload.admin_delivering_url)]
+  ].filter(([, url]) => firstValue(url));
+
+  if (!actions.length) return '';
+
+  const links = actions.map(([label, url]) => (
+    `<a href="${escapeHtml(url)}" style="display:inline-block;background:#ff5a1f;color:#160c07;text-decoration:none;font-weight:800;padding:12px 18px;border-radius:8px;margin:0 10px 10px 0;">${escapeHtml(label)}</a>`
+  )).join('');
+
+  return `<p style="margin:22px 0 0;">${links}</p>`;
 }
 
 function buildEmailHeader(details, label) {

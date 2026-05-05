@@ -272,7 +272,8 @@ test('notifyOperationalEvent sends pending transfer operational and customer ema
           rut: '17515638-0',
           email: 'contacto@caferoast.cl'
         },
-        admin_transfer_url: 'https://caferoast.cl/operaciones/transferencia/?order_id=roast_internal_001&token=test-token'
+        admin_transfer_url: 'https://caferoast.cl/operaciones/transferencia/?order_id=roast_internal_001&action=paid&token=test-token',
+        admin_expire_url: 'https://caferoast.cl/operaciones/transferencia/?order_id=roast_internal_001&action=expired&token=expire-token'
       }
     }
   );
@@ -285,8 +286,8 @@ test('notifyOperationalEvent sends pending transfer operational and customer ema
   ]);
   assert.equal(requests[0].headers.Authorization, 'Bearer resend_test_key');
   assert.equal(requests[0].headers['Content-Type'], 'application/json');
-  assert.equal(requests[0].headers['Idempotency-Key'], 'roast:roast_internal_001:operational');
-  assert.equal(requests[1].headers['Idempotency-Key'], 'roast:roast_internal_001:customer');
+  assert.equal(requests[0].headers['Idempotency-Key'], 'roast:roast_internal_001:pending_transfer:operational');
+  assert.equal(requests[1].headers['Idempotency-Key'], 'roast:roast_internal_001:pending_transfer:customer');
   assert.equal(requests[0].body.from, 'Roast <orders@caferoast.cl>');
   assert.equal(requests[0].body.reply_to, 'soporte@caferoast.cl');
   assert.deepEqual(requests[0].body.to, ['operaciones@caferoast.cl']);
@@ -296,6 +297,7 @@ test('notifyOperationalEvent sends pending transfer operational and customer ema
   assert.match(requests[0].body.html, /Downtime/);
   assert.match(requests[0].body.html, /\$36\.000 CLP/);
   assert.match(requests[0].body.html, /Validar transferencia/);
+  assert.match(requests[0].body.html, /Marcar pedido vencido/);
   assert.deepEqual(requests[1].body.to, ['cliente@example.com']);
   assert.match(requests[1].body.subject, /0205789/);
   assert.match(requests[1].body.html, /0205789/);
@@ -305,6 +307,70 @@ test('notifyOperationalEvent sends pending transfer operational and customer ema
   assert.match(requests[1].body.html, /61947059/);
   assert.match(requests[1].body.html, /17515638-0/);
   assert.match(requests[1].body.html, /transferencia vence/i);
+  assert.doesNotMatch(requests[1].body.html, /roast_internal_001/);
+});
+
+test('notifyOperationalEvent sends paid customer confirmation through Resend', async t => {
+  const requests = [];
+  installFetchMock(t, async (url, init = {}) => {
+    requests.push({
+      url,
+      headers: init.headers,
+      body: JSON.parse(init.body)
+    });
+    return jsonResponse({ id: `email_${requests.length}` }, 202);
+  });
+
+  const result = await notifyOperationalEvent(
+    {
+      RESEND_API_KEY: 'resend_test_key',
+      RESEND_FROM: 'Roast <orders@caferoast.cl>',
+      RESEND_REPLY_TO: 'soporte@caferoast.cl'
+    },
+    {
+      event_type: 'paid',
+      order_id: 'roast_internal_001',
+      recipient: 'operaciones@caferoast.cl',
+      payload: {
+        order_id: 'roast_internal_001',
+        order_number: '0205789',
+        confirmation_number: '0205789',
+        first_name: 'Camila',
+        customer_name: 'Camila Roast',
+        email: 'cliente@example.com',
+        commune: 'Providencia',
+        address: 'Av. Siempre Viva 123',
+        items: [
+          {
+            product_name: 'Downtime',
+            format_label: '1 kg',
+            grind: 'Grano entero',
+            quantity: 1,
+            line_subtotal_clp: 36000
+          }
+        ],
+        subtotal_clp: 36000,
+        shipping_clp: 0,
+        total_clp: 36000,
+        paid_at: '2026-05-04 15:30:00',
+        admin_delivering_url: 'https://caferoast.cl/operaciones/transferencia/?order_id=roast_internal_001&action=delivering&token=test-token'
+      }
+    }
+  );
+
+  assert.equal(result, true);
+  assert.equal(requests.length, 2);
+  assert.equal(requests[0].headers['Idempotency-Key'], 'roast:roast_internal_001:paid:operational');
+  assert.equal(requests[1].headers['Idempotency-Key'], 'roast:roast_internal_001:paid:customer');
+  assert.deepEqual(requests[0].body.to, ['operaciones@caferoast.cl']);
+  assert.match(requests[0].body.html, /Marcar en despacho/);
+  assert.deepEqual(requests[1].body.to, ['cliente@example.com']);
+  assert.match(requests[1].body.subject, /Confirmamos tu transferencia 0205789/);
+  assert.match(requests[1].body.html, /Confirmamos tu transferencia/i);
+  assert.match(requests[1].body.html, /Tu pedido está siendo preparado/i);
+  assert.match(requests[1].body.html, /Downtime/);
+  assert.match(requests[1].body.html, /\$36\.000 CLP/);
+  assert.match(requests[1].body.html, /Av\. Siempre Viva 123, Providencia/);
   assert.doesNotMatch(requests[1].body.html, /roast_internal_001/);
 });
 
@@ -726,6 +792,31 @@ test('admin transfer confirmation rejects invalid token before touching Sheets',
   assert.match(payload.error, /Invalid admin action token/);
 });
 
+test('admin status update rejects tokens signed for a different status', async () => {
+  const paidToken = await hmacSha256Hex('admin-secret', 'set-status:paid:roast_internal_001');
+  const response = await worker.fetch(
+    new Request('https://caferoast.cl/api/admin/orders/roast_internal_001/status', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        token: paidToken,
+        status: 'expired'
+      })
+    }),
+    {
+      ADMIN_ACTION_SECRET: 'admin-secret'
+    },
+    createContext()
+  );
+  const payload = await response.json();
+
+  assert.equal(response.status, 403);
+  assert.equal(payload.ok, false);
+  assert.match(payload.error, /Invalid admin action token/);
+});
+
 test('admin transfer confirmation marks pending transfer orders as paid and is idempotent', async t => {
   const appended = {
     Eventos: []
@@ -872,6 +963,272 @@ test('admin transfer confirmation marks pending transfer orders as paid and is i
   assert.equal(eventRow.from_status, 'pending_transfer');
   assert.equal(eventRow.to_status, 'paid');
   assert.equal(JSON.parse(eventRow.payload_json).confirmation_number, '0205789');
+});
+
+test('admin status update marks pending transfer orders as expired without notifying customer', async t => {
+  const appended = {
+    Eventos: []
+  };
+  const updates = [];
+  const resendRequests = [];
+
+  installFetchMock(t, async (url, init = {}) => {
+    if (url === 'https://api.resend.com/emails') {
+      resendRequests.push(JSON.parse(init.body));
+      return jsonResponse({ id: `email_${resendRequests.length}` }, 202);
+    }
+
+    if (url === 'https://oauth2.googleapis.com/token') {
+      return jsonResponse({ access_token: 'test-access-token', expires_in: 3600 });
+    }
+
+    const sheetName = sheetNameFromAppendUrl(url);
+    if (sheetName) {
+      const body = JSON.parse(init.body);
+      appended[sheetName].push(body.values[0]);
+      return jsonResponse({ updates: { updatedRows: 1 } });
+    }
+
+    if (init.method === 'PUT' && url.includes('/values/Ventas!')) {
+      updates.push({ sheet: 'Ventas', row: objectFromRow(SALES_HEADERS, JSON.parse(init.body).values[0]) });
+      return jsonResponse({ updatedRows: 1 });
+    }
+
+    if (init.method === 'PUT' && url.includes('/values/Pagos_Flow!')) {
+      updates.push({ sheet: 'Pagos_Flow', row: objectFromRow(PAYMENT_HEADERS, JSON.parse(init.body).values[0]) });
+      return jsonResponse({ updatedRows: 1 });
+    }
+
+    if (url.includes('/values/Ventas!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(SALES_HEADERS, [
+          {
+            order_id: 'roast_internal_001',
+            order_number: '0205789',
+            customer_id: 'cus_001',
+            customer_name: 'Camila Roast',
+            email: 'cliente@example.com',
+            items_label: 'Downtime 1 kg',
+            total_clp: '36000',
+            internal_status: 'pending_transfer'
+          }
+        ])
+      });
+    }
+
+    if (url.includes('/values/Pagos_Flow!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(PAYMENT_HEADERS, [
+          {
+            payment_id: 'pay_001',
+            order_id: 'roast_internal_001',
+            internal_status: 'pending_transfer',
+            amount_clp: '36000',
+            payer_email: 'cliente@example.com',
+            payment_method: 'transfer'
+          }
+        ])
+      });
+    }
+
+    if (url.includes('/values/Lineas_Pedido!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(LINE_HEADERS, [
+          {
+            order_id: 'roast_internal_001',
+            product_name: 'Downtime',
+            format_label: '1 kg',
+            grind: 'grano entero',
+            quantity: '1',
+            unit_price_clp: '36000',
+            line_subtotal_clp: '36000'
+          }
+        ])
+      });
+    }
+
+    throw new Error(`Unexpected fetch: ${url}`);
+  });
+
+  const token = await hmacSha256Hex('admin-secret', 'set-status:expired:roast_internal_001');
+  const response = await worker.fetch(
+    new Request('https://caferoast.cl/api/admin/orders/roast_internal_001/status', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ token, status: 'expired' })
+    }),
+    {
+      GOOGLE_SHEET_ID: 'test-sheet',
+      GOOGLE_SERVICE_ACCOUNT_JSON: getServiceAccountJson(),
+      ADMIN_ACTION_SECRET: 'admin-secret',
+      RESEND_API_KEY: 'resend_test_key'
+    },
+    createContext()
+  );
+  const payload = await response.json();
+
+  assert.equal(response.status, 200, payload.error);
+  assert.equal(payload.ok, true);
+  assert.equal(payload.internal_status, 'expired');
+  assert.equal(updates.find(update => update.sheet === 'Ventas').row.internal_status, 'expired');
+  assert.equal(updates.find(update => update.sheet === 'Pagos_Flow').row.internal_status, 'expired');
+  assert.equal(appended.Eventos.length, 1);
+  const eventRow = objectFromRow(EVENT_HEADERS, appended.Eventos[0]);
+  assert.equal(eventRow.event_type, 'expired');
+  assert.equal(eventRow.from_status, 'pending_transfer');
+  assert.equal(eventRow.to_status, 'expired');
+  assert.equal(resendRequests.length, 0);
+});
+
+test('admin status update marks paid orders as delivering without notifying customer', async t => {
+  const appended = {
+    Eventos: []
+  };
+  const updates = [];
+  const resendRequests = [];
+  const dispatchedAtPattern = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+
+  installFetchMock(t, async (url, init = {}) => {
+    if (url === 'https://api.resend.com/emails') {
+      resendRequests.push(JSON.parse(init.body));
+      return jsonResponse({ id: `email_${resendRequests.length}` }, 202);
+    }
+
+    if (url === 'https://oauth2.googleapis.com/token') {
+      return jsonResponse({ access_token: 'test-access-token', expires_in: 3600 });
+    }
+
+    const sheetName = sheetNameFromAppendUrl(url);
+    if (sheetName) {
+      const body = JSON.parse(init.body);
+      appended[sheetName].push(body.values[0]);
+      return jsonResponse({ updates: { updatedRows: 1 } });
+    }
+
+    if (init.method === 'PUT' && url.includes('/values/Ventas!')) {
+      updates.push({ sheet: 'Ventas', row: objectFromRow(SALES_HEADERS, JSON.parse(init.body).values[0]) });
+      return jsonResponse({ updatedRows: 1 });
+    }
+
+    if (url.includes('/values/Ventas!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(SALES_HEADERS, [
+          {
+            order_id: 'roast_internal_001',
+            order_number: '0205789',
+            customer_id: 'cus_001',
+            customer_name: 'Camila Roast',
+            email: 'cliente@example.com',
+            items_label: 'Downtime 1 kg',
+            total_clp: '36000',
+            internal_status: 'paid',
+            paid_at: '2026-05-04 15:30:00'
+          }
+        ])
+      });
+    }
+
+    if (url.includes('/values/Lineas_Pedido!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(LINE_HEADERS, [
+          {
+            order_id: 'roast_internal_001',
+            product_name: 'Downtime',
+            format_label: '1 kg',
+            grind: 'grano entero',
+            quantity: '1',
+            unit_price_clp: '36000',
+            line_subtotal_clp: '36000'
+          }
+        ])
+      });
+    }
+
+    throw new Error(`Unexpected fetch: ${url}`);
+  });
+
+  const token = await hmacSha256Hex('admin-secret', 'set-status:delivering:roast_internal_001');
+  const response = await worker.fetch(
+    new Request('https://caferoast.cl/api/admin/orders/roast_internal_001/status', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ token, status: 'delivering' })
+    }),
+    {
+      GOOGLE_SHEET_ID: 'test-sheet',
+      GOOGLE_SERVICE_ACCOUNT_JSON: getServiceAccountJson(),
+      ADMIN_ACTION_SECRET: 'admin-secret',
+      RESEND_API_KEY: 'resend_test_key'
+    },
+    createContext()
+  );
+  const payload = await response.json();
+
+  assert.equal(response.status, 200, payload.error);
+  assert.equal(payload.ok, true);
+  assert.equal(payload.internal_status, 'delivering');
+  const salesUpdate = updates.find(update => update.sheet === 'Ventas').row;
+  assert.equal(salesUpdate.internal_status, 'delivering');
+  assert.match(salesUpdate.dispatched_at, dispatchedAtPattern);
+  assert.equal(appended.Eventos.length, 1);
+  const eventRow = objectFromRow(EVENT_HEADERS, appended.Eventos[0]);
+  assert.equal(eventRow.event_type, 'delivering');
+  assert.equal(eventRow.from_status, 'paid');
+  assert.equal(eventRow.to_status, 'delivering');
+  assert.equal(resendRequests.length, 0);
+});
+
+test('admin status update rejects invalid transitions', async t => {
+  installFetchMock(t, async (url) => {
+    if (url === 'https://oauth2.googleapis.com/token') {
+      return jsonResponse({ access_token: 'test-access-token', expires_in: 3600 });
+    }
+
+    if (url.includes('/values/Ventas!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(SALES_HEADERS, [
+          {
+            order_id: 'roast_internal_001',
+            order_number: '0205789',
+            customer_id: 'cus_001',
+            customer_name: 'Camila Roast',
+            email: 'cliente@example.com',
+            items_label: 'Downtime 1 kg',
+            total_clp: '36000',
+            internal_status: 'pending_transfer'
+          }
+        ])
+      });
+    }
+
+    throw new Error(`Unexpected fetch: ${url}`);
+  });
+
+  const token = await hmacSha256Hex('admin-secret', 'set-status:delivering:roast_internal_001');
+  const response = await worker.fetch(
+    new Request('https://caferoast.cl/api/admin/orders/roast_internal_001/status', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ token, status: 'delivering' })
+    }),
+    {
+      GOOGLE_SHEET_ID: 'test-sheet',
+      GOOGLE_SERVICE_ACCOUNT_JSON: getServiceAccountJson(),
+      ADMIN_ACTION_SECRET: 'admin-secret'
+    },
+    createContext()
+  );
+  const payload = await response.json();
+
+  assert.equal(response.status, 409);
+  assert.equal(payload.ok, false);
+  assert.match(payload.error, /cannot move to delivering/i);
 });
 
 test('admin transfer confirmation is idempotent for already paid orders', async t => {
