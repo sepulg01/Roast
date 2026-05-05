@@ -2037,6 +2037,10 @@
       opacity: 0.46;
       transform: none;
     }
+    .admin-status-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
     .checkout-payment-group {
       margin-top: 1.1rem;
       border: 0;
@@ -2207,6 +2211,14 @@
       justify-content: space-between;
       gap: 1rem;
       margin-bottom: 0.35rem;
+    }
+    .checkout-confirmation-logo-frame {
+      width: clamp(86px, 15vw, 112px);
+      min-height: clamp(64px, 11vw, 82px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
     }
     .checkout-confirmation-logo {
       display: block;
@@ -2446,9 +2458,15 @@
         flex-direction: row;
         flex-wrap: wrap;
       }
+      .admin-status-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
       .checkout-step-actions .btn,
       .result-actions .btn {
         width: auto;
+      }
+      .admin-status-actions .btn {
+        width: 100%;
       }
     }
     @media (min-width: 1024px) {

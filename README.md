@@ -21,7 +21,7 @@ Sitio estatico y flujo de pedido web para Cafe Roast. El cliente arma el pedido 
 - `POST /api/payment-links`: codigo legado Flow; permanece desactivado por defecto con `flow_enabled=false` y solo debe operar si Flow se reactiva.
 - `POST /api/flow/confirmation`: callback server-to-server de Flow.
 - `POST /pago/retorno`: retorno del navegador desde Flow hacia `/pago/resultado/`.
-- `POST /api/admin/orders/:order_id/status`: accion operativa firmada para mover `pending_transfer -> paid|expired` y `paid -> delivering`.
+- `POST /api/admin/orders/:order_id/status`: accion operativa firmada para mover `pending_transfer -> paid|expired`, `paid -> delivering` y `delivering -> delivered`.
 - `POST /api/admin/orders/:order_id/confirm-transfer`: compatibilidad legacy; equivale a `status=paid`.
 - `GET /api/orders/:order_id`: estado publico por ID de pedido.
 - `GET /api/health`: healthcheck productivo con flags de `confirmation_number`, `terms_only_checkout`, `resend_notifications` y booleans de configuracion para Google, Resend, admin actions y WhatsApp.
@@ -43,7 +43,7 @@ Hojas requeridas:
 
 `Config.status_map` se parsea hoy, pero no debe considerarse contrato productivo hasta que el Worker lo use explicitamente.
 
-El identificador interno `order_id` sigue siendo la llave relacional entre `Ventas`, `Lineas_Pedido`, `Pagos_Flow` y `Eventos`. El numero visible para clientes y soporte es `order_number` / `confirmation_number`, con formato `DDMMRRR` como texto para conservar ceros iniciales.
+El identificador interno `order_id` sigue siendo la llave relacional entre `Ventas`, `Lineas_Pedido`, `Pagos_Flow` y `Eventos`. El numero visible para clientes y soporte es `order_number` / `confirmation_number`, con formato unico `DDMMRRR` como texto para conservar ceros iniciales; si un pedido legacy no tiene un valor valido, el Worker lo backfillea una sola vez antes de mostrarlo o reutilizarlo en eventos nuevos.
 
 La regla vigente de envio gratis usa `free_shipping_threshold_clp` para todas las comunas listadas y despachables. El campo historico `free_shipping_eligible` puede venir en `Config.communes`, pero no decide el calculo de despacho gratis.
 
@@ -62,7 +62,7 @@ Cuando `POST /api/checkout-orders` deja un pedido en `pending_transfer`, el Work
 
 - Subject: `Hemos recibido tu pedido {confirmation_number}`
 - Numero visible de pedido, detalle de productos, subtotal, envio, total, datos BCI, monto a transferir y vencimiento de la transferencia.
-- El email operativo incluye links seguros para validar la transferencia o marcar el pedido vencido.
+- El email operativo incluye links seguros hacia el panel de acciones para validar la transferencia, marcar el pedido expirado o continuar el flujo de despacho.
 - Cuando la transferencia se marca como recibida, el cliente recibe `Confirmamos tu transferencia {confirmation_number}` con detalle del pedido y el mensaje de preparacion.
 - Canal de respuesta: `contacto@caferoast.cl` y WhatsApp `+56 9 9174 6361`.
 
@@ -73,11 +73,11 @@ Resend usa `RESEND_FROM`, `RESEND_REPLY_TO` e `Idempotency-Key` por email (`roas
 El pago por transferencia se valida manualmente contra el banco. El flujo operativo es:
 
 1. Revisar la transferencia bancaria recibida usando monto, cliente y numero visible.
-2. Abrir el link `Validar transferencia` del email operativo.
-3. La pagina `/operaciones/transferencia/` muestra el pedido y llama a `POST /api/admin/orders/:order_id/status` con token HMAC y accion (`paid`, `expired` o `delivering`).
-4. El Worker permite solo `pending_transfer -> paid|expired` y `paid -> delivering`.
+2. Abrir el link operativo del email.
+3. La pagina `/operaciones/transferencia/` muestra el pedido y los botones disponibles para `paid`, `expired`, `delivering` y `delivered`, deshabilitando los que no correspondan al estado actual.
+4. El Worker permite solo `pending_transfer -> paid|expired`, `paid -> delivering` y `delivering -> delivered`.
 5. Al marcar `paid`, actualiza `Ventas.internal_status=paid`, `Pagos_Flow.confirmed_at`, estadisticas del cliente, evento `paid` y email de confirmacion al cliente.
-6. Desde el email operativo de evento `paid`, el boton `Marcar en despacho` mueve el pedido a `delivering` y guarda `Ventas.dispatched_at`.
+6. Desde el panel operativo, `Informar pedido en despacho` guarda `Ventas.dispatched_at` y `Informar pedido entregado` guarda `Ventas.delivered_at`.
 
 El link seguro requiere `ADMIN_ACTION_SECRET`; si no existe, el email se envia sin accion de validacion. Los eventos guardan `notification_results_json` para auditar email y WhatsApp.
 

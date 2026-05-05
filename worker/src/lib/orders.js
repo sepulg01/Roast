@@ -33,8 +33,10 @@ const CONTACT_REQUEST_ALLOWED_STATUSES = new Set(['draft', 'manual_review']);
 const ADMIN_STATUS_TRANSITIONS = {
   paid: new Set(['pending_transfer']),
   expired: new Set(['pending_transfer']),
-  delivering: new Set(['paid'])
+  delivering: new Set(['paid']),
+  delivered: new Set(['delivering'])
 };
+const VISIBLE_ORDER_NUMBER_PATTERN = /^\d{7}$/;
 const BANK_TRANSFER_DETAILS = {
   bank: 'BCI',
   account_type: 'Cuenta Corriente',
@@ -491,6 +493,37 @@ function statusError(message, status = 400, details) {
   return error;
 }
 
+function isVisibleOrderNumber(value) {
+  return VISIBLE_ORDER_NUMBER_PATTERN.test(normalizeText(value));
+}
+
+async function getUsedOrderNumbers(env) {
+  const table = await readSheetTable(env, 'Ventas');
+  return new Set(table.rows
+    .map(row => normalizeText(row.order_number || row.confirmation_number))
+    .filter(isVisibleOrderNumber));
+}
+
+async function buildUniqueOrderNumber(env, date = new Date()) {
+  const usedNumbers = await getUsedOrderNumbers(env);
+  const firstCandidate = buildOrderNumber(date);
+  const prefix = firstCandidate.slice(0, 4);
+  const seed = parseInteger(firstCandidate.slice(4), 0);
+
+  for (let offset = 0; offset < 1000; offset += 1) {
+    const suffix = String((seed + offset) % 1000).padStart(3, '0');
+    const candidate = `${prefix}${suffix}`;
+
+    if (!usedNumbers.has(candidate)) {
+      return candidate;
+    }
+  }
+
+  throw statusError('No quedan numeros de pedido disponibles para hoy.', 503, {
+    code: 'order_number_pool_exhausted'
+  });
+}
+
 function validateCheckoutCustomerPayload(payload) {
   const firstName = normalizeText(payload.first_name);
   const lastName = normalizeText(payload.last_name);
@@ -884,10 +917,20 @@ async function buildAdminStatusUrl(env, orderId, status) {
   if (!env || !env.ADMIN_ACTION_SECRET) return '';
 
   const targetStatus = normalizeText(status);
-  const token = await buildAdminActionToken(env.ADMIN_ACTION_SECRET, buildAdminStatusAction(targetStatus), orderId);
+  const params = new URLSearchParams({
+    order_id: orderId,
+    action: targetStatus
+  });
+  const statuses = Object.keys(ADMIN_STATUS_TRANSITIONS);
+
+  for (const candidateStatus of statuses) {
+    const token = await buildAdminActionToken(env.ADMIN_ACTION_SECRET, buildAdminStatusAction(candidateStatus), orderId);
+    params.set(`${candidateStatus}_token`, token);
+  }
+
   return buildPublicAssetUrl(
     env,
-    `/operaciones/transferencia/?order_id=${encodeURIComponent(orderId)}&action=${encodeURIComponent(targetStatus)}&token=${encodeURIComponent(token)}`
+    `/operaciones/transferencia/?${params.toString()}`
   );
 }
 
@@ -956,7 +999,7 @@ export async function createOrderDraft(env, payload) {
   const orderMetrics = calculateOrderTotals(hydratedItems, customer.commune, config);
   const createdAt = getLocalTimestamp();
   const orderId = buildOrderId();
-  const orderNumber = buildOrderNumber();
+  const orderNumber = await buildUniqueOrderNumber(env);
   const customerRow = await upsertCustomer(env, customer, orderId);
   const itemsLabel = buildItemsLabel(hydratedItems);
   const salesRow = {
@@ -1054,7 +1097,7 @@ export async function createCheckoutOrder(env, payload) {
   const createdAt = getLocalTimestamp();
   const acceptedAt = createdAt;
   const orderId = buildOrderId();
-  const orderNumber = buildOrderNumber();
+  const orderNumber = await buildUniqueOrderNumber(env);
   const adminTransferUrl = await buildAdminTransferConfirmationUrl(env, orderId);
   const adminExpireUrl = await buildAdminStatusUrl(env, orderId, 'expired');
   const transferExpiresAt = new Date(Date.now() + (2 * 60 * 60 * 1000)).toISOString();
@@ -1290,10 +1333,16 @@ async function buildAdminStatusPayload(env, order, lineItems, targetStatus, chan
   if (targetStatus === 'paid') {
     payload.paid_at = changedAt;
     payload.admin_delivering_url = await buildAdminStatusUrl(env, order.order_id, 'delivering');
+    payload.admin_delivered_url = await buildAdminStatusUrl(env, order.order_id, 'delivered');
   }
 
   if (targetStatus === 'delivering') {
     payload.dispatched_at = changedAt;
+    payload.admin_delivered_url = await buildAdminStatusUrl(env, order.order_id, 'delivered');
+  }
+
+  if (targetStatus === 'delivered') {
+    payload.delivered_at = changedAt;
   }
 
   if (targetStatus === 'expired') {
@@ -1351,9 +1400,19 @@ async function applyAdminOrderStatus(env, orderId, targetStatus, source) {
   }
 
   const previousStatus = normalizeText(existing.row.internal_status);
-  const orderNumber = normalizeText(existing.row.order_number || existing.row.confirmation_number);
+  const persistedOrderNumber = normalizeText(existing.row.order_number);
+  let orderNumber = normalizeText(persistedOrderNumber || existing.row.confirmation_number);
+  const needsOrderNumberBackfill = !isVisibleOrderNumber(orderNumber) || persistedOrderNumber !== orderNumber;
+
+  if (needsOrderNumberBackfill) {
+    orderNumber = await buildUniqueOrderNumber(env);
+  }
 
   if (previousStatus === targetStatus) {
+    if (needsOrderNumberBackfill) {
+      await updateSalesOrder(env, orderId, { order_number: orderNumber });
+    }
+
     return {
       ok: true,
       order_id: orderId,
@@ -1377,12 +1436,20 @@ async function applyAdminOrderStatus(env, orderId, targetStatus, source) {
     internal_status: targetStatus
   };
 
+  if (needsOrderNumberBackfill) {
+    salesUpdates.order_number = orderNumber;
+  }
+
   if (targetStatus === 'paid') {
     salesUpdates.paid_at = changedAt;
   }
 
   if (targetStatus === 'delivering') {
     salesUpdates.dispatched_at = changedAt;
+  }
+
+  if (targetStatus === 'delivered') {
+    salesUpdates.delivered_at = changedAt;
   }
 
   const updatedOrder = await updateSalesOrder(env, orderId, salesUpdates);
@@ -1428,7 +1495,8 @@ async function applyAdminOrderStatus(env, orderId, targetStatus, source) {
     already_status: false,
     already_paid: false,
     paid_at: targetStatus === 'paid' ? changedAt : existing.row.paid_at || '',
-    dispatched_at: targetStatus === 'delivering' ? changedAt : existing.row.dispatched_at || ''
+    dispatched_at: targetStatus === 'delivering' ? changedAt : existing.row.dispatched_at || '',
+    delivered_at: targetStatus === 'delivered' ? changedAt : existing.row.delivered_at || ''
   };
 }
 
@@ -1587,6 +1655,13 @@ export async function syncPaymentStatus(env, token, source) {
 
   const transition = buildPaymentUpdateFromStatus(statusPayload, existing.row);
   const previousStatus = normalizeText(existing.row.internal_status);
+  const persistedOrderNumber = normalizeText(existing.row.order_number);
+  let orderNumber = normalizeText(persistedOrderNumber || existing.row.confirmation_number);
+
+  if (!isVisibleOrderNumber(orderNumber) || persistedOrderNumber !== orderNumber) {
+    orderNumber = await buildUniqueOrderNumber(env);
+    transition.salesUpdates.order_number = orderNumber;
+  }
 
   await updateSalesOrder(env, orderId, transition.salesUpdates);
   await upsertPaymentRow(env, transition.paymentUpdates);
@@ -1596,18 +1671,27 @@ export async function syncPaymentStatus(env, token, source) {
   }
 
   if (previousStatus !== transition.mappedStatus) {
+    const eventPayload = {
+      order_id: orderId,
+      order_number: orderNumber,
+      confirmation_number: orderNumber || orderId,
+      flow_order: statusPayload.flowOrder,
+      flow_status: statusPayload.status,
+      payment_method: statusPayload.paymentData?.media || statusPayload.pending_info?.media || ''
+    };
+
+    if (transition.mappedStatus === 'paid') {
+      eventPayload.admin_delivering_url = await buildAdminStatusUrl(env, orderId, 'delivering');
+      eventPayload.admin_delivered_url = await buildAdminStatusUrl(env, orderId, 'delivered');
+    }
+
     await appendEvent(env, {
       order_id: orderId,
       source,
       event_type: transition.mappedStatus,
       from_status: previousStatus,
       to_status: transition.mappedStatus,
-      payload: {
-        order_id: orderId,
-        flow_order: statusPayload.flowOrder,
-        flow_status: statusPayload.status,
-        payment_method: statusPayload.paymentData?.media || statusPayload.pending_info?.media || ''
-      }
+      payload: eventPayload
     });
   }
 
@@ -1650,14 +1734,24 @@ export async function getPublicOrder(env, orderId) {
     throw new Error('Order not found');
   }
 
-  const orderNumber = normalizeText(order.row.order_number || order.row.confirmation_number) ||
+  const persistedOrderNumber = normalizeText(order.row.order_number);
+  const orderNumber = normalizeText(persistedOrderNumber || order.row.confirmation_number) ||
     await findOrderNumberFromEvents(env, order.row.order_id).catch(() => '');
+  let visibleOrderNumber = orderNumber;
+
+  if (!isVisibleOrderNumber(visibleOrderNumber)) {
+    visibleOrderNumber = await buildUniqueOrderNumber(env);
+  }
+
+  if (persistedOrderNumber !== visibleOrderNumber) {
+    await updateSalesOrder(env, order.row.order_id, { order_number: visibleOrderNumber });
+  }
 
   return {
     ok: true,
     order_id: order.row.order_id,
-    order_number: orderNumber,
-    confirmation_number: orderNumber || order.row.order_id,
+    order_number: visibleOrderNumber,
+    confirmation_number: visibleOrderNumber,
     items_label: order.row.items_label,
     total_clp: toCurrencyNumber(order.row.total_clp),
     internal_status: order.row.internal_status,

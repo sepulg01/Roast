@@ -545,3 +545,17 @@
 - Validacion enfocada realizada: ciclo rojo/verde Worker con `node --test tests/worker/orders-notifications.test.mjs`; ciclo rojo/verde funcional con `npm run test:functional -- tests/functional/static-routes.spec.js --project=chromium --grep "admin transfer page" --reporter=line`.
 - Completado totalmente: endpoint generico de estado, tokens por accion, UI operativa multi-accion, email cliente para pago confirmado y documentacion.
 - Pendiente/deferido: validar en produccion con un pedido `NO PREPARAR` despues del deploy automatico y confirmar visualmente la llegada del email de pago confirmado.
+
+## 2026-05-05 - Pedido consistente y operacion multi-estado
+
+- Se reforzo el numero visible de pedido como `DDMMRRR` unico por dia, consultando `Ventas.order_number` antes de crear pedidos y reintentando hasta encontrar una combinacion disponible.
+- Si un pedido legacy trae un numero visible ausente o invalido, el Worker lo backfillea a `DDMMRRR` antes de mostrarlo en `/api/orders/:order_id` o usarlo en eventos de cambio de estado.
+- Se extendio el flujo operativo con `delivered`: ahora las transiciones permitidas son `pending_transfer -> paid|expired`, `paid -> delivering` y `delivering -> delivered`.
+- La pagina `/operaciones/transferencia/` ahora muestra simultaneamente los botones `Marcar transferencia recibida`, `Informar pedido expirado`, `Informar pedido en despacho` e `Informar pedido entregado`, habilitando solo los validos segun estado actual.
+- Los links operativos incluyen tokens HMAC por accion (`paid`, `expired`, `delivering`, `delivered`), de modo que un token de una accion no sirve para otra.
+- La confirmacion de `/pedido/` evita mostrar fechas legacy de 8 digitos como numero de pedido, conserva formato visible de 7 digitos y centra el logo dentro de su marco visual.
+- Se incremento el cache-bust de `/assets/checkout.js` en `/pedido/` para forzar la UI corregida tras deploy.
+- Se actualizo `README.md`, `scripts/sync-sheet-readme.mjs` y la aprobacion `copy-approvals/2026-05-05-multi-status-order-actions.md`.
+- Validacion enfocada realizada: ciclo rojo/verde Worker con `node --test tests/worker/orders-notifications.test.mjs`; ciclo rojo/verde funcional con `npm run test:functional -- tests/functional/static-routes.spec.js --project=chromium --grep "admin transfer page" --reporter=line`; ciclo rojo/verde checkout con `npm run test:functional -- tests/functional/checkout.spec.js --project=chromium --grep "transfer payment creates|confirmation fallback avoids" --reporter=line`.
+- Completado totalmente: unicidad/backfill del numero visible, estado final `delivered`, panel operativo multi-boton, tokens por accion, ajuste visual de logo y cobertura automatizada enfocada.
+- Pendiente/deferido: validar en produccion con pedido `NO PREPARAR` despues del deploy automatico, incluyendo el flujo manual hasta `delivered`.

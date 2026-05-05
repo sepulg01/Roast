@@ -301,7 +301,8 @@ function buildOperationalActionLinks(details, payload) {
   const actions = [
     ['Validar transferencia', firstValue(details.admin_transfer_url, payload.admin_transfer_url)],
     ['Marcar pedido vencido', firstValue(details.admin_expire_url, payload.admin_expire_url)],
-    ['Marcar en despacho', firstValue(details.admin_delivering_url, payload.admin_delivering_url)]
+    ['Marcar en despacho', firstValue(details.admin_delivering_url, payload.admin_delivering_url)],
+    ['Informar pedido entregado', firstValue(details.admin_delivered_url, payload.admin_delivered_url)]
   ].filter(([, url]) => firstValue(url));
 
   if (!actions.length) return '';

@@ -680,10 +680,13 @@
 
     for (var index = 0; index < candidates.length; index += 1) {
       var candidate = String(candidates[index] || '').trim();
-      var exactDigits = candidate.match(/^\d{7,8}$/);
+      var exactDigits = candidate.match(/^\d{7}$/);
       if (exactDigits) return exactDigits[0];
 
-      var embeddedDigits = candidate.match(/\d{7,8}/);
+      var legacyDate = candidate.match(/(?:^|_)(20\d{2})(\d{2})(\d{2})(?:_|$)/);
+      if (legacyDate) return legacyDate[3] + legacyDate[2] + '000';
+
+      var embeddedDigits = candidate.match(/\d{7}/);
       if (embeddedDigits) return embeddedDigits[0];
     }
 
@@ -782,7 +785,7 @@
       '<article class="checkout-confirmation-panel" aria-live="polite">',
       '  <div class="checkout-confirmation-heading">',
       '    <p class="checkout-summary-kicker">Pedido recibido</p>',
-      '    <img class="checkout-confirmation-logo" src="/assets/logos/logo_black.png" alt="Roast" width="92" height="68" loading="lazy" decoding="async" />',
+      '    <span class="checkout-confirmation-logo-frame"><img class="checkout-confirmation-logo" src="/assets/logos/logo_black.png" alt="Roast" width="92" height="68" loading="lazy" decoding="async" /></span>',
       '  </div>',
       '  <h2>Confirmación N° ' + escapeHtml(confirmationNumber) + '</h2>',
       '  <p class="checkout-confirmation-id">Gracias, ' + escapeHtml(customerData.first_name) + '. Tu pedido está a la espera de transferencia</p>',

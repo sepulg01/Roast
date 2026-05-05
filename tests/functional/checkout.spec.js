@@ -196,6 +196,12 @@ test.describe('checkout 2-step order and transfer flow', () => {
 
     await expect(page.getByRole('heading', { name: 'Confirmación N° 0205789' })).toBeVisible();
     await expect(page.getByRole('img', { name: 'Roast' })).toBeVisible();
+    const logoFrameDelta = await page.locator('.checkout-confirmation-logo-frame').evaluate(element => {
+      const frame = element.getBoundingClientRect();
+      const image = element.querySelector('img').getBoundingClientRect();
+      return Math.abs((frame.left + frame.width / 2) - (image.left + image.width / 2));
+    });
+    expect(logoFrameDelta).toBeLessThanOrEqual(1);
     await expect(page.getByText('Gracias, Camila. Tu pedido está a la espera de transferencia')).toBeVisible();
     await expect(page.getByText(/BCI/i)).toBeVisible();
     await expect(page.getByText(/Cuenta Corriente\s+61947059/i)).toBeVisible();
@@ -256,7 +262,9 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await page.locator('#accept_terms').check();
     await page.getByRole('button', { name: 'Pagar ahora' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Confirmación N° 20260502' })).toBeVisible();
+    const heading = page.getByRole('heading', { name: /^Confirmación N° \d{7}$/ });
+    await expect(heading).toBeVisible();
+    await expect(heading).not.toContainText('20260502');
     await expect(page.locator('.checkout-confirmation-panel')).not.toContainText('roast_20260502_161221_qd5qs');
   });
 

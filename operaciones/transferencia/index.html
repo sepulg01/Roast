@@ -20,7 +20,7 @@
     <div class="container">
       <article class="result-card" aria-live="polite">
         <p class="checkout-summary-kicker">Operación Roast</p>
-        <h1 id="adminTransferTitle">Validar transferencia</h1>
+        <h1 id="adminTransferTitle">Gestionar pedido</h1>
         <p class="muted" id="adminTransferCopy">Cargando pedido.</p>
 
         <section class="checkout-confirmation-section">
@@ -33,8 +33,11 @@
           </dl>
         </section>
 
-        <div class="checkout-step-actions">
-          <button type="button" class="btn btn-primary" id="adminConfirmTransferButton">Marcar transferencia recibida</button>
+        <div class="checkout-step-actions admin-status-actions" aria-label="Acciones operativas del pedido">
+          <button type="button" class="btn btn-primary" id="adminActionPaid" data-admin-status-action="paid">Marcar transferencia recibida</button>
+          <button type="button" class="btn btn-secondary" id="adminActionExpired" data-admin-status-action="expired">Informar pedido expirado</button>
+          <button type="button" class="btn btn-secondary" id="adminActionDelivering" data-admin-status-action="delivering">Informar pedido en despacho</button>
+          <button type="button" class="btn btn-secondary" id="adminActionDelivered" data-admin-status-action="delivered">Informar pedido entregado</button>
         </div>
       </article>
     </div>
@@ -47,15 +50,14 @@
     var orderId = params.get('order_id') || '';
     var token = params.get('token') || '';
     var actionParam = params.get('action') || '';
-    var action = 'paid';
-    var isLegacyConfirmLink = !actionParam;
     var title = document.getElementById('adminTransferTitle');
     var copy = document.getElementById('adminTransferCopy');
-    var button = document.getElementById('adminConfirmTransferButton');
     var number = document.getElementById('adminOrderNumber');
     var status = document.getElementById('adminOrderStatus');
     var total = document.getElementById('adminOrderTotal');
     var items = document.getElementById('adminOrderItems');
+    var actionButtons = Array.prototype.slice.call(document.querySelectorAll('[data-admin-status-action]'));
+    var currentStatus = '';
     var formatter = new Intl.NumberFormat('es-CL', {
       style: 'currency',
       currency: 'CLP',
@@ -63,34 +65,37 @@
     });
     var actionConfig = {
       paid: {
-        title: 'Validar transferencia',
-        button: 'Marcar transferencia recibida',
         loading: 'Marcando transferencia como recibida.',
-        successTitle: 'Transferencia validada',
         success: 'Pedido marcado como pagado.',
         already: 'Este pedido ya está marcado como pagado.',
         allowedFrom: ['pending_transfer']
       },
       expired: {
-        title: 'Marcar pedido vencido',
-        button: 'Marcar pedido vencido',
-        loading: 'Marcando pedido como vencido.',
-        successTitle: 'Pedido vencido',
-        success: 'Pedido marcado como vencido.',
+        loading: 'Marcando pedido como expirado.',
+        success: 'Pedido marcado como expirado.',
         already: 'Este pedido ya está marcado como vencido.',
         allowedFrom: ['pending_transfer']
       },
       delivering: {
-        title: 'Marcar pedido en despacho',
-        button: 'Marcar en despacho',
         loading: 'Marcando pedido en despacho.',
-        successTitle: 'Pedido en despacho',
         success: 'Pedido marcado en despacho.',
         already: 'Este pedido ya está en despacho.',
         allowedFrom: ['paid']
+      },
+      delivered: {
+        loading: 'Marcando pedido como entregado.',
+        success: 'Pedido marcado como entregado.',
+        already: 'Este pedido ya está marcado como entregado.',
+        allowedFrom: ['delivering']
       }
     };
-    action = normalizeAction(actionParam || 'paid');
+    var statusLabels = {
+      pending_transfer: 'esperando transferencia',
+      paid: 'pagado',
+      expired: 'expirado',
+      delivering: 'en despacho',
+      delivered: 'entregado'
+    };
 
     function normalizeAction(value) {
       var normalized = String(value || '').trim().toLowerCase();
@@ -101,24 +106,44 @@
       if (copy) copy.textContent = message;
     }
 
-    function setDisabled(disabled) {
-      if (button) button.disabled = disabled;
+    function getActionToken(action) {
+      return params.get(action + '_token') || (action === normalizeAction(actionParam) ? token : '');
     }
 
-    function getActionConfig() {
-      return actionConfig[action] || actionConfig.paid;
+    function setAllDisabled(disabled) {
+      actionButtons.forEach(function(button) {
+        button.disabled = disabled;
+      });
     }
 
-    function syncActionCopy() {
-      var config = getActionConfig();
-
-      if (title) title.textContent = config.title;
-      if (button) button.textContent = config.button;
+    function canRunAction(action, statusValue) {
+      var config = actionConfig[action] || actionConfig.paid;
+      return config.allowedFrom.indexOf(statusValue) !== -1;
     }
 
-    function canRunAction(currentStatus) {
-      var config = getActionConfig();
-      return config.allowedFrom.indexOf(currentStatus) !== -1;
+    function syncActions() {
+      var enabledCount = 0;
+
+      actionButtons.forEach(function(button) {
+        var action = normalizeAction(button.getAttribute('data-admin-status-action'));
+        var hasToken = Boolean(getActionToken(action));
+        var enabled = hasToken && canRunAction(action, currentStatus);
+        button.disabled = !enabled;
+        button.setAttribute('aria-disabled', String(!enabled));
+        if (enabled) enabledCount += 1;
+      });
+
+      if (currentStatus === 'delivered' || currentStatus === 'expired') {
+        setMessage('Pedido en estado final: ' + (statusLabels[currentStatus] || currentStatus) + '.');
+        return;
+      }
+
+      if (!enabledCount) {
+        setMessage('No hay acciones disponibles para pedidos en estado ' + (statusLabels[currentStatus] || currentStatus || 'desconocido') + '.');
+        return;
+      }
+
+      setMessage('Revisa el estado real del pedido antes de ejecutar una acción.');
     }
 
     async function fetchJson(url, options) {
@@ -133,10 +158,10 @@
     }
 
     async function loadOrder() {
-      syncActionCopy();
+      if (title) title.textContent = 'Gestionar pedido';
 
-      if (!orderId || !token) {
-        setDisabled(true);
+      if (!orderId) {
+        setAllDisabled(true);
         setMessage('Falta información para ejecutar esta acción.');
         return;
       }
@@ -146,57 +171,46 @@
       if (status) status.textContent = payload.internal_status || 'Sin estado';
       if (total) total.textContent = formatter.format(Number(payload.total_clp || 0));
       if (items) items.textContent = payload.items_label || 'Sin detalle';
-      var currentStatus = payload.internal_status || '';
-      var config = getActionConfig();
-
-      if (currentStatus === action) {
-        setMessage(config.already);
-        setDisabled(true);
-        return;
-      }
-
-      if (!canRunAction(currentStatus)) {
-        setMessage('Esta acción no está disponible para pedidos en estado ' + (currentStatus || 'desconocido') + '.');
-        setDisabled(true);
-        return;
-      }
-
-      setMessage(action === 'paid' ? 'Revisa el banco antes de marcar este pedido como pagado.' : 'Revisa el pedido antes de ejecutar esta acción.');
-      setDisabled(false);
+      currentStatus = payload.internal_status || '';
+      syncActions();
     }
 
-    async function runAction() {
-      var config = getActionConfig();
-      setDisabled(true);
+    async function runAction(action, button) {
+      var config = actionConfig[action] || actionConfig.paid;
+      var actionToken = getActionToken(action);
+
+      if (!actionToken || !canRunAction(action, currentStatus)) return;
+
+      setAllDisabled(true);
       setMessage(config.loading);
 
       try {
-        var endpoint = isLegacyConfirmLink
-          ? '/api/admin/orders/' + encodeURIComponent(orderId) + '/confirm-transfer'
-          : '/api/admin/orders/' + encodeURIComponent(orderId) + '/status';
-        var body = isLegacyConfirmLink ? { token: token } : { token: token, status: action };
+        var endpoint = '/api/admin/orders/' + encodeURIComponent(orderId) + '/status';
         var payload = await fetchJson(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(body)
+          body: JSON.stringify({ token: actionToken, status: action })
         });
-        if (status) status.textContent = payload.internal_status || action;
-        if (title) title.textContent = config.successTitle;
+        currentStatus = payload.internal_status || action;
+        if (status) status.textContent = currentStatus;
+        syncActions();
         setMessage(payload.already_status || payload.already_paid ? config.already : config.success);
       } catch (error) {
-        setDisabled(false);
+        syncActions();
         setMessage(error.message || 'No se pudo completar la acción.');
       }
     }
 
-    if (button) {
-      button.addEventListener('click', runAction);
-    }
+    actionButtons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        runAction(normalizeAction(button.getAttribute('data-admin-status-action')), button);
+      });
+    });
 
     loadOrder().catch(function(error) {
-      setDisabled(true);
+      setAllDisabled(true);
       setMessage(error.message || 'No se pudo cargar el pedido.');
     });
   }());

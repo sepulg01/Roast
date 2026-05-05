@@ -14,7 +14,7 @@ import {
   buildPendingTransferNotificationPayload
 } from '../../worker/src/lib/orders.js';
 import { notifyOperationalEvent, notifyOperationalEventWithResults } from '../../worker/src/lib/notifications.js';
-import { hmacSha256Hex } from '../../worker/src/lib/utils.js';
+import { buildOrderNumber, hmacSha256Hex } from '../../worker/src/lib/utils.js';
 
 let serviceAccountJson;
 
@@ -353,7 +353,8 @@ test('notifyOperationalEvent sends paid customer confirmation through Resend', a
         shipping_clp: 0,
         total_clp: 36000,
         paid_at: '2026-05-04 15:30:00',
-        admin_delivering_url: 'https://caferoast.cl/operaciones/transferencia/?order_id=roast_internal_001&action=delivering&token=test-token'
+        admin_delivering_url: 'https://caferoast.cl/operaciones/transferencia/?order_id=roast_internal_001&action=delivering&delivering_token=test-token',
+        admin_delivered_url: 'https://caferoast.cl/operaciones/transferencia/?order_id=roast_internal_001&action=delivered&delivered_token=delivered-token'
       }
     }
   );
@@ -364,6 +365,7 @@ test('notifyOperationalEvent sends paid customer confirmation through Resend', a
   assert.equal(requests[1].headers['Idempotency-Key'], 'roast:roast_internal_001:paid:customer');
   assert.deepEqual(requests[0].body.to, ['operaciones@caferoast.cl']);
   assert.match(requests[0].body.html, /Marcar en despacho/);
+  assert.match(requests[0].body.html, /Informar pedido entregado/);
   assert.deepEqual(requests[1].body.to, ['cliente@example.com']);
   assert.match(requests[1].body.subject, /Confirmamos tu transferencia 0205789/);
   assert.match(requests[1].body.html, /Confirmamos tu transferencia/i);
@@ -540,6 +542,27 @@ test('checkout order accepts terms without accept_total, returns order number, a
     Eventos: []
   };
   const webhookRequests = [];
+  const salesReads = [];
+  const originalGetRandomValues = globalThis.crypto.getRandomValues;
+  const collisionNumber = buildOrderNumber(new Date(), {
+    getRandomValues(array) {
+      array[0] = 789;
+      return array;
+    }
+  });
+  const randomValues = [12345, 789];
+
+  globalThis.crypto.getRandomValues = array => {
+    if (randomValues.length) {
+      array[0] = randomValues.shift();
+      return array;
+    }
+
+    return originalGetRandomValues.call(globalThis.crypto, array);
+  };
+  t.after(() => {
+    globalThis.crypto.getRandomValues = originalGetRandomValues;
+  });
 
   installFetchMock(t, async (url, init = {}) => {
     if (url === 'https://oauth2.googleapis.com/token') {
@@ -584,6 +607,19 @@ test('checkout order accepts terms without accept_total, returns order number, a
 
     if (url.includes('/values/Config!A%3AZ')) {
       return jsonResponse({ values: configRows() });
+    }
+
+    if (url.includes('/values/Ventas!A%3AAZ')) {
+      salesReads.push(url);
+      return jsonResponse({
+        values: rowsFromObjects(SALES_HEADERS, [
+          {
+            order_id: 'roast_existing_collision',
+            order_number: collisionNumber,
+            internal_status: 'pending_transfer'
+          }
+        ])
+      });
     }
 
     if (url.includes('/values/Clientes!A%3AAZ')) {
@@ -638,12 +674,14 @@ test('checkout order accepts terms without accept_total, returns order number, a
   assert.equal(payload.ok, true);
   assert.match(payload.order_id, /^roast_/);
   assert.match(payload.order_number, /^\d{7}$/);
+  assert.notEqual(payload.order_number, collisionNumber);
   assert.equal(payload.confirmation_number, payload.order_number);
   assert.notEqual(payload.confirmation_number, payload.order_id);
   assert.equal(payload.shipping_clp, 0);
   assert.equal(payload.total_clp, 36000);
 
   assert.equal(SALES_HEADERS.includes('order_number'), true);
+  assert.ok(salesReads.length >= 1);
   const salesRow = objectFromRow(SALES_HEADERS, appended.Ventas[0]);
   assert.equal(salesRow.order_id, payload.order_id);
   assert.equal(salesRow.order_number, payload.order_number);
@@ -670,10 +708,154 @@ test('checkout order accepts terms without accept_total, returns order number, a
   assert.equal(webhookRequests[0].payload.payload.order_number, payload.order_number);
 });
 
+test('admin status update backfills invalid visible order numbers before notifying paid', async t => {
+  const appended = {
+    Eventos: []
+  };
+  const updates = [];
+  const originalGetRandomValues = globalThis.crypto.getRandomValues;
+
+  globalThis.crypto.getRandomValues = array => {
+    array[0] = 321;
+    return array;
+  };
+  t.after(() => {
+    globalThis.crypto.getRandomValues = originalGetRandomValues;
+  });
+
+  installFetchMock(t, async (url, init = {}) => {
+    if (url === 'https://oauth2.googleapis.com/token') {
+      return jsonResponse({ access_token: 'test-access-token', expires_in: 3600 });
+    }
+
+    const sheetName = sheetNameFromAppendUrl(url);
+    if (sheetName) {
+      const body = JSON.parse(init.body);
+      appended[sheetName].push(body.values[0]);
+      return jsonResponse({ updates: { updatedRows: 1 } });
+    }
+
+    if (init.method === 'PUT' && url.includes('/values/Ventas!')) {
+      updates.push({ sheet: 'Ventas', row: objectFromRow(SALES_HEADERS, JSON.parse(init.body).values[0]) });
+      return jsonResponse({ updatedRows: 1 });
+    }
+
+    if (init.method === 'PUT' && url.includes('/values/Pagos_Flow!')) {
+      updates.push({ sheet: 'Pagos_Flow', row: objectFromRow(PAYMENT_HEADERS, JSON.parse(init.body).values[0]) });
+      return jsonResponse({ updatedRows: 1 });
+    }
+
+    if (init.method === 'PUT' && url.includes('/values/Clientes!')) {
+      updates.push({ sheet: 'Clientes', row: objectFromRow(CLIENT_HEADERS, JSON.parse(init.body).values[0]) });
+      return jsonResponse({ updatedRows: 1 });
+    }
+
+    if (url.includes('/values/Ventas!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(SALES_HEADERS, [
+          {
+            order_id: 'roast_internal_001',
+            order_number: '20260505',
+            customer_id: 'cus_001',
+            customer_name: 'Camila Roast',
+            email: 'cliente@example.com',
+            phone: '+56991746361',
+            commune: 'Providencia',
+            address: 'Av. Siempre Viva 123',
+            items_label: 'Downtime 1 kg',
+            subtotal_clp: '36000',
+            shipping_clp: '0',
+            total_clp: '36000',
+            internal_status: 'pending_transfer'
+          }
+        ])
+      });
+    }
+
+    if (url.includes('/values/Pagos_Flow!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(PAYMENT_HEADERS, [
+          {
+            payment_id: 'pay_001',
+            order_id: 'roast_internal_001',
+            internal_status: 'pending_transfer',
+            amount_clp: '36000',
+            payer_email: 'cliente@example.com',
+            payment_method: 'transfer'
+          }
+        ])
+      });
+    }
+
+    if (url.includes('/values/Clientes!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(CLIENT_HEADERS, [
+          {
+            customer_id: 'cus_001',
+            full_name: 'Camila Roast',
+            email: 'cliente@example.com',
+            order_count: '1',
+            total_paid_clp: '0'
+          }
+        ])
+      });
+    }
+
+    if (url.includes('/values/Lineas_Pedido!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(LINE_HEADERS, [
+          {
+            order_id: 'roast_internal_001',
+            product_name: 'Downtime',
+            format_label: '1 kg',
+            grind: 'grano entero',
+            quantity: '1',
+            unit_price_clp: '36000',
+            line_subtotal_clp: '36000'
+          }
+        ])
+      });
+    }
+
+    throw new Error(`Unexpected fetch: ${url}`);
+  });
+
+  const token = await hmacSha256Hex('admin-secret', 'set-status:paid:roast_internal_001');
+  const response = await worker.fetch(
+    new Request('https://caferoast.cl/api/admin/orders/roast_internal_001/status', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ token, status: 'paid' })
+    }),
+    {
+      GOOGLE_SHEET_ID: 'test-sheet',
+      GOOGLE_SERVICE_ACCOUNT_JSON: getServiceAccountJson(),
+      ADMIN_ACTION_SECRET: 'admin-secret'
+    },
+    createContext()
+  );
+  const payload = await response.json();
+  const salesUpdate = updates.find(update => update.sheet === 'Ventas').row;
+  const eventRow = objectFromRow(EVENT_HEADERS, appended.Eventos[0]);
+  const eventPayload = JSON.parse(eventRow.payload_json);
+
+  assert.equal(response.status, 200, payload.error);
+  assert.match(payload.confirmation_number, /^\d{7}$/);
+  assert.notEqual(payload.confirmation_number, '20260505');
+  assert.equal(salesUpdate.order_number, payload.confirmation_number);
+  assert.equal(eventPayload.confirmation_number, payload.confirmation_number);
+});
+
 test('public order lookup returns confirmation number while still looking up by internal order_id', async t => {
   installFetchMock(t, async (url) => {
     if (url === 'https://oauth2.googleapis.com/token') {
       return jsonResponse({ access_token: 'test-access-token', expires_in: 3600 });
+    }
+
+    if (url.includes('/values/Ventas!') && !url.includes('/values/Ventas!A%3AAZ')) {
+      return jsonResponse({ updatedRows: 1 });
     }
 
     if (url.includes('/values/Ventas!A%3AAZ')) {
@@ -717,6 +899,10 @@ test('public order lookup can recover confirmation number from event payload whe
   installFetchMock(t, async (url) => {
     if (url === 'https://oauth2.googleapis.com/token') {
       return jsonResponse({ access_token: 'test-access-token', expires_in: 3600 });
+    }
+
+    if (url.includes('/values/Ventas!') && !url.includes('/values/Ventas!A%3AAZ')) {
+      return jsonResponse({ updatedRows: 1 });
     }
 
     if (url.includes('/values/Ventas!A%3AAZ')) {
@@ -1179,6 +1365,107 @@ test('admin status update marks paid orders as delivering without notifying cust
   assert.equal(eventRow.event_type, 'delivering');
   assert.equal(eventRow.from_status, 'paid');
   assert.equal(eventRow.to_status, 'delivering');
+  assert.equal(resendRequests.length, 0);
+});
+
+test('admin status update marks delivering orders as delivered without notifying customer', async t => {
+  const appended = {
+    Eventos: []
+  };
+  const updates = [];
+  const resendRequests = [];
+  const deliveredAtPattern = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+
+  installFetchMock(t, async (url, init = {}) => {
+    if (url === 'https://api.resend.com/emails') {
+      resendRequests.push(JSON.parse(init.body));
+      return jsonResponse({ id: `email_${resendRequests.length}` }, 202);
+    }
+
+    if (url === 'https://oauth2.googleapis.com/token') {
+      return jsonResponse({ access_token: 'test-access-token', expires_in: 3600 });
+    }
+
+    const sheetName = sheetNameFromAppendUrl(url);
+    if (sheetName) {
+      const body = JSON.parse(init.body);
+      appended[sheetName].push(body.values[0]);
+      return jsonResponse({ updates: { updatedRows: 1 } });
+    }
+
+    if (init.method === 'PUT' && url.includes('/values/Ventas!')) {
+      updates.push({ sheet: 'Ventas', row: objectFromRow(SALES_HEADERS, JSON.parse(init.body).values[0]) });
+      return jsonResponse({ updatedRows: 1 });
+    }
+
+    if (url.includes('/values/Ventas!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(SALES_HEADERS, [
+          {
+            order_id: 'roast_internal_001',
+            order_number: '0205789',
+            customer_id: 'cus_001',
+            customer_name: 'Camila Roast',
+            email: 'cliente@example.com',
+            items_label: 'Downtime 1 kg',
+            total_clp: '36000',
+            internal_status: 'delivering',
+            paid_at: '2026-05-04 15:30:00',
+            dispatched_at: '2026-05-04 16:30:00'
+          }
+        ])
+      });
+    }
+
+    if (url.includes('/values/Lineas_Pedido!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(LINE_HEADERS, [
+          {
+            order_id: 'roast_internal_001',
+            product_name: 'Downtime',
+            format_label: '1 kg',
+            grind: 'grano entero',
+            quantity: '1',
+            unit_price_clp: '36000',
+            line_subtotal_clp: '36000'
+          }
+        ])
+      });
+    }
+
+    throw new Error(`Unexpected fetch: ${url}`);
+  });
+
+  const token = await hmacSha256Hex('admin-secret', 'set-status:delivered:roast_internal_001');
+  const response = await worker.fetch(
+    new Request('https://caferoast.cl/api/admin/orders/roast_internal_001/status', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ token, status: 'delivered' })
+    }),
+    {
+      GOOGLE_SHEET_ID: 'test-sheet',
+      GOOGLE_SERVICE_ACCOUNT_JSON: getServiceAccountJson(),
+      ADMIN_ACTION_SECRET: 'admin-secret',
+      RESEND_API_KEY: 'resend_test_key'
+    },
+    createContext()
+  );
+  const payload = await response.json();
+
+  assert.equal(response.status, 200, payload.error);
+  assert.equal(payload.ok, true);
+  assert.equal(payload.internal_status, 'delivered');
+  const salesUpdate = updates.find(update => update.sheet === 'Ventas').row;
+  assert.equal(salesUpdate.internal_status, 'delivered');
+  assert.match(salesUpdate.delivered_at, deliveredAtPattern);
+  assert.equal(appended.Eventos.length, 1);
+  const eventRow = objectFromRow(EVENT_HEADERS, appended.Eventos[0]);
+  assert.equal(eventRow.event_type, 'delivered');
+  assert.equal(eventRow.from_status, 'delivering');
+  assert.equal(eventRow.to_status, 'delivered');
   assert.equal(resendRequests.length, 0);
 });
 
