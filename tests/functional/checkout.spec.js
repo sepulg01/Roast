@@ -123,6 +123,25 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await expect(page.locator('#checkoutSummaryItems')).toContainText(/Downtime.*250g.*Grano Entero/i);
   });
 
+  test('cart summary updates when products are added and removed', async ({ page }) => {
+    await installMockWorkerApi(page);
+    await page.goto('/pedido/', { waitUntil: 'domcontentloaded' });
+
+    await expect(page.locator('#checkoutSummaryItems .checkout-summary-empty')).toHaveText('Aún no hay productos en tu carrito');
+
+    await page.locator('[data-current-item-field="format_code"]').selectOption('500g');
+    await page.locator('[data-current-item-field="grind"]').selectOption('molienda media');
+    await page.getByRole('button', { name: 'Agregar al carrito' }).click();
+
+    await expect(page.locator('#checkoutSummaryItems')).toContainText(/Downtime.*500g.*Molienda Media/i);
+    await expect(page.locator('#summarySubtotal')).toContainText('$19.900');
+
+    await page.getByRole('button', { name: /Eliminar Downtime del carrito/i }).click();
+
+    await expect(page.locator('#checkoutSummaryItems .checkout-summary-empty')).toHaveText('Aún no hay productos en tu carrito');
+    await expect(page.locator('#summarySubtotal')).toContainText('$0');
+  });
+
   test('captures first and last name separately before choosing payment', async ({ page }) => {
     await installMockWorkerApi(page);
     await reachDataStep(page);
@@ -233,6 +252,59 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await expect(page.getByRole('button', { name: /Eliminar/i })).toHaveCount(0);
   });
 
+  test('selected grind is sent to checkout and rendered in confirmation', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page);
+    await reachDataStep(page, { quantity: 1, format: '500g' });
+    await fillCustomerData(page);
+    await choosePaymentMethod(page, /transferencia/i);
+
+    await page.locator('#checkoutStep2Back').click();
+    await page.locator('[data-current-item-field="grind"]').selectOption('molienda gruesa');
+    await page.locator('[data-summary-remove-item]').first().click();
+    await page.getByRole('button', { name: 'Agregar al carrito' }).click();
+    await page.getByRole('button', { name: 'Finalizar Pedido' }).click();
+    await page.locator('#accept_terms').check();
+    await page.getByRole('button', { name: 'Pagar ahora' }).click();
+
+    await expect.poll(() => mockApi.checkoutOrderRequests.length).toBe(1);
+    expect(mockApi.checkoutOrderRequests[0].items).toEqual([
+      expect.objectContaining({
+        format_code: '500g',
+        grind: 'molienda gruesa'
+      })
+    ]);
+    await expect(page.locator('.checkout-confirmation-panel')).toContainText('Molienda Gruesa');
+  });
+
+  test('required customer fields and invalid email show inline errors before submit', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page);
+    await reachDataStep(page, { quantity: 1, format: '250g' });
+
+    for (const fieldId of ['first_name', 'last_name', 'email', 'phone', 'commune', 'address']) {
+      await page.locator(`#${fieldId}`).focus();
+      await page.locator('#notes').focus();
+    }
+
+    await expect(page.locator('[data-error-for="first_name"]')).toHaveText('Ingresa tu nombre.');
+    await expect(page.locator('[data-error-for="last_name"]')).toHaveText('Ingresa tu apellido.');
+    await expect(page.locator('[data-error-for="email"]')).toHaveText('Ingresa un email válido.');
+    await expect(page.locator('[data-error-for="phone"]')).toHaveText('Ingresa un teléfono.');
+    await expect(page.locator('[data-error-for="commune"]')).toHaveText('Selecciona tu comuna.');
+    await expect(page.locator('[data-error-for="address"]')).toHaveText('Ingresa tu dirección.');
+
+    await page.locator('#first_name').fill('Camila');
+    await page.locator('#last_name').fill('Roast');
+    await page.locator('#email').fill('cliente-invalido');
+    await page.locator('#phone').fill('+56991746361');
+    await page.locator('#commune').selectOption('Providencia');
+    await page.locator('#address').fill('Av. Siempre Viva 123');
+    await page.locator('#accept_terms').check();
+    await page.getByRole('button', { name: 'Pagar ahora' }).click();
+
+    await expect(page.locator('[data-error-for="email"]')).toHaveText('Ingresa un email válido.');
+    expect(mockApi.checkoutOrderRequests).toHaveLength(0);
+  });
+
   test('retries once with legacy accept_total when deployed worker still requires it', async ({ page }) => {
     const mockApi = await installMockWorkerApi(page, { checkoutOrderRequiresAcceptTotal: true });
     await reachDataStep(page, { quantity: 1, format: '250g' });
@@ -329,6 +401,21 @@ test.describe('checkout 2-step order and transfer flow', () => {
     }));
   });
 
+  test('non-dispatchable commune blocks checkout with no available shipping', async ({ page }) => {
+    await installMockWorkerApi(page, {
+      communeOverrides: {
+        Pudahuel: { dispatchable: false }
+      }
+    });
+    await reachDataStep(page, { quantity: 1, format: '250g' });
+    await fillCustomerData(page, { commune: 'Pudahuel' });
+
+    await expect(page.locator('#summaryShipping')).toHaveText('No disponible');
+    await expect(page.locator('#checkoutCoverageNote')).toContainText('fuera de cobertura automática');
+    await expect(page.locator('[data-error-for="commune"]')).toHaveText('Por ahora no finalizamos pedidos web para esa comuna.');
+    await expect(page.getByRole('button', { name: 'Pagar ahora' })).toBeDisabled();
+  });
+
   test('HTML API response explains checkout-orders backend route misconfiguration', async ({ page }) => {
     await installMockWorkerApi(page, { checkoutOrderHtmlError: true });
     await reachDataStep(page, { quantity: 2, format: '1kg' });
@@ -350,5 +437,50 @@ test.describe('checkout 2-step order and transfer flow', () => {
 
     await expect(page.locator('#checkoutStatus')).toContainText('El backend del checkout no está respondiendo correctamente');
     await expect(page.locator('#checkoutStatus')).toContainText('/api/checkout-orders');
+  });
+
+  test('checkout order 422 error keeps customer on data step with backend message', async ({ page }) => {
+    await installMockWorkerApi(page, {
+      checkoutOrderApiError: {
+        status: 422,
+        body: {
+          ok: false,
+          error: 'Address commune does not match geocoding result'
+        }
+      }
+    });
+    await reachDataStep(page, { quantity: 1, format: '250g' });
+    await fillCustomerData(page);
+    await choosePaymentMethod(page, /transferencia/i);
+    await page.locator('#accept_terms').check();
+    await page.getByRole('button', { name: 'Pagar ahora' }).click();
+
+    await expect(page.locator('#checkoutStatus')).toContainText('Address commune does not match geocoding result');
+    await expect(page.locator('[data-checkout-step="2"]')).toHaveClass(/checkout-step-active/);
+    await expect(page.locator('.checkout-confirmation-panel')).toHaveCount(0);
+  });
+
+  test('malformed checkout JSON response renders recoverable error', async ({ page }) => {
+    await installMockWorkerApi(page, { checkoutOrderMalformedJson: true });
+    await reachDataStep(page, { quantity: 1, format: '250g' });
+    await fillCustomerData(page);
+    await choosePaymentMethod(page, /transferencia/i);
+    await page.locator('#accept_terms').check();
+    await page.getByRole('button', { name: 'Pagar ahora' }).click();
+
+    await expect(page.locator('#checkoutStatus')).toContainText('La API del checkout respondió con JSON inválido.');
+    await expect(page.locator('.checkout-confirmation-panel')).toHaveCount(0);
+  });
+
+  test('network failure on checkout order renders recoverable error', async ({ page }) => {
+    await installMockWorkerApi(page, { checkoutOrderNetworkFailure: true });
+    await reachDataStep(page, { quantity: 1, format: '250g' });
+    await fillCustomerData(page);
+    await choosePaymentMethod(page, /transferencia/i);
+    await page.locator('#accept_terms').check();
+    await page.getByRole('button', { name: 'Pagar ahora' }).click();
+
+    await expect(page.locator('#checkoutStatus')).toContainText('No se pudo finalizar el pedido por transferencia');
+    await expect(page.locator('.checkout-confirmation-panel')).toHaveCount(0);
   });
 });

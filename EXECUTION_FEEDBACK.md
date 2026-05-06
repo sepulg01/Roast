@@ -574,3 +574,19 @@
 - Validacion enfocada realizada: ciclo rojo/verde Worker con `npm run test:worker`; ciclo rojo/verde checkout con `npm run test:functional -- --reporter=line tests/functional/checkout.spec.js`.
 - Completado totalmente: limpieza de rama remota, correccion visual de transferencia, molienda en detalle operativo, persistencia/reutilizacion de numero visible y cobertura automatizada enfocada.
 - Pendiente/deferido: validar en produccion con pedido `NO PREPARAR` despues del deploy automatico, recorriendo cambio de estados y revisando el numero visible en emails, panel operativo y Sheets.
+
+## 2026-05-06 - Matriz funcional completa de compra y estados
+
+- Se amplio la suite Playwright local para cubrir la matriz de compra por transferencia, estados operativos manuales y estados Flow legado visibles sin reactivar Flow en checkout.
+- `tests/functional/helpers/mockWorkerApi.js` ahora permite simular comunas no despachables, errores de checkout, JSON malformado, fallas de red, respuestas configurables de `/api/orders/:id` y errores/idempotencia del endpoint admin.
+- `checkout.spec.js` cubre agregar/remover productos, molienda seleccionada, validaciones inline, comuna no cubierta, envio gratis/cobrado, transferencia exitosa y fallos recuperables de `/api/checkout-orders`.
+- `payment-result.spec.js` cubre `pending_transfer`, `paid`, `link_sent`, `pending_payment`, `payment_failed`, `canceled`, `expired`, `manual_review`, `delivering`, `delivered`, `contact_requested`, estado desconocido y errores de API.
+- `static-routes.spec.js` cubre finales `expired`/`delivered`, token admin invalido, transicion rechazada e idempotencia `already_status`.
+- Se corrigio la visibilidad de elementos con atributo `hidden` para que el boton `Retomar confirmación` solo quede visible en `link_sent` y `pending_payment`.
+- Se agrego `scripts/e2e-purchase-production.mjs` y el workflow manual `Purchase E2E Production`, que crea pedidos reales `NO PREPARAR`, valida numero `DDMMRRR`, consulta `/api/orders/:order_id` y recorre `paid -> delivering -> delivered`; opcionalmente crea un pedido separado `expired`.
+- El E2E productivo queda bloqueado fuera de GitHub Actions y usa solo secretos del Environment `production`, especialmente `ADMIN_ACTION_SECRET`.
+- Se agrego `npm run test:functional:purchase` y `npm run e2e:purchase-production`; `test:static` ahora valida sintaxis del nuevo script productivo.
+- Se agrego la aprobacion `copy-approvals/2026-05-06-functional-purchase-tests.md`.
+- Validacion enfocada realizada: ciclo rojo/verde con `npm run test:functional:purchase -- --project=chromium --reporter=line`, primero con 16 fallas esperadas por mocks faltantes y luego con 81 pruebas pasando.
+- Completado totalmente: matriz funcional local, mocks configurables, script/workflow productivo y guardia de secretos no-locales.
+- Pendiente/deferido: ejecutar manualmente `Purchase E2E Production` desde GitHub cuando se quiera crear pedidos reales `NO PREPARAR`; confirmar visualmente emails en los inbox porque el workflow no tiene acceso al correo.

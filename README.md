@@ -95,6 +95,7 @@ El deploy productivo del Worker no depende de variables locales. GitHub Actions 
 
 - `.github/workflows/worker-secrets-sync.yml`: manual; sincroniza secretos persistentes de GitHub hacia Cloudflare Worker con `wrangler secret put`.
 - `.github/workflows/worker-deploy.yml`: automatico en push a `main` y manual; corre checks, funcionales, sincroniza secretos requeridos, ejecuta `wrangler deploy` y smoke productivo.
+- `.github/workflows/purchase-e2e-production.yml`: manual; crea pedidos reales `NO PREPARAR`, valida numero visible y recorre estados operativos usando secretos del Environment `production`.
 - `npm run smoke:worker-production`: valida `/api/health`, que Google/Resend esten configurados, `/api/public-catalog` y que `/api/checkout-orders` ya no exija `accept_total`.
 
 ## Variables Y Secretos
@@ -136,6 +137,7 @@ npm run test:static
 npm --prefix worker run check
 npx playwright install chromium
 npm run test:functional -- --reporter=line
+npm run test:functional:purchase -- --reporter=line
 ```
 
 Para sincronizar la pestaña `README` de la planilla:
@@ -171,6 +173,7 @@ npm run test:functional -- --reporter=line
 npm run test:static
 npm --prefix worker run check
 npm run test:functional -- --reporter=line
+npm run test:functional:purchase -- --reporter=line
 node scripts/smoke-worker-production.mjs --base-url https://caferoast.cl
 git diff --check
 ROAST_OLD_SUPPORT_PATTERN='numero-antiguo-o-wa-me-antiguo'

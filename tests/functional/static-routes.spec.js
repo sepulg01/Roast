@@ -231,6 +231,88 @@ test.describe('static routes', () => {
     await expect(page.locator('#adminActionDelivered')).toBeDisabled();
   });
 
+  test('admin transfer page disables every action when order is expired', async ({ page }) => {
+    await installMockWorkerApi(page, { orderStatus: 'expired' });
+    await page.goto('/operaciones/transferencia/?order_id=ORD_TEST_001&paid_token=paid-token&expired_token=expired-token&delivering_token=delivering-token&delivered_token=delivered-token', { waitUntil: 'domcontentloaded' });
+
+    await expect(page.locator('#adminTransferCopy')).toContainText('Pedido en estado final');
+    await expect(page.locator('#adminActionPaid')).toBeDisabled();
+    await expect(page.locator('#adminActionExpired')).toBeDisabled();
+    await expect(page.locator('#adminActionDelivering')).toBeDisabled();
+    await expect(page.locator('#adminActionDelivered')).toBeDisabled();
+  });
+
+  test('admin transfer page reports invalid token errors without changing state', async ({ page }) => {
+    const mockApi = await installMockWorkerApi(page, {
+      orderStatus: 'pending_transfer',
+      adminStatusResponse: {
+        status: 403,
+        body: {
+          ok: false,
+          error: 'Invalid admin action token'
+        }
+      }
+    });
+    await page.goto('/operaciones/transferencia/?order_id=ORD_TEST_001&paid_token=bad-token&expired_token=expired-token', { waitUntil: 'domcontentloaded' });
+
+    await page.locator('#adminActionPaid').click();
+
+    expect(mockApi.adminStatusRequests).toEqual([
+      expect.objectContaining({
+        token: 'bad-token',
+        status: 'paid'
+      })
+    ]);
+    await expect(page.locator('#adminOrderStatus')).toHaveText('pending_transfer');
+    await expect(page.locator('#adminTransferCopy')).toContainText('Invalid admin action token');
+    await expect(page.locator('#adminActionPaid')).toBeEnabled();
+  });
+
+  test('admin transfer page reports invalid transition errors without changing state', async ({ page }) => {
+    await installMockWorkerApi(page, {
+      orderStatus: 'paid',
+      adminStatusResponse: {
+        status: 409,
+        body: {
+          ok: false,
+          error: 'Order status paid cannot move to delivering'
+        }
+      }
+    });
+    await page.goto('/operaciones/transferencia/?order_id=ORD_TEST_001&delivering_token=delivering-token', { waitUntil: 'domcontentloaded' });
+
+    await page.locator('#adminActionDelivering').click();
+
+    await expect(page.locator('#adminOrderStatus')).toHaveText('paid');
+    await expect(page.locator('#adminTransferCopy')).toContainText('Order status paid cannot move to delivering');
+  });
+
+  test('admin transfer page handles idempotent already-status responses', async ({ page }) => {
+    await installMockWorkerApi(page, {
+      orderStatus: 'pending_transfer',
+      adminStatusResponse: {
+        status: 200,
+        body: {
+          ok: true,
+          order_id: 'ORD_TEST_001',
+          order_number: '0205789',
+          confirmation_number: '0205789',
+          internal_status: 'paid',
+          already_status: true,
+          already_paid: true
+        }
+      }
+    });
+    await page.goto('/operaciones/transferencia/?order_id=ORD_TEST_001&paid_token=paid-token&delivering_token=delivering-token', { waitUntil: 'domcontentloaded' });
+
+    await page.locator('#adminActionPaid').click();
+
+    await expect(page.locator('#adminOrderStatus')).toHaveText('paid');
+    await expect(page.locator('#adminTransferCopy')).toContainText('Este pedido ya está marcado como pagado.');
+    await expect(page.locator('#adminActionPaid')).toBeDisabled();
+    await expect(page.locator('#adminActionDelivering')).toBeEnabled();
+  });
+
   for (const width of overflowWidths) {
     test(`no horizontal overflow at ${width}px`, async ({ page }) => {
       await installMockWorkerApi(page, { orderStatus: 'paid' });

@@ -62,10 +62,19 @@ export const publicCatalogPayload = {
 };
 
 function buildPublicCatalogPayload(options = {}) {
+  const communeOverrides = options.communeOverrides || {};
+
   return {
     ...publicCatalogPayload,
     free_shipping_threshold_clp: options.freeShippingThresholdClp || publicCatalogPayload.free_shipping_threshold_clp,
-    communes: publicCatalogPayload.communes.map(commune => ({ ...commune })),
+    communes: publicCatalogPayload.communes.map(commune => {
+      const override = communeOverrides[commune.commune] || communeOverrides[String(commune.commune).toLowerCase()] || {};
+      const nextCommune = { ...commune, ...override };
+      if (Object.prototype.hasOwnProperty.call(override, 'dispatchable')) {
+        nextCommune.covered = Boolean(override.dispatchable);
+      }
+      return nextCommune;
+    }),
     catalog: publicCatalogPayload.catalog.map(item => ({ ...item }))
   };
 }
@@ -86,7 +95,7 @@ export function collectCriticalConsole(page) {
   return messages;
 }
 
-function orderPayload(status = 'paid') {
+function orderPayload(status = 'paid', overrides = {}) {
   const flowUrl = '/__mock-flow/checkout?token=test-token';
   return {
     ok: true,
@@ -98,7 +107,8 @@ function orderPayload(status = 'paid') {
     internal_status: status,
     flow_checkout_url: ['pending_payment', 'link_sent'].includes(status) ? flowUrl : '',
     support_email: 'contacto@caferoast.cl',
-    support_whatsapp: `${SUPPORT_WHATSAPP_URL}?text=Hola%20Roast.%20Necesito%20ayuda%20con%20mi%20pedido%20ORD_TEST_001.`
+    support_whatsapp: `${SUPPORT_WHATSAPP_URL}?text=Hola%20Roast.%20Necesito%20ayuda%20con%20mi%20pedido%20ORD_TEST_001.`,
+    ...overrides
   };
 }
 
@@ -205,11 +215,25 @@ export async function installMockWorkerApi(page, options = {}) {
       }
     }
 
+    if (options.checkoutOrderNetworkFailure) {
+      await route.abort('failed');
+      return;
+    }
+
     if (options.checkoutOrderHtmlError) {
       await route.fulfill({
         status: 200,
         contentType: 'text/html',
         body: '<!doctype html><p>not the checkout worker</p>'
+      });
+      return;
+    }
+
+    if (options.checkoutOrderMalformedJson) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{"ok":'
       });
       return;
     }
@@ -221,6 +245,18 @@ export async function installMockWorkerApi(page, options = {}) {
         body: JSON.stringify({
           ok: false,
           error: 'Not found'
+        })
+      });
+      return;
+    }
+
+    if (options.checkoutOrderApiError) {
+      await route.fulfill({
+        status: options.checkoutOrderApiError.status || 400,
+        contentType: 'application/json',
+        body: JSON.stringify(options.checkoutOrderApiError.body || {
+          ok: false,
+          error: 'Checkout order failed'
         })
       });
       return;
@@ -332,6 +368,18 @@ export async function installMockWorkerApi(page, options = {}) {
     }
 
     adminStatusRequests.push(statusRequest);
+    if (options.adminStatusResponse) {
+      await route.fulfill({
+        status: options.adminStatusResponse.status || 200,
+        contentType: 'application/json',
+        body: JSON.stringify(options.adminStatusResponse.body || {
+          ok: true,
+          internal_status: statusRequest.status || 'paid'
+        })
+      });
+      return;
+    }
+
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -375,10 +423,28 @@ export async function installMockWorkerApi(page, options = {}) {
   });
 
   await page.route('**/api/orders/*', async route => {
+    if (options.orderApiMalformedJson) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '{"ok":'
+      });
+      return;
+    }
+
+    if (options.orderApiResponse) {
+      await route.fulfill({
+        status: options.orderApiResponse.status || 200,
+        contentType: 'application/json',
+        body: JSON.stringify(options.orderApiResponse.body || {})
+      });
+      return;
+    }
+
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(orderPayload(options.orderStatus || 'paid'))
+      body: JSON.stringify(orderPayload(options.orderStatus || 'paid', options.orderPayloadOverrides || {}))
     });
   });
 

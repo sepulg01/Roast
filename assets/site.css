@@ -16,6 +16,7 @@
       --glass-border: rgba(245, 240, 232, 0.08);
       --nav-height: 68px;
     }
+    [hidden] { display: none !important; }
     html { scroll-behavior: smooth; }
     body.menu-open { overflow: hidden; }
     body {

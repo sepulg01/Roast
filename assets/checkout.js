@@ -111,7 +111,14 @@
   }
 
   async function fetchJsonOrThrow(path, options, fallbackMessage) {
-    var response = await fetch(buildApiUrl(path), options);
+    var response;
+
+    try {
+      response = await fetch(buildApiUrl(path), options);
+    } catch (error) {
+      throw new Error(fallbackMessage || 'No pudimos conectar con el backend del checkout.');
+    }
+
     var contentType = String(response.headers.get('content-type') || '').toLowerCase();
     var raw = await response.text();
     var payload = {};

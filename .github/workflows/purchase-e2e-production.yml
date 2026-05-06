@@ -1,0 +1,49 @@
+name: Purchase E2E Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Production base URL to test
+        required: true
+        default: https://caferoast.cl
+      include_expired:
+        description: Also create a second NO PREPARAR order and mark it expired
+        required: true
+        type: boolean
+        default: false
+
+concurrency:
+  group: purchase-e2e-production
+  cancel-in-progress: false
+
+jobs:
+  purchase-e2e:
+    name: Real purchase flow against production
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      ADMIN_ACTION_SECRET: ${{ secrets.ADMIN_ACTION_SECRET }}
+      PUBLIC_BASE_URL: ${{ secrets.PUBLIC_BASE_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run production purchase E2E
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--base-url "${{ inputs.base_url }}")
+          if [ "${{ inputs.include_expired }}" = "true" ]; then
+            args+=(--include-expired)
+          fi
+          node scripts/e2e-purchase-production.mjs "${args[@]}"
