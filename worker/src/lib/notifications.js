@@ -527,11 +527,8 @@ function getDisplayOrderNumber(payload) {
 
 function normalizeDisplayNumber(value) {
   const candidate = String(value || '').trim();
-  const exactDigits = candidate.match(/^\d{7,8}$/);
+  const exactDigits = candidate.match(/^\d{7}$/);
   if (exactDigits) return exactDigits[0];
-
-  const embeddedDigits = candidate.match(/\d{7,8}/);
-  if (embeddedDigits) return embeddedDigits[0];
 
   return '';
 }

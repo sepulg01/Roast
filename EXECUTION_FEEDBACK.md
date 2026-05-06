@@ -559,3 +559,18 @@
 - Validacion enfocada realizada: ciclo rojo/verde Worker con `node --test tests/worker/orders-notifications.test.mjs`; ciclo rojo/verde funcional con `npm run test:functional -- tests/functional/static-routes.spec.js --project=chromium --grep "admin transfer page" --reporter=line`; ciclo rojo/verde checkout con `npm run test:functional -- tests/functional/checkout.spec.js --project=chromium --grep "transfer payment creates|confirmation fallback avoids" --reporter=line`.
 - Completado totalmente: unicidad/backfill del numero visible, estado final `delivered`, panel operativo multi-boton, tokens por accion, ajuste visual de logo y cobertura automatizada enfocada.
 - Pendiente/deferido: validar en produccion con pedido `NO PREPARAR` despues del deploy automatico, incluyendo el flujo manual hasta `delivered`.
+
+## 2026-05-06 - Persistencia real del numero visible y limpieza de transferencia
+
+- Se elimino la rama remota obsoleta `origin/cloudflare/workers-autoconfig` via SSH y se ejecuto `git fetch --prune`; la rama `origin/feature/checkout-whatsapp-email-20260430` permanece como rama ya integrada en `main`.
+- Se confirmo que el token expirado correspondia al conector GitHub de Codex/MCP; no afecta el flujo Git por SSH para `fetch`, `pull`, `push` ni borrado remoto.
+- La confirmacion web de transferencia ya no muestra duplicadas las lineas `Cuenta Corriente 61947059` ni `Rut 17515638-0` bajo el titulo; esos datos quedan solo dentro de la lista de transferencia.
+- La fecha limite de transferencia paso a ser una fila `Vencimiento` dentro de la misma lista de datos bancarios.
+- La UI y los emails dejan de extraer numeros desde IDs internos `roast_YYYYMMDD_*`; solo se acepta `DDMMRRR` exacto como numero visible.
+- Los emails operativos y `items_label` de nuevos pedidos incluyen la molienda elegida por el cliente.
+- Los cambios de estado administrativos y Flow reutilizan `Ventas.order_number` valido o un numero previo de `Eventos`; solo generan un nuevo `DDMMRRR` si no existe ningun valor valido, y backfillean `Ventas.order_number`.
+- Se agrego guardia para crear el header `order_number` en `Ventas` cuando una planilla legacy no lo tenga, antes de persistir el backfill.
+- Se agrego la aprobacion `copy-approvals/2026-05-06-confirmation-transfer-cleanup.md`.
+- Validacion enfocada realizada: ciclo rojo/verde Worker con `npm run test:worker`; ciclo rojo/verde checkout con `npm run test:functional -- --reporter=line tests/functional/checkout.spec.js`.
+- Completado totalmente: limpieza de rama remota, correccion visual de transferencia, molienda en detalle operativo, persistencia/reutilizacion de numero visible y cobertura automatizada enfocada.
+- Pendiente/deferido: validar en produccion con pedido `NO PREPARAR` despues del deploy automatico, recorriendo cambio de estados y revisando el numero visible en emails, panel operativo y Sheets.

@@ -21,6 +21,7 @@ import {
 } from './utils.js';
 import {
   appendSheetObject,
+  ensureSheetHeaders,
   findSheetRowByField,
   getSheetValues,
   readSheetTable,
@@ -461,7 +462,11 @@ function calculateOrderTotals(hydratedItems, commune, config) {
 
 function buildItemsLabel(items) {
   return items
-    .map(item => `${item.product_name} ${item.format_label}${item.quantity > 1 ? ` x${item.quantity}` : ''}`)
+    .map(item => [
+      [item.product_name, item.format_label || item.format_code].filter(Boolean).join(' '),
+      item.grind,
+      item.quantity > 1 ? `x${item.quantity}` : ''
+    ].filter(Boolean).join(' · '))
     .join(' + ');
 }
 
@@ -497,11 +502,23 @@ function isVisibleOrderNumber(value) {
   return VISIBLE_ORDER_NUMBER_PATTERN.test(normalizeText(value));
 }
 
+function getExactVisibleOrderNumber(...values) {
+  for (const value of values) {
+    const candidate = normalizeText(value);
+    if (isVisibleOrderNumber(candidate)) {
+      return candidate;
+    }
+  }
+
+  return '';
+}
+
 async function getUsedOrderNumbers(env) {
   const table = await readSheetTable(env, 'Ventas');
+  await ensureSheetHeaders(env, 'Ventas', table.headers, ['order_number']);
   return new Set(table.rows
-    .map(row => normalizeText(row.order_number || row.confirmation_number))
-    .filter(isVisibleOrderNumber));
+    .map(row => getExactVisibleOrderNumber(row.order_number, row.confirmation_number))
+    .filter(Boolean));
 }
 
 async function buildUniqueOrderNumber(env, date = new Date()) {
@@ -815,6 +832,10 @@ async function updateSalesOrder(env, orderId, updates) {
     throw new Error(`Order not found: ${orderId}`);
   }
 
+  if (Object.prototype.hasOwnProperty.call(updates, 'order_number')) {
+    await ensureSheetHeaders(env, 'Ventas', existing.headers, ['order_number']);
+  }
+
   const merged = {
     ...existing.row,
     ...updates,
@@ -867,7 +888,7 @@ async function getOrderLineItems(env, orderId) {
 }
 
 function buildOrderContactPayload(order, lineItems, whatsappUrl) {
-  const orderNumber = normalizeText(order.order_number || order.confirmation_number);
+  const orderNumber = getExactVisibleOrderNumber(order.order_number, order.confirmation_number);
 
   return {
     order_id: order.order_id,
@@ -951,7 +972,7 @@ export function buildPendingTransferNotificationPayload({
 }) {
   const items = Array.isArray(responseItems) ? responseItems : [];
   const total = toCurrencyNumber(orderMetrics && orderMetrics.total_clp);
-  const confirmationNumber = normalizeText(orderNumber || salesRow?.order_number || salesRow?.confirmation_number);
+  const confirmationNumber = getExactVisibleOrderNumber(orderNumber, salesRow?.order_number, salesRow?.confirmation_number);
 
   return {
     order_id: orderId,
@@ -1304,7 +1325,7 @@ export async function createOrderContactRequest(env, request) {
 }
 
 async function buildAdminStatusPayload(env, order, lineItems, targetStatus, changedAt) {
-  const orderNumber = normalizeText(order.order_number || order.confirmation_number);
+  const orderNumber = getExactVisibleOrderNumber(order.order_number, order.confirmation_number);
   const payload = {
     order_id: order.order_id,
     order_number: orderNumber,
@@ -1400,13 +1421,9 @@ async function applyAdminOrderStatus(env, orderId, targetStatus, source) {
   }
 
   const previousStatus = normalizeText(existing.row.internal_status);
-  const persistedOrderNumber = normalizeText(existing.row.order_number);
-  let orderNumber = normalizeText(persistedOrderNumber || existing.row.confirmation_number);
-  const needsOrderNumberBackfill = !isVisibleOrderNumber(orderNumber) || persistedOrderNumber !== orderNumber;
-
-  if (needsOrderNumberBackfill) {
-    orderNumber = await buildUniqueOrderNumber(env);
-  }
+  const resolvedOrderNumber = await resolveVisibleOrderNumber(env, orderId, existing.row);
+  const orderNumber = resolvedOrderNumber.orderNumber;
+  const needsOrderNumberBackfill = resolvedOrderNumber.needsBackfill;
 
   if (previousStatus === targetStatus) {
     if (needsOrderNumberBackfill) {
@@ -1655,11 +1672,10 @@ export async function syncPaymentStatus(env, token, source) {
 
   const transition = buildPaymentUpdateFromStatus(statusPayload, existing.row);
   const previousStatus = normalizeText(existing.row.internal_status);
-  const persistedOrderNumber = normalizeText(existing.row.order_number);
-  let orderNumber = normalizeText(persistedOrderNumber || existing.row.confirmation_number);
+  const resolvedOrderNumber = await resolveVisibleOrderNumber(env, orderId, existing.row);
+  const orderNumber = resolvedOrderNumber.orderNumber;
 
-  if (!isVisibleOrderNumber(orderNumber) || persistedOrderNumber !== orderNumber) {
-    orderNumber = await buildUniqueOrderNumber(env);
+  if (resolvedOrderNumber.needsBackfill) {
     transition.salesUpdates.order_number = orderNumber;
   }
 
@@ -1707,7 +1723,7 @@ export async function syncPaymentStatus(env, token, source) {
 function extractOrderNumberFromEventPayload(row) {
   try {
     const payload = JSON.parse(row.payload_json || '{}');
-    return normalizeText(payload.confirmation_number || payload.order_number);
+    return getExactVisibleOrderNumber(payload.confirmation_number, payload.order_number);
   } catch (error) {
     return '';
   }
@@ -1727,6 +1743,40 @@ async function findOrderNumberFromEvents(env, orderId) {
   return '';
 }
 
+async function resolveVisibleOrderNumber(env, orderId, row, options = {}) {
+  const shouldGenerate = options.generate !== false;
+  const persistedOrderNumber = getExactVisibleOrderNumber(row?.order_number, row?.confirmation_number);
+
+  if (persistedOrderNumber) {
+    return {
+      orderNumber: persistedOrderNumber,
+      needsBackfill: normalizeText(row?.order_number) !== persistedOrderNumber
+    };
+  }
+
+  const eventOrderNumber = await findOrderNumberFromEvents(env, orderId).catch(() => '');
+
+  if (eventOrderNumber) {
+    return {
+      orderNumber: eventOrderNumber,
+      needsBackfill: normalizeText(row?.order_number) !== eventOrderNumber
+    };
+  }
+
+  if (!shouldGenerate) {
+    return {
+      orderNumber: '',
+      needsBackfill: false
+    };
+  }
+
+  const generatedOrderNumber = await buildUniqueOrderNumber(env);
+  return {
+    orderNumber: generatedOrderNumber,
+    needsBackfill: true
+  };
+}
+
 export async function getPublicOrder(env, orderId) {
   const order = await findSheetRowByField(env, 'Ventas', 'order_id', orderId);
 
@@ -1734,16 +1784,10 @@ export async function getPublicOrder(env, orderId) {
     throw new Error('Order not found');
   }
 
-  const persistedOrderNumber = normalizeText(order.row.order_number);
-  const orderNumber = normalizeText(persistedOrderNumber || order.row.confirmation_number) ||
-    await findOrderNumberFromEvents(env, order.row.order_id).catch(() => '');
-  let visibleOrderNumber = orderNumber;
+  const resolvedOrderNumber = await resolveVisibleOrderNumber(env, order.row.order_id, order.row);
+  const visibleOrderNumber = resolvedOrderNumber.orderNumber;
 
-  if (!isVisibleOrderNumber(visibleOrderNumber)) {
-    visibleOrderNumber = await buildUniqueOrderNumber(env);
-  }
-
-  if (persistedOrderNumber !== visibleOrderNumber) {
+  if (resolvedOrderNumber.needsBackfill) {
     await updateSalesOrder(env, order.row.order_id, { order_number: visibleOrderNumber });
   }
 

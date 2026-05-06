@@ -196,6 +196,7 @@ test.describe('checkout 2-step order and transfer flow', () => {
 
     await expect(page.getByRole('heading', { name: 'Confirmación N° 0205789' })).toBeVisible();
     await expect(page.getByRole('img', { name: 'Roast' })).toBeVisible();
+    const confirmationPanel = page.locator('.checkout-confirmation-panel');
     const logoFrameDelta = await page.locator('.checkout-confirmation-logo-frame').evaluate(element => {
       const frame = element.getBoundingClientRect();
       const image = element.querySelector('img').getBoundingClientRect();
@@ -204,14 +205,19 @@ test.describe('checkout 2-step order and transfer flow', () => {
     expect(logoFrameDelta).toBeLessThanOrEqual(1);
     await expect(page.getByText('Gracias, Camila. Tu pedido está a la espera de transferencia')).toBeVisible();
     await expect(page.getByText(/BCI/i)).toBeVisible();
-    await expect(page.getByText(/Cuenta Corriente\s+61947059/i)).toBeVisible();
+    await expect(confirmationPanel.locator('.checkout-transfer-account-line')).toHaveCount(0);
+    await expect(confirmationPanel.locator('dt').filter({ hasText: /^Tipo de cuenta$/i })).toBeVisible();
+    await expect(confirmationPanel.locator('dd').filter({ hasText: /^Cuenta Corriente$/i })).toBeVisible();
+    await expect(confirmationPanel.locator('dt').filter({ hasText: /^Número$/i })).toBeVisible();
+    await expect(confirmationPanel.locator('dd').filter({ hasText: /^61947059$/ })).toBeVisible();
     await expect(page.getByText(/^RUT$/i)).toBeVisible();
     await expect(page.locator('dd').filter({ hasText: /^17515638-0$/ })).toBeVisible();
     await expect(page.locator('dd').filter({ hasText: /^contacto@caferoast\.cl$/i })).toBeVisible();
+    await expect(confirmationPanel.locator('dt').filter({ hasText: /^Vencimiento$/i })).toBeVisible();
+    await expect(confirmationPanel).not.toContainText(/^Tu transferencia vence/i);
     await expect(page.getByRole('heading', { name: 'Dirección de entrega validada' })).toBeVisible();
     await expect(page.getByText(/Downtime.*1kg.*x2/i)).toBeVisible();
 
-    const confirmationPanel = page.locator('.checkout-confirmation-panel');
     const gutters = await confirmationPanel.evaluate(element => {
       const box = element.getBoundingClientRect();
       return {
@@ -242,7 +248,7 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await expect(page.getByRole('heading', { name: 'Confirmación N° 0205789' })).toBeVisible();
   });
 
-  test('confirmation number is displayed as customer-safe digits when worker sends a raw roast id', async ({ page }) => {
+  test('confirmation fallback never extracts a customer number from a raw roast id', async ({ page }) => {
     await installMockWorkerApi(page, { checkoutOrderRawConfirmationNumber: true });
     await reachDataStep(page, { quantity: 1, format: '250g' });
     await fillCustomerData(page, { commune: 'Peñalolén' });
@@ -250,8 +256,9 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await page.locator('#accept_terms').check();
     await page.getByRole('button', { name: 'Pagar ahora' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Confirmación N° 0205789' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Confirmación N° pendiente' })).toBeVisible();
     await expect(page.locator('.checkout-confirmation-panel')).not.toContainText('roast_0205789_live');
+    await expect(page.locator('.checkout-confirmation-panel')).not.toContainText('0205789');
   });
 
   test('confirmation fallback avoids rendering a legacy raw roast order id', async ({ page }) => {
@@ -262,7 +269,7 @@ test.describe('checkout 2-step order and transfer flow', () => {
     await page.locator('#accept_terms').check();
     await page.getByRole('button', { name: 'Pagar ahora' }).click();
 
-    const heading = page.getByRole('heading', { name: /^Confirmación N° \d{7}$/ });
+    const heading = page.getByRole('heading', { name: 'Confirmación N° pendiente' });
     await expect(heading).toBeVisible();
     await expect(heading).not.toContainText('20260502');
     await expect(page.locator('.checkout-confirmation-panel')).not.toContainText('roast_20260502_161221_qd5qs');

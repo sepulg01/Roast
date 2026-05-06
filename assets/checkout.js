@@ -682,12 +682,6 @@
       var candidate = String(candidates[index] || '').trim();
       var exactDigits = candidate.match(/^\d{7}$/);
       if (exactDigits) return exactDigits[0];
-
-      var legacyDate = candidate.match(/(?:^|_)(20\d{2})(\d{2})(\d{2})(?:_|$)/);
-      if (legacyDate) return legacyDate[3] + legacyDate[2] + '000';
-
-      var embeddedDigits = candidate.match(/\d{7}/);
-      if (embeddedDigits) return embeddedDigits[0];
     }
 
     return 'pendiente';
@@ -791,8 +785,6 @@
       '  <p class="checkout-confirmation-id">Gracias, ' + escapeHtml(customerData.first_name) + '. Tu pedido está a la espera de transferencia</p>',
       '  <section class="checkout-confirmation-section">',
       '    <h3>Datos para transferencia</h3>',
-      '    <p class="checkout-transfer-account-line">' + escapeHtml(transferDetails.account_type + ' ' + transferDetails.account_number) + '</p>',
-      '    <p class="checkout-transfer-account-line">Rut ' + escapeHtml(transferDetails.rut) + '</p>',
       '    <dl class="checkout-confirmation-list">',
       '      <div><dt>Banco</dt><dd>' + escapeHtml(transferDetails.bank) + '</dd></div>',
       '      <div><dt>Tipo de cuenta</dt><dd>' + escapeHtml(transferDetails.account_type) + '</dd></div>',
@@ -800,8 +792,8 @@
       '      <div><dt>Titular</dt><dd>' + escapeHtml(transferDetails.holder) + '</dd></div>',
       '      <div><dt>RUT</dt><dd>' + escapeHtml(transferDetails.rut) + '</dd></div>',
       '      <div><dt>Email</dt><dd>' + escapeHtml(transferDetails.email) + '</dd></div>',
+      '      <div><dt>Vencimiento</dt><dd>' + escapeHtml(formatDateTime(expiration)) + '</dd></div>',
       '    </dl>',
-      '    <p class="checkout-confirmation-note">Tu transferencia vence el ' + escapeHtml(formatDateTime(expiration)) + '.</p>',
       '  </section>',
       '  <section class="checkout-confirmation-section">',
       '    <h3>Dirección de entrega validada</h3>',

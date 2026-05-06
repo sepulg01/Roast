@@ -177,6 +177,23 @@ export async function updateSheetObjectRow(env, sheetName, headers, rowNumber, o
   return updateSheetValues(env, range, [objectToSheetRow(object, headers)]);
 }
 
+export async function ensureSheetHeaders(env, sheetName, existingHeaders, requiredHeaders) {
+  const currentHeaders = Array.isArray(existingHeaders) ? existingHeaders : [];
+  const normalizedCurrent = new Set(currentHeaders.map(normalizeKey).filter(Boolean));
+  const missingHeaders = requiredHeaders
+    .map(normalizeKey)
+    .filter(header => header && !normalizedCurrent.has(header));
+
+  if (!missingHeaders.length) {
+    return currentHeaders;
+  }
+
+  const nextHeaders = [...currentHeaders, ...missingHeaders];
+  const endColumn = toSheetColumn(nextHeaders.length);
+  await updateSheetValues(env, `${sheetName}!A1:${endColumn}1`, [nextHeaders]);
+  return nextHeaders;
+}
+
 function toSheetColumn(columnNumber) {
   let value = columnNumber;
   let column = '';

@@ -253,7 +253,7 @@ test('notifyOperationalEvent sends pending transfer operational and customer ema
           {
             product_name: 'Downtime',
             format_label: '1 kg',
-            grind: 'Grano entero',
+            grind: 'Molienda Media',
             quantity: 1,
             line_subtotal_clp: 36000
           }
@@ -295,6 +295,7 @@ test('notifyOperationalEvent sends pending transfer operational and customer ema
   assert.match(requests[0].body.html, /0205789/);
   assert.match(requests[0].body.html, /logo_black\.png/);
   assert.match(requests[0].body.html, /Downtime/);
+  assert.match(requests[0].body.html, /Molienda Media/);
   assert.match(requests[0].body.html, /\$36\.000 CLP/);
   assert.match(requests[0].body.html, /Validar transferencia/);
   assert.match(requests[0].body.html, /Marcar pedido vencido/);
@@ -303,11 +304,58 @@ test('notifyOperationalEvent sends pending transfer operational and customer ema
   assert.match(requests[1].body.html, /0205789/);
   assert.match(requests[1].body.html, /logo_black\.png/);
   assert.match(requests[1].body.html, /Downtime/);
+  assert.match(requests[1].body.html, /Molienda Media/);
   assert.match(requests[1].body.html, /BCI/);
   assert.match(requests[1].body.html, /61947059/);
   assert.match(requests[1].body.html, /17515638-0/);
   assert.match(requests[1].body.html, /transferencia vence/i);
   assert.doesNotMatch(requests[1].body.html, /roast_internal_001/);
+});
+
+test('notifyOperationalEvent does not extract display numbers from raw internal order ids', async t => {
+  const requests = [];
+  installFetchMock(t, async (url, init = {}) => {
+    requests.push({
+      url,
+      headers: init.headers,
+      body: JSON.parse(init.body)
+    });
+    return jsonResponse({ id: `email_${requests.length}` }, 202);
+  });
+
+  const result = await notifyOperationalEvent(
+    {
+      RESEND_API_KEY: 'resend_test_key',
+      RESEND_FROM: 'Roast <orders@caferoast.cl>',
+      RESEND_REPLY_TO: 'soporte@caferoast.cl'
+    },
+    {
+      event_type: 'paid',
+      order_id: 'roast_20260506_112300_abcd1',
+      recipient: 'operaciones@caferoast.cl',
+      payload: {
+        order_id: 'roast_20260506_112300_abcd1',
+        customer_name: 'Camila Roast',
+        email: 'cliente@example.com',
+        items: [
+          {
+            product_name: 'Downtime',
+            format_label: '1 kg',
+            grind: 'Molienda Media',
+            quantity: 1,
+            line_subtotal_clp: 36000
+          }
+        ],
+        total_clp: 36000
+      }
+    }
+  );
+
+  assert.equal(result, true);
+  assert.equal(requests.length, 2);
+  assert.doesNotMatch(requests[0].body.subject, /20260506/);
+  assert.doesNotMatch(requests[0].body.html, /20260506/);
+  assert.match(requests[0].body.subject, /sin pedido/);
 });
 
 test('notifyOperationalEvent sends paid customer confirmation through Resend', async t => {
@@ -529,7 +577,8 @@ test('notifyOperationalEvent does not expose a raw roast order id in Resend cust
 
   assert.equal(result, true);
   assert.equal(requests.length, 2);
-  assert.match(requests[1].body.html, /20260502/);
+  assert.doesNotMatch(requests[1].body.html, /20260502/);
+  assert.match(requests[1].body.html, /sin pedido/);
   assert.doesNotMatch(requests[1].body.html, /roast_20260502_161221_qd5qs/);
 });
 
@@ -652,7 +701,7 @@ test('checkout order accepts terms without accept_total, returns order number, a
           {
             product_code: 'downtime',
             format_code: '1kg',
-            grind: 'grano entero',
+            grind: 'molienda media',
             quantity: 1
           }
         ]
@@ -685,12 +734,14 @@ test('checkout order accepts terms without accept_total, returns order number, a
   const salesRow = objectFromRow(SALES_HEADERS, appended.Ventas[0]);
   assert.equal(salesRow.order_id, payload.order_id);
   assert.equal(salesRow.order_number, payload.order_number);
+  assert.match(salesRow.items_label, /molienda media/i);
 
   const paymentRow = objectFromRow(PAYMENT_HEADERS, appended.Pagos_Flow[0]);
   assert.equal(paymentRow.order_id, payload.order_id);
 
   const lineRow = objectFromRow(LINE_HEADERS, appended.Lineas_Pedido[0]);
   assert.equal(lineRow.order_id, payload.order_id);
+  assert.equal(lineRow.grind, 'molienda media');
 
   const eventRow = objectFromRow(EVENT_HEADERS, appended.Eventos[0]);
   assert.equal(eventRow.order_id, payload.order_id);
@@ -801,6 +852,22 @@ test('admin status update backfills invalid visible order numbers before notifyi
       });
     }
 
+    if (url.includes('/values/Eventos!A%3AAZ')) {
+      return jsonResponse({
+        values: rowsFromObjects(EVENT_HEADERS, [
+          {
+            order_id: 'roast_internal_001',
+            event_type: 'pending_transfer',
+            payload_json: JSON.stringify({
+              order_id: 'roast_internal_001',
+              order_number: '0605298',
+              confirmation_number: '0605298'
+            })
+          }
+        ])
+      });
+    }
+
     if (url.includes('/values/Lineas_Pedido!A%3AAZ')) {
       return jsonResponse({
         values: rowsFromObjects(LINE_HEADERS, [
@@ -842,7 +909,7 @@ test('admin status update backfills invalid visible order numbers before notifyi
   const eventPayload = JSON.parse(eventRow.payload_json);
 
   assert.equal(response.status, 200, payload.error);
-  assert.match(payload.confirmation_number, /^\d{7}$/);
+  assert.equal(payload.confirmation_number, '0605298');
   assert.notEqual(payload.confirmation_number, '20260505');
   assert.equal(salesUpdate.order_number, payload.confirmation_number);
   assert.equal(eventPayload.confirmation_number, payload.confirmation_number);
@@ -895,10 +962,16 @@ test('public order lookup returns confirmation number while still looking up by 
 
 test('public order lookup can recover confirmation number from event payload when sales header is not present', async t => {
   const legacySalesHeaders = SALES_HEADERS.filter(header => header !== 'order_number');
+  const headerUpdates = [];
 
   installFetchMock(t, async (url) => {
     if (url === 'https://oauth2.googleapis.com/token') {
       return jsonResponse({ access_token: 'test-access-token', expires_in: 3600 });
+    }
+
+    if (url.includes('/values/Ventas!A1%3A')) {
+      headerUpdates.push(url);
+      return jsonResponse({ updatedRows: 1 });
     }
 
     if (url.includes('/values/Ventas!') && !url.includes('/values/Ventas!A%3AAZ')) {
@@ -953,6 +1026,7 @@ test('public order lookup can recover confirmation number from event payload whe
   assert.equal(payload.order_id, 'roast_internal_001');
   assert.equal(payload.order_number, '0205789');
   assert.equal(payload.confirmation_number, '0205789');
+  assert.equal(headerUpdates.length, 1);
 });
 
 test('admin transfer confirmation rejects invalid token before touching Sheets', async () => {
