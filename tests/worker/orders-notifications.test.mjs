@@ -1439,7 +1439,8 @@ test('admin status update marks paid orders as delivering without notifying cust
   assert.equal(eventRow.event_type, 'delivering');
   assert.equal(eventRow.from_status, 'paid');
   assert.equal(eventRow.to_status, 'delivering');
-  assert.equal(resendRequests.length, 0);
+  assert.equal(resendRequests.length, 1);
+  assert.match(resendRequests[0].subject, /\[Roast\] delivering - 0205789/);
 });
 
 test('admin status update marks delivering orders as delivered without notifying customer', async t => {

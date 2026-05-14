@@ -480,6 +480,22 @@
 - Completado totalmente: el frontend queda compatible con Worker nuevo y viejo mientras se regulariza el despliegue backend.
 - Pendiente/deferido: desplegar el Worker actualizado con credenciales Cloudflare para retirar esta compatibilidad temporal en una futura limpieza.
 
+## 2026-05-14 - WhatsApp operativo con botones directos y Flow enriquecido
+
+- Se agrego `POST /api/whatsapp/webhook` para recibir respuestas de botones Meta WhatsApp y `GET /api/whatsapp/webhook` para challenge de verificacion.
+- Se agregaron payloads HMAC stateless para botones WhatsApp con expiracion de 7 dias usando `WHATSAPP_ACTION_SECRET`; no se expone ni reutiliza `ADMIN_ACTION_SECRET` en WhatsApp.
+- Las respuestas de botones validan `X-Hub-Signature-256` con `WHATSAPP_APP_SECRET`, telefono operador (`WHATSAPP_OPERATOR_PHONES` o `WHATSAPP_NOTIFY_TO`) y payload antes de ejecutar la maquina de estados.
+- WhatsApp operativo ahora puede mandar acciones directas: `pending_transfer -> paid|expired`, `paid -> delivering` y `delivering -> delivered`.
+- Los eventos Flow `paid` se enriquecieron con datos completos del pedido, cliente, total e items antes de notificar por WhatsApp; Flow no se reactivo en checkout.
+- `GET /api/health` ahora reporta `configuration.whatsapp_actions` sin exponer secretos.
+- Se actualizaron workflows para sincronizar nuevos secretos Meta y tratar `ADMIN_ACTION_SECRET` como requerido.
+- Se actualizaron `README.md`, `Backlog.md`, `scripts/sync-sheet-readme.mjs` y `worker/.dev.vars.example` con los nuevos templates/secrets.
+- Validacion realizada: ciclo rojo/verde con `node --test tests/worker/whatsapp-actions.test.mjs tests/worker/index.test.mjs`, luego `node --test tests/worker/*.test.mjs` con 38 pruebas pasando; `node --check` manual sobre scripts y Worker; `node scripts/check-visible-copy-approval.mjs` con PATH de GitHub Desktop; `git diff --check`.
+- Completado totalmente: implementacion backend local, cobertura automatizada de botones directos, webhook, health y Flow enriquecido, mas documentacion/workflows.
+- Parcial: no se probo recepcion real en WhatsApp ni webhook Meta productivo porque requiere templates aprobados y secretos cargados en GitHub Environment `production`.
+- Pendiente/deferido: crear/aprobar templates Meta `WHATSAPP_TEMPLATE_TRANSFER_ACTIONS`, `WHATSAPP_TEMPLATE_PAID_ACTIONS`, `WHATSAPP_TEMPLATE_DELIVERING_ACTIONS`; cargar `WHATSAPP_WEBHOOK_VERIFY_TOKEN`, `WHATSAPP_APP_SECRET`, `WHATSAPP_ACTION_SECRET`, `WHATSAPP_OPERATOR_PHONES` y secretos existentes en GitHub `production`; ejecutar `Sync Worker Secrets` o `Deploy Worker`; verificar `/api/health`; probar con pedido `NO PREPARAR` y recorrer botones hasta `delivered`.
+- No se ejecuto refresh de stacks; no corresponde a Repotool y no fue solicitado para este plan.
+
 ## 2026-05-04 - Deploy persistente Worker y emails Resend
 
 - Se agrego `GET /api/health` al Worker con flags `confirmation_number`, `terms_only_checkout` y `resend_notifications`, para detectar en produccion si sigue corriendo una version vieja.

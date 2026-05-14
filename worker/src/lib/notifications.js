@@ -1,4 +1,5 @@
 import { hmacSha256Hex } from './utils.js';
+import { buildWhatsAppActionId } from './whatsapp-actions.js';
 
 const DEFAULT_SUPPORT_EMAIL = 'contacto@caferoast.cl';
 const DEFAULT_RESEND_FROM = `Cafe Roast <${DEFAULT_SUPPORT_EMAIL}>`;
@@ -11,6 +12,7 @@ const NOTIFIABLE_EVENTS = new Set([
   'order_contact_requested',
   'pending_transfer',
   'paid',
+  'delivering',
   'payment_failed',
   'manual_review'
 ]);
@@ -343,6 +345,19 @@ async function notifyWhatsAppEvent(env, payload) {
   const details = getDetails(payload);
   const orderNumber = getDisplayOrderNumber(payload);
   const status = firstValue(payload.to_status, details.internal_status, payload.event_type, 'sin estado');
+  const components = [{
+    type: 'body',
+    parameters: [
+      { type: 'text', text: orderNumber },
+      { type: 'text', text: payload.event_type || status },
+      { type: 'text', text: firstValue(details.customer_name, payload.customer_name, 'Sin cliente') },
+      { type: 'text', text: formatCurrency(firstValue(details.total_clp, payload.total_clp)) },
+      { type: 'text', text: status }
+    ]
+  }];
+  const buttons = await buildWhatsAppActionButtons(env, payload, details);
+  components.push(...buttons);
+
   const messagePayload = {
     messaging_product: 'whatsapp',
     to: normalizePhone(env.WHATSAPP_NOTIFY_TO),
@@ -352,16 +367,7 @@ async function notifyWhatsAppEvent(env, payload) {
       language: {
         code: firstValue(env.WHATSAPP_TEMPLATE_LANGUAGE, 'es_CL')
       },
-      components: [{
-        type: 'body',
-        parameters: [
-          { type: 'text', text: orderNumber },
-          { type: 'text', text: payload.event_type || status },
-          { type: 'text', text: firstValue(details.customer_name, payload.customer_name, 'Sin cliente') },
-          { type: 'text', text: formatCurrency(firstValue(details.total_clp, payload.total_clp)) },
-          { type: 'text', text: status }
-        ]
-      }]
+      components
     }
   };
   try {
@@ -391,15 +397,60 @@ async function notifyWhatsAppEvent(env, payload) {
 }
 
 function getWhatsAppTemplateName(env, eventType) {
+  if (eventType === 'delivering') {
+    return firstValue(env.WHATSAPP_TEMPLATE_DELIVERING_ACTIONS);
+  }
+
   if (eventType === 'paid') {
-    return firstValue(env.WHATSAPP_TEMPLATE_PAID_EVENT, env.WHATSAPP_TEMPLATE_ORDER_EVENT);
+    return firstValue(env.WHATSAPP_TEMPLATE_PAID_ACTIONS, env.WHATSAPP_TEMPLATE_PAID_EVENT, env.WHATSAPP_TEMPLATE_ORDER_EVENT);
   }
 
   if (eventType === 'pending_transfer') {
-    return firstValue(env.WHATSAPP_TEMPLATE_ORDER_EVENT);
+    return firstValue(env.WHATSAPP_TEMPLATE_TRANSFER_ACTIONS, env.WHATSAPP_TEMPLATE_ORDER_EVENT);
   }
 
   return '';
+}
+
+async function buildWhatsAppActionButtons(env, payload, details) {
+  if (!env.WHATSAPP_ACTION_SECRET) return [];
+
+  const orderId = firstValue(payload.order_id, details.order_id);
+  const actions = getWhatsAppActionsForEvent(payload.event_type);
+  const buttons = [];
+
+  for (const [index, status] of actions.entries()) {
+    const actionId = await buildWhatsAppActionId(env.WHATSAPP_ACTION_SECRET, orderId, status);
+    if (!actionId) continue;
+
+    buttons.push({
+      type: 'button',
+      sub_type: 'quick_reply',
+      index: String(index),
+      parameters: [{
+        type: 'payload',
+        payload: actionId
+      }]
+    });
+  }
+
+  return buttons;
+}
+
+function getWhatsAppActionsForEvent(eventType) {
+  if (eventType === 'pending_transfer') {
+    return ['paid', 'expired'];
+  }
+
+  if (eventType === 'paid') {
+    return ['delivering'];
+  }
+
+  if (eventType === 'delivering') {
+    return ['delivered'];
+  }
+
+  return [];
 }
 
 function normalizePhone(value) {

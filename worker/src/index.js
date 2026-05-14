@@ -6,6 +6,7 @@ import {
   createPaymentLink,
   getPublicCatalog,
   getPublicOrder,
+  processWhatsAppWebhook,
   syncPaymentStatus,
   updateAdminOrderStatus
 } from './lib/orders.js';
@@ -69,6 +70,25 @@ async function handleAdminStatus(request, env, orderId) {
   return jsonResponse(result);
 }
 
+async function handleWhatsAppWebhookVerification(request, env) {
+  const url = new URL(request.url);
+  const mode = url.searchParams.get('hub.mode');
+  const token = url.searchParams.get('hub.verify_token');
+  const challenge = url.searchParams.get('hub.challenge');
+
+  if (mode === 'subscribe' && token && token === env.WHATSAPP_WEBHOOK_VERIFY_TOKEN && challenge) {
+    return textResponse(challenge);
+  }
+
+  return errorResponse('Invalid WhatsApp webhook verification token', { status: 403 });
+}
+
+async function handleWhatsAppWebhook(request, env) {
+  const rawBody = await request.text();
+  const result = await processWhatsAppWebhook(env, rawBody, request.headers.get('x-hub-signature-256') || '');
+  return jsonResponse(result);
+}
+
 function hasEnvValue(env, name) {
   return Boolean(String(env && env[name] || '').trim());
 }
@@ -83,6 +103,14 @@ async function handleHealth(env) {
     && hasEnvValue(env, 'WHATSAPP_PHONE_NUMBER_ID')
     && hasEnvValue(env, 'WHATSAPP_NOTIFY_TO')
     && hasEnvValue(env, 'WHATSAPP_TEMPLATE_ORDER_EVENT');
+  const whatsappActionsConfigured = whatsappConfigured
+    && hasEnvValue(env, 'WHATSAPP_TEMPLATE_TRANSFER_ACTIONS')
+    && hasEnvValue(env, 'WHATSAPP_TEMPLATE_PAID_ACTIONS')
+    && hasEnvValue(env, 'WHATSAPP_TEMPLATE_DELIVERING_ACTIONS')
+    && hasEnvValue(env, 'WHATSAPP_WEBHOOK_VERIFY_TOKEN')
+    && hasEnvValue(env, 'WHATSAPP_APP_SECRET')
+    && hasEnvValue(env, 'WHATSAPP_ACTION_SECRET')
+    && (hasEnvValue(env, 'WHATSAPP_OPERATOR_PHONES') || hasEnvValue(env, 'WHATSAPP_NOTIFY_TO'));
 
   return jsonResponse({
     ok: true,
@@ -99,7 +127,8 @@ async function handleHealth(env) {
       apps_script_fallback: appsScriptFallbackConfigured,
       notifications: resendConfigured || appsScriptFallbackConfigured,
       admin_actions: adminActionsConfigured,
-      whatsapp: whatsappConfigured
+      whatsapp: whatsappConfigured,
+      whatsapp_actions: whatsappActionsConfigured
     }
   });
 }
@@ -178,6 +207,14 @@ export default {
 
       if (request.method === 'POST' && extractAdminStatusOrderId(url.pathname)) {
         return await handleAdminStatus(request, env, extractAdminStatusOrderId(url.pathname));
+      }
+
+      if (request.method === 'GET' && url.pathname === '/api/whatsapp/webhook') {
+        return await handleWhatsAppWebhookVerification(request, env);
+      }
+
+      if (request.method === 'POST' && url.pathname === '/api/whatsapp/webhook') {
+        return await handleWhatsAppWebhook(request, env);
       }
 
       if (request.method === 'GET' && url.pathname === '/api/health') {

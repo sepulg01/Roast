@@ -29,6 +29,12 @@ import {
 } from './google.js';
 import { createFlowPayment, getFlowPaymentStatus, mapFlowStatus } from './flow.js';
 import { notifyOperationalEventWithResults, shouldNotifyEvent } from './notifications.js';
+import {
+  extractWhatsAppActionMessages,
+  isAllowedWhatsAppOperator,
+  verifyWhatsAppActionId,
+  verifyWhatsAppWebhookSignature
+} from './whatsapp-actions.js';
 
 const CONTACT_REQUEST_ALLOWED_STATUSES = new Set(['draft', 'manual_review']);
 const ADMIN_STATUS_TRANSITIONS = {
@@ -1413,6 +1419,54 @@ export async function updateAdminOrderStatus(env, orderId, status, token) {
   return applyAdminOrderStatus(env, orderId, targetStatus, `api/admin/status/${targetStatus}`);
 }
 
+export async function processWhatsAppWebhook(env, rawBody, signatureHeader) {
+  const signatureValid = await verifyWhatsAppWebhookSignature(env, rawBody, signatureHeader);
+
+  if (!signatureValid) {
+    throw statusError('Invalid WhatsApp webhook signature', 403);
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(rawBody || '{}');
+  } catch (error) {
+    throw statusError('Invalid WhatsApp webhook JSON', 400);
+  }
+
+  const messages = extractWhatsAppActionMessages(env, payload);
+  const results = [];
+
+  for (const message of messages) {
+    if (message.rejected) {
+      throw statusError(`WhatsApp webhook ${message.reason}`, 403);
+    }
+
+    if (!isAllowedWhatsAppOperator(env, message.from)) {
+      throw statusError('WhatsApp sender is not authorized for operational actions', 403);
+    }
+
+    const action = await verifyWhatsAppActionId(env.WHATSAPP_ACTION_SECRET, message.actionId);
+    if (!action.ok) {
+      throw statusError(`Invalid WhatsApp action: ${action.reason}`, 403);
+    }
+
+    const result = await applyAdminOrderStatus(env, action.orderId, action.status, 'api/whatsapp/webhook');
+    results.push({
+      message_id: message.messageId,
+      order_id: result.order_id,
+      order_number: result.order_number,
+      confirmation_number: result.confirmation_number,
+      internal_status: result.internal_status,
+      already_status: result.already_status || false
+    });
+  }
+
+  return {
+    ok: true,
+    results
+  };
+}
+
 async function applyAdminOrderStatus(env, orderId, targetStatus, source) {
   const existing = await findSheetRowByField(env, 'Ventas', 'order_id', orderId);
 
@@ -1679,7 +1733,7 @@ export async function syncPaymentStatus(env, token, source) {
     transition.salesUpdates.order_number = orderNumber;
   }
 
-  await updateSalesOrder(env, orderId, transition.salesUpdates);
+  const updatedOrder = await updateSalesOrder(env, orderId, transition.salesUpdates);
   await upsertPaymentRow(env, transition.paymentUpdates);
 
   if (transition.mappedStatus === 'paid' && previousStatus !== 'paid') {
@@ -1687,14 +1741,24 @@ export async function syncPaymentStatus(env, token, source) {
   }
 
   if (previousStatus !== transition.mappedStatus) {
-    const eventPayload = {
-      order_id: orderId,
-      order_number: orderNumber,
-      confirmation_number: orderNumber || orderId,
-      flow_order: statusPayload.flowOrder,
-      flow_status: statusPayload.status,
-      payment_method: statusPayload.paymentData?.media || statusPayload.pending_info?.media || ''
-    };
+    const lineItems = transition.mappedStatus === 'paid' ? await getOrderLineItems(env, orderId) : [];
+    const eventPayload = transition.mappedStatus === 'paid'
+      ? await buildAdminStatusPayload(
+        env,
+        updatedOrder,
+        lineItems,
+        'paid',
+        transition.paidAt || getLocalTimestamp()
+      )
+      : {
+        order_id: orderId,
+        order_number: orderNumber,
+        confirmation_number: orderNumber || orderId
+      };
+
+    eventPayload.flow_order = statusPayload.flowOrder;
+    eventPayload.flow_status = statusPayload.status;
+    eventPayload.payment_method = statusPayload.paymentData?.media || statusPayload.pending_info?.media || 'flow';
 
     if (transition.mappedStatus === 'paid') {
       eventPayload.admin_delivering_url = await buildAdminStatusUrl(env, orderId, 'delivering');
