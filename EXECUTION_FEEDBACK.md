@@ -606,3 +606,14 @@
 - Validacion enfocada realizada: ciclo rojo/verde con `npm run test:functional:purchase -- --project=chromium --reporter=line`, primero con 16 fallas esperadas por mocks faltantes y luego con 81 pruebas pasando.
 - Completado totalmente: matriz funcional local, mocks configurables, script/workflow productivo y guardia de secretos no-locales.
 - Pendiente/deferido: ejecutar manualmente `Purchase E2E Production` desde GitHub cuando se quiera crear pedidos reales `NO PREPARAR`; confirmar visualmente emails en los inbox porque el workflow no tiene acceso al correo.
+
+## 2026-05-14 - E2E productivo para WhatsApp operativo
+
+- Se agrego `scripts/e2e-whatsapp-production.mjs` con guardia `GITHUB_ACTIONS=true`, verificacion de `/api/health`, challenge Meta, pedidos `NO PREPARAR`, callbacks WhatsApp firmados, pruebas negativas de firma/telefono/payload, transferencia completa, expiracion y Flow real opcional con espera de pago humano.
+- Se agrego `.github/workflows/whatsapp-e2e-production.yml` como workflow manual `WhatsApp E2E Production` con inputs `base_url`, `run_transfer`, `run_expired` y `run_flow_real`, usando secretos del Environment `production` sin imprimir valores sensibles.
+- Se agrego `npm run e2e:whatsapp-production`, se incluyo el runner en `test:static` y se cubrio su contrato con `tests/worker/whatsapp-production-script.test.mjs`.
+- Se actualizaron `README.md`, `Backlog.md` y `scripts/sync-sheet-readme.mjs` para documentar la prueba real, el workflow y el webhook WhatsApp operativo.
+- Completado totalmente: tooling y workflow para repetir pruebas reales de WhatsApp productivo, incluyendo reporte JSON sin secretos y pruebas locales del contrato del runner.
+- Parcial: no se ejecuto el workflow productivo desde esta sesion, por diseno debe correr desde GitHub Actions con secretos reales y Meta configurado.
+- Pendiente/deferido: cargar o confirmar secretos Meta en GitHub `production`, ejecutar `Sync Worker Secrets` o `Deploy Worker`, configurar webhook/templates en Meta, correr `WhatsApp E2E Production`, verificar visualmente mensajes en el telefono Roast y restaurar `Config.settings.flow_enabled=false` si se usa Flow real.
+- No se ejecuto refresh de stacks porque este proyecto no es Repotool y el plan no pidio refresco de stacks.

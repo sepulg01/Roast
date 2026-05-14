@@ -100,6 +100,8 @@ Templates Meta requeridos para acciones directas:
 
 `GET /api/health` reporta `configuration.whatsapp=true` solo cuando estan configurados `WHATSAPP_CLOUD_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_NOTIFY_TO` y `WHATSAPP_TEMPLATE_ORDER_EVENT`. Reporta `configuration.whatsapp_actions=true` cuando, ademas, estan configurados los tres templates de acciones, `WHATSAPP_WEBHOOK_VERIFY_TOKEN`, `WHATSAPP_APP_SECRET`, `WHATSAPP_ACTION_SECRET` y al menos un telefono operativo. Si aparece `false`, el Worker omite o degrada ese canal aunque los emails Resend funcionen.
 
+La prueba real repetible vive en el workflow manual `WhatsApp E2E Production`. Crea pedidos productivos `NO PREPARAR`, verifica `/api/health`, prueba el challenge de Meta, simula callbacks firmados de WhatsApp contra `POST /api/whatsapp/webhook`, recorre estados operativos y emite un reporte JSON sin secretos. Si se activa `run_flow_real`, primero hay que dejar `Config.settings.flow_enabled=true` en Sheets, pagar el link Flow que imprime el workflow durante la ventana de espera y restaurar `flow_enabled=false` al terminar.
+
 ## Deploy Persistente
 
 El deploy productivo del Worker no depende de variables locales. GitHub Actions usa el Environment `production`:
@@ -107,6 +109,7 @@ El deploy productivo del Worker no depende de variables locales. GitHub Actions 
 - `.github/workflows/worker-secrets-sync.yml`: manual; sincroniza secretos persistentes de GitHub hacia Cloudflare Worker con `wrangler secret put`.
 - `.github/workflows/worker-deploy.yml`: automatico en push a `main` y manual; corre checks, funcionales, sincroniza secretos requeridos, ejecuta `wrangler deploy` y smoke productivo.
 - `.github/workflows/purchase-e2e-production.yml`: manual; crea pedidos reales `NO PREPARAR`, valida numero visible y recorre estados operativos usando secretos del Environment `production`.
+- `.github/workflows/whatsapp-e2e-production.yml`: manual; valida WhatsApp operativo real en produccion con pedidos `NO PREPARAR`, callbacks firmados y, opcionalmente, Flow real con pago humano durante la corrida.
 - `npm run smoke:worker-production`: valida `/api/health`, que Google/Resend esten configurados, `/api/public-catalog` y que `/api/checkout-orders` ya no exija `accept_total`.
 
 ## Variables Y Secretos
@@ -197,3 +200,5 @@ git diff --check
 ROAST_OLD_SUPPORT_PATTERN='numero-antiguo-o-wa-me-antiguo'
 rg "$ROAST_OLD_SUPPORT_PATTERN" --glob '!EXECUTION_FEEDBACK.md'
 ```
+
+El E2E real de WhatsApp se ejecuta solo desde GitHub Actions con el Environment `production`; localmente queda cubierto por `npm run test:worker` y `npm run test:static`.
