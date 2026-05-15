@@ -1,10 +1,9 @@
 import { hmacSha256Hex } from './utils.js';
-import { buildWhatsAppActionId } from './whatsapp-actions.js';
+import { buildTelegramActionId } from './telegram-actions.js';
 
 const DEFAULT_SUPPORT_EMAIL = 'contacto@caferoast.cl';
 const DEFAULT_RESEND_FROM = `Cafe Roast <${DEFAULT_SUPPORT_EMAIL}>`;
 const RESEND_EMAILS_URL = 'https://api.resend.com/emails';
-const WHATSAPP_GRAPH_VERSION = 'v20.0';
 
 const NOTIFIABLE_EVENTS = new Set([
   'draft_created',
@@ -42,7 +41,7 @@ export async function notifyOperationalEventWithResults(env, payload) {
     };
   }
 
-  channels.whatsapp = await notifyWhatsAppEvent(env, payload);
+  channels.telegram = await notifyTelegramEvent(env, payload);
 
   return {
     ok: Boolean(channels.email && channels.email.ok),
@@ -330,51 +329,34 @@ function buildEmailHeader(details, label) {
   `;
 }
 
-async function notifyWhatsAppEvent(env, payload) {
-  const templateName = getWhatsAppTemplateName(env, payload.event_type);
-
-  if (!templateName || !env.WHATSAPP_CLOUD_TOKEN || !env.WHATSAPP_PHONE_NUMBER_ID || !env.WHATSAPP_NOTIFY_TO) {
+async function notifyTelegramEvent(env, payload) {
+  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) {
     return {
       ok: true,
-      provider: 'meta_whatsapp',
+      provider: 'telegram',
       skipped: true,
-      reason: 'whatsapp_not_configured'
+      reason: 'telegram_not_configured'
     };
   }
 
   const details = getDetails(payload);
-  const orderNumber = getDisplayOrderNumber(payload);
-  const status = firstValue(payload.to_status, details.internal_status, payload.event_type, 'sin estado');
-  const components = [{
-    type: 'body',
-    parameters: [
-      { type: 'text', text: orderNumber },
-      { type: 'text', text: payload.event_type || status },
-      { type: 'text', text: firstValue(details.customer_name, payload.customer_name, 'Sin cliente') },
-      { type: 'text', text: formatCurrency(firstValue(details.total_clp, payload.total_clp)) },
-      { type: 'text', text: status }
-    ]
-  }];
-  const buttons = await buildWhatsAppActionButtons(env, payload, details);
-  components.push(...buttons);
-
   const messagePayload = {
-    messaging_product: 'whatsapp',
-    to: normalizePhone(env.WHATSAPP_NOTIFY_TO),
-    type: 'template',
-    template: {
-      name: templateName,
-      language: {
-        code: firstValue(env.WHATSAPP_TEMPLATE_LANGUAGE, 'es_CL')
-      },
-      components
-    }
+    chat_id: String(env.TELEGRAM_CHAT_ID),
+    text: buildTelegramMessageText(payload, details),
+    disable_web_page_preview: true
   };
+  const buttons = await buildTelegramActionButtons(env, payload, details);
+
+  if (buttons.length) {
+    messagePayload.reply_markup = {
+      inline_keyboard: buttons
+    };
+  }
+
   try {
-    const response = await fetch(`https://graph.facebook.com/${WHATSAPP_GRAPH_VERSION}/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
+    const response = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${env.WHATSAPP_CLOUD_TOKEN}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(messagePayload)
@@ -382,79 +364,102 @@ async function notifyWhatsAppEvent(env, payload) {
     const responsePayload = await response.json().catch(() => null);
 
     return {
-      ok: response.ok && !(responsePayload && responsePayload.error),
-      provider: 'meta_whatsapp',
+      ok: response.ok && !(responsePayload && responsePayload.ok === false),
+      provider: 'telegram',
       status: response.status,
       response: summarizeProviderResponse(responsePayload)
     };
   } catch (error) {
     return {
       ok: false,
-      provider: 'meta_whatsapp',
-      error: error.message || 'whatsapp_request_failed'
+      provider: 'telegram',
+      error: error.message || 'telegram_request_failed'
     };
   }
 }
 
-function getWhatsAppTemplateName(env, eventType) {
-  if (eventType === 'delivering') {
-    return firstValue(env.WHATSAPP_TEMPLATE_DELIVERING_ACTIONS);
+function buildTelegramMessageText(payload, details) {
+  const orderNumber = getDisplayOrderNumber(payload);
+  const status = firstValue(payload.to_status, details.internal_status, payload.event_type, 'sin estado');
+  const lines = [
+    `Roast pedido ${orderNumber}`,
+    `Estado: ${status}`,
+    `Cliente: ${firstValue(details.customer_name, payload.customer_name, 'Sin cliente')}`,
+    `Total: ${formatCurrency(firstValue(details.total_clp, payload.total_clp))}`
+  ];
+  const items = buildTelegramItemsList(details.items);
+
+  if (items) {
+    lines.push('', 'Detalle:', items);
+  } else if (firstValue(details.items_label)) {
+    lines.push('', `Detalle: ${details.items_label}`);
   }
 
-  if (eventType === 'paid') {
-    return firstValue(env.WHATSAPP_TEMPLATE_PAID_ACTIONS, env.WHATSAPP_TEMPLATE_PAID_EVENT, env.WHATSAPP_TEMPLATE_ORDER_EVENT);
+  if (firstValue(details.commune, details.address)) {
+    lines.push('', `Entrega: ${[details.address, details.commune].filter(Boolean).join(', ')}`);
   }
 
-  if (eventType === 'pending_transfer') {
-    return firstValue(env.WHATSAPP_TEMPLATE_TRANSFER_ACTIONS, env.WHATSAPP_TEMPLATE_ORDER_EVENT);
+  if (firstValue(details.notes)) {
+    lines.push(`Notas: ${details.notes}`);
   }
 
-  return '';
+  return lines.join('\n');
 }
 
-async function buildWhatsAppActionButtons(env, payload, details) {
-  if (!env.WHATSAPP_ACTION_SECRET) return [];
+function buildTelegramItemsList(items) {
+  const list = Array.isArray(items) ? items : [];
+  if (!list.length) return '';
+
+  return list.map(item => {
+    const label = [
+      firstValue(item.product_name, item.product_code, 'Producto'),
+      firstValue(item.format_label, item.format_code),
+      item.grind
+    ].filter(Boolean).join(' / ');
+    const quantity = Number(item.quantity || 1);
+    const subtotal = formatCurrency(firstValue(item.line_subtotal_clp, Number(item.unit_price_clp || 0) * quantity));
+
+    return `- ${label} x${quantity} - ${subtotal}`;
+  }).join('\n');
+}
+
+async function buildTelegramActionButtons(env, payload, details) {
+  if (!env.TELEGRAM_ACTION_SECRET) return [];
 
   const orderId = firstValue(payload.order_id, details.order_id);
-  const actions = getWhatsAppActionsForEvent(payload.event_type);
+  const actions = getTelegramActionsForEvent(payload.event_type);
   const buttons = [];
 
-  for (const [index, status] of actions.entries()) {
-    const actionId = await buildWhatsAppActionId(env.WHATSAPP_ACTION_SECRET, orderId, status);
+  for (const action of actions) {
+    const actionId = await buildTelegramActionId(env.TELEGRAM_ACTION_SECRET, orderId, action.status);
     if (!actionId) continue;
 
     buttons.push({
-      type: 'button',
-      sub_type: 'quick_reply',
-      index: String(index),
-      parameters: [{
-        type: 'payload',
-        payload: actionId
-      }]
+      text: action.label,
+      callback_data: actionId
     });
   }
 
-  return buttons;
+  return buttons.length ? [buttons] : [];
 }
 
-function getWhatsAppActionsForEvent(eventType) {
+function getTelegramActionsForEvent(eventType) {
   if (eventType === 'pending_transfer') {
-    return ['paid', 'expired'];
+    return [
+      { status: 'paid', label: 'Confirmar pago' },
+      { status: 'expired', label: 'Expirar' }
+    ];
   }
 
   if (eventType === 'paid') {
-    return ['delivering'];
+    return [{ status: 'delivering', label: 'En despacho' }];
   }
 
   if (eventType === 'delivering') {
-    return ['delivered'];
+    return [{ status: 'delivered', label: 'Entregado' }];
   }
 
   return [];
-}
-
-function normalizePhone(value) {
-  return String(value || '').replace(/[^\d]/g, '');
 }
 
 function buildItemsTable(items) {

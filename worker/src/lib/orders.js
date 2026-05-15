@@ -30,11 +30,12 @@ import {
 import { createFlowPayment, getFlowPaymentStatus, mapFlowStatus } from './flow.js';
 import { notifyOperationalEventWithResults, shouldNotifyEvent } from './notifications.js';
 import {
-  extractWhatsAppActionMessages,
-  isAllowedWhatsAppOperator,
-  verifyWhatsAppActionId,
-  verifyWhatsAppWebhookSignature
-} from './whatsapp-actions.js';
+  answerTelegramCallbackQuery,
+  extractTelegramActionMessages,
+  isAllowedTelegramOperator,
+  verifyTelegramActionId,
+  verifyTelegramWebhookSecret
+} from './telegram-actions.js';
 
 const CONTACT_REQUEST_ALLOWED_STATUSES = new Set(['draft', 'manual_review']);
 const ADMIN_STATUS_TRANSITIONS = {
@@ -1419,40 +1420,42 @@ export async function updateAdminOrderStatus(env, orderId, status, token) {
   return applyAdminOrderStatus(env, orderId, targetStatus, `api/admin/status/${targetStatus}`);
 }
 
-export async function processWhatsAppWebhook(env, rawBody, signatureHeader) {
-  const signatureValid = await verifyWhatsAppWebhookSignature(env, rawBody, signatureHeader);
+export async function processTelegramWebhook(env, rawBody, secretHeader) {
+  const secretValid = verifyTelegramWebhookSecret(env, secretHeader);
 
-  if (!signatureValid) {
-    throw statusError('Invalid WhatsApp webhook signature', 403);
+  if (!secretValid) {
+    throw statusError('Invalid Telegram webhook secret', 403);
   }
 
   let payload;
   try {
     payload = JSON.parse(rawBody || '{}');
   } catch (error) {
-    throw statusError('Invalid WhatsApp webhook JSON', 400);
+    throw statusError('Invalid Telegram webhook JSON', 400);
   }
 
-  const messages = extractWhatsAppActionMessages(env, payload);
+  const messages = extractTelegramActionMessages(env, payload);
   const results = [];
 
   for (const message of messages) {
     if (message.rejected) {
-      throw statusError(`WhatsApp webhook ${message.reason}`, 403);
+      throw statusError(`Telegram webhook ${message.reason}`, 403);
     }
 
-    if (!isAllowedWhatsAppOperator(env, message.from)) {
-      throw statusError('WhatsApp sender is not authorized for operational actions', 403);
+    if (!isAllowedTelegramOperator(env, message.fromId)) {
+      throw statusError('Telegram sender is not authorized for operational actions', 403);
     }
 
-    const action = await verifyWhatsAppActionId(env.WHATSAPP_ACTION_SECRET, message.actionId);
+    const action = await verifyTelegramActionId(env.TELEGRAM_ACTION_SECRET, message.actionId);
     if (!action.ok) {
-      throw statusError(`Invalid WhatsApp action: ${action.reason}`, 403);
+      throw statusError(`Invalid Telegram action: ${action.reason}`, 403);
     }
 
-    const result = await applyAdminOrderStatus(env, action.orderId, action.status, 'api/whatsapp/webhook');
+    const result = await applyAdminOrderStatus(env, action.orderId, action.status, 'api/telegram/webhook');
+    await answerTelegramCallbackQuery(env, message.callbackQueryId, `Estado actualizado: ${result.internal_status}`).catch(() => null);
     results.push({
       message_id: message.messageId,
+      callback_query_id: message.callbackQueryId,
       order_id: result.order_id,
       order_number: result.order_number,
       confirmation_number: result.confirmation_number,

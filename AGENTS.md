@@ -10,6 +10,7 @@
 
 - Todos los `push` a GitHub deben hacerse via SSH.
 - Asumir que existe una SSH key valida configurada para este repo; no usar HTTPS para `push` salvo instruccion explicita del usuario.
+- La key privada GitHub indicada por el usuario esta en `C:\Users\gonzalo.sepulveda\OneDrive - Thermo Fisher Scientific\ThermoDocs\gonzalo_key_private.ppk`; usarla solo como identidad SSH local y nunca copiar su contenido al chat, commits, logs ni archivos del repo.
 
 ## Secretos y variables productivas
 

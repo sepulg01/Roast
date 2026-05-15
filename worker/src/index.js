@@ -6,7 +6,7 @@ import {
   createPaymentLink,
   getPublicCatalog,
   getPublicOrder,
-  processWhatsAppWebhook,
+  processTelegramWebhook,
   syncPaymentStatus,
   updateAdminOrderStatus
 } from './lib/orders.js';
@@ -70,22 +70,9 @@ async function handleAdminStatus(request, env, orderId) {
   return jsonResponse(result);
 }
 
-async function handleWhatsAppWebhookVerification(request, env) {
-  const url = new URL(request.url);
-  const mode = url.searchParams.get('hub.mode');
-  const token = url.searchParams.get('hub.verify_token');
-  const challenge = url.searchParams.get('hub.challenge');
-
-  if (mode === 'subscribe' && token && token === env.WHATSAPP_WEBHOOK_VERIFY_TOKEN && challenge) {
-    return textResponse(challenge);
-  }
-
-  return errorResponse('Invalid WhatsApp webhook verification token', { status: 403 });
-}
-
-async function handleWhatsAppWebhook(request, env) {
+async function handleTelegramWebhook(request, env) {
   const rawBody = await request.text();
-  const result = await processWhatsAppWebhook(env, rawBody, request.headers.get('x-hub-signature-256') || '');
+  const result = await processTelegramWebhook(env, rawBody, request.headers.get('x-telegram-bot-api-secret-token') || '');
   return jsonResponse(result);
 }
 
@@ -99,18 +86,11 @@ async function handleHealth(env) {
   const resendConfigured = hasEnvValue(env, 'RESEND_API_KEY');
   const appsScriptFallbackConfigured = hasEnvValue(env, 'APPS_SCRIPT_WEBHOOK_URL') && hasEnvValue(env, 'APPS_SCRIPT_SHARED_SECRET');
   const adminActionsConfigured = hasEnvValue(env, 'ADMIN_ACTION_SECRET');
-  const whatsappConfigured = hasEnvValue(env, 'WHATSAPP_CLOUD_TOKEN')
-    && hasEnvValue(env, 'WHATSAPP_PHONE_NUMBER_ID')
-    && hasEnvValue(env, 'WHATSAPP_NOTIFY_TO')
-    && hasEnvValue(env, 'WHATSAPP_TEMPLATE_ORDER_EVENT');
-  const whatsappActionsConfigured = whatsappConfigured
-    && hasEnvValue(env, 'WHATSAPP_TEMPLATE_TRANSFER_ACTIONS')
-    && hasEnvValue(env, 'WHATSAPP_TEMPLATE_PAID_ACTIONS')
-    && hasEnvValue(env, 'WHATSAPP_TEMPLATE_DELIVERING_ACTIONS')
-    && hasEnvValue(env, 'WHATSAPP_WEBHOOK_VERIFY_TOKEN')
-    && hasEnvValue(env, 'WHATSAPP_APP_SECRET')
-    && hasEnvValue(env, 'WHATSAPP_ACTION_SECRET')
-    && (hasEnvValue(env, 'WHATSAPP_OPERATOR_PHONES') || hasEnvValue(env, 'WHATSAPP_NOTIFY_TO'));
+  const telegramActionsConfigured = hasEnvValue(env, 'TELEGRAM_BOT_TOKEN')
+    && hasEnvValue(env, 'TELEGRAM_CHAT_ID')
+    && hasEnvValue(env, 'TELEGRAM_WEBHOOK_SECRET')
+    && hasEnvValue(env, 'TELEGRAM_ACTION_SECRET')
+    && hasEnvValue(env, 'TELEGRAM_OPERATOR_IDS');
 
   return jsonResponse({
     ok: true,
@@ -127,8 +107,7 @@ async function handleHealth(env) {
       apps_script_fallback: appsScriptFallbackConfigured,
       notifications: resendConfigured || appsScriptFallbackConfigured,
       admin_actions: adminActionsConfigured,
-      whatsapp: whatsappConfigured,
-      whatsapp_actions: whatsappActionsConfigured
+      telegram_actions: telegramActionsConfigured
     }
   });
 }
@@ -209,12 +188,8 @@ export default {
         return await handleAdminStatus(request, env, extractAdminStatusOrderId(url.pathname));
       }
 
-      if (request.method === 'GET' && url.pathname === '/api/whatsapp/webhook') {
-        return await handleWhatsAppWebhookVerification(request, env);
-      }
-
-      if (request.method === 'POST' && url.pathname === '/api/whatsapp/webhook') {
-        return await handleWhatsAppWebhook(request, env);
+      if (request.method === 'POST' && url.pathname === '/api/telegram/webhook') {
+        return await handleTelegramWebhook(request, env);
       }
 
       if (request.method === 'GET' && url.pathname === '/api/health') {

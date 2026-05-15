@@ -424,7 +424,7 @@ test('notifyOperationalEvent sends paid customer confirmation through Resend', a
   assert.doesNotMatch(requests[1].body.html, /roast_internal_001/);
 });
 
-test('notifyOperationalEventWithResults sends WhatsApp order notifications without blocking successful email', async t => {
+test('notifyOperationalEventWithResults sends Telegram order notifications without blocking successful email', async t => {
   const requests = [];
   installFetchMock(t, async (url, init = {}) => {
     requests.push({
@@ -437,8 +437,8 @@ test('notifyOperationalEventWithResults sends WhatsApp order notifications witho
       return jsonResponse({ id: `email_${requests.length}` }, 202);
     }
 
-    if (url === 'https://graph.facebook.com/v20.0/phone_123/messages') {
-      return jsonResponse({ messages: [{ id: 'wamid.test' }] }, 200);
+    if (url === 'https://api.telegram.org/botbot-token/sendMessage') {
+      return jsonResponse({ ok: true, result: { message_id: 10 } }, 200);
     }
 
     throw new Error(`Unexpected fetch: ${url}`);
@@ -447,10 +447,9 @@ test('notifyOperationalEventWithResults sends WhatsApp order notifications witho
   const result = await notifyOperationalEventWithResults(
     {
       RESEND_API_KEY: 'resend_test_key',
-      WHATSAPP_CLOUD_TOKEN: 'whatsapp_test_token',
-      WHATSAPP_PHONE_NUMBER_ID: 'phone_123',
-      WHATSAPP_NOTIFY_TO: '+56911112222',
-      WHATSAPP_TEMPLATE_ORDER_EVENT: 'roast_order_event'
+      TELEGRAM_BOT_TOKEN: 'bot-token',
+      TELEGRAM_CHAT_ID: '-1001234567890',
+      TELEGRAM_ACTION_SECRET: 'telegram-action-secret'
     },
     {
       event_type: 'pending_transfer',
@@ -467,27 +466,28 @@ test('notifyOperationalEventWithResults sends WhatsApp order notifications witho
 
   assert.equal(result.ok, true);
   assert.equal(result.channels.email.ok, true);
-  assert.equal(result.channels.whatsapp.ok, true);
+  assert.equal(result.channels.telegram.ok, true);
 
-  const whatsappRequest = requests.find(request => request.url.includes('graph.facebook.com'));
-  assert.equal(whatsappRequest.headers.Authorization, 'Bearer whatsapp_test_token');
-  assert.equal(whatsappRequest.body.messaging_product, 'whatsapp');
-  assert.equal(whatsappRequest.body.to, '56911112222');
-  assert.equal(whatsappRequest.body.template.name, 'roast_order_event');
+  const telegramRequest = requests.find(request => request.url.includes('api.telegram.org'));
+  assert.equal(telegramRequest.body.chat_id, '-1001234567890');
+  assert.match(telegramRequest.body.text, /0205789/);
+  assert.match(telegramRequest.body.text, /pending_transfer/);
+  assert.match(telegramRequest.body.text, /Camila Roast/);
+  assert.match(telegramRequest.body.text, /\$36\.000 CLP/);
   assert.deepEqual(
-    whatsappRequest.body.template.components[0].parameters.map(parameter => parameter.text),
-    ['0205789', 'pending_transfer', 'Camila Roast', '$36.000 CLP', 'pending_transfer']
+    telegramRequest.body.reply_markup.inline_keyboard.flat().map(button => button.text),
+    ['Confirmar pago', 'Expirar']
   );
 });
 
-test('notifyOperationalEventWithResults treats WhatsApp failure as best-effort when email succeeds', async t => {
+test('notifyOperationalEventWithResults treats Telegram failure as best-effort when email succeeds', async t => {
   installFetchMock(t, async (url) => {
     if (url === 'https://api.resend.com/emails') {
       return jsonResponse({ id: 'email_test' }, 202);
     }
 
-    if (url === 'https://graph.facebook.com/v20.0/phone_123/messages') {
-      return jsonResponse({ error: { message: 'Template missing' } }, 400);
+    if (url === 'https://api.telegram.org/botbot-token/sendMessage') {
+      return jsonResponse({ ok: false, description: 'chat not found' }, 400);
     }
 
     throw new Error(`Unexpected fetch: ${url}`);
@@ -496,10 +496,8 @@ test('notifyOperationalEventWithResults treats WhatsApp failure as best-effort w
   const result = await notifyOperationalEventWithResults(
     {
       RESEND_API_KEY: 'resend_test_key',
-      WHATSAPP_CLOUD_TOKEN: 'whatsapp_test_token',
-      WHATSAPP_PHONE_NUMBER_ID: 'phone_123',
-      WHATSAPP_NOTIFY_TO: '+56911112222',
-      WHATSAPP_TEMPLATE_ORDER_EVENT: 'roast_order_event'
+      TELEGRAM_BOT_TOKEN: 'bot-token',
+      TELEGRAM_CHAT_ID: '-1001234567890'
     },
     {
       event_type: 'pending_transfer',
@@ -516,7 +514,7 @@ test('notifyOperationalEventWithResults treats WhatsApp failure as best-effort w
 
   assert.equal(result.ok, true);
   assert.equal(result.channels.email.ok, true);
-  assert.equal(result.channels.whatsapp.ok, false);
+  assert.equal(result.channels.telegram.ok, false);
 });
 
 test('notifyOperationalEvent returns false when any required Resend pending transfer email fails', async t => {

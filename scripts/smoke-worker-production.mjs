@@ -36,7 +36,12 @@ async function fetchJson(url, options = {}) {
       ...(options.headers || {})
     }
   });
+  const contentType = String(response.headers.get('content-type') || '').toLowerCase();
   const text = await response.text();
+
+  if (contentType.includes('text/html') || /^\s*</.test(text)) {
+    throw new Error(`${options.label || url.pathname} returned HTML instead of Worker JSON. Check Cloudflare Worker routes for ${url.origin}/api/*. Snippet: ${text.slice(0, 180)}`);
+  }
 
   let payload;
   try {

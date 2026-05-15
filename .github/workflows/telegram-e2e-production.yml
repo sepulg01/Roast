@@ -1,4 +1,4 @@
-name: WhatsApp E2E Production
+name: Telegram E2E Production
 
 on:
   workflow_dispatch:
@@ -8,38 +8,37 @@ on:
         required: true
         default: https://caferoast.cl
       run_transfer:
-        description: Create a NO PREPARAR transfer order and move paid -> delivering -> delivered through WhatsApp webhook actions
+        description: Create a NO PREPARAR transfer order and move paid -> delivering -> delivered through Telegram webhook actions
         required: true
         type: boolean
         default: true
       run_expired:
-        description: Create a second NO PREPARAR transfer order and expire it through a WhatsApp webhook action
+        description: Create a second NO PREPARAR transfer order and expire it through a Telegram webhook action
         required: true
         type: boolean
         default: false
       run_flow_real:
-        description: Create a Flow real payment link, wait for human payment, then complete dispatch states through WhatsApp webhook actions
+        description: Create a Flow real payment link, wait for human payment, then complete dispatch states through Telegram webhook actions
         required: true
         type: boolean
         default: false
 
 concurrency:
-  group: whatsapp-e2e-production
+  group: telegram-e2e-production
   cancel-in-progress: false
 
 jobs:
-  whatsapp-e2e:
-    name: Real WhatsApp integration against production
+  telegram-e2e:
+    name: Real Telegram integration against production
     runs-on: ubuntu-latest
     environment: production
     env:
       PUBLIC_BASE_URL: ${{ secrets.PUBLIC_BASE_URL }}
-      WHATSAPP_WEBHOOK_VERIFY_TOKEN: ${{ secrets.WHATSAPP_WEBHOOK_VERIFY_TOKEN }}
-      WHATSAPP_APP_SECRET: ${{ secrets.WHATSAPP_APP_SECRET }}
-      WHATSAPP_ACTION_SECRET: ${{ secrets.WHATSAPP_ACTION_SECRET }}
-      WHATSAPP_OPERATOR_PHONES: ${{ secrets.WHATSAPP_OPERATOR_PHONES }}
-      WHATSAPP_NOTIFY_TO: ${{ secrets.WHATSAPP_NOTIFY_TO }}
-      WHATSAPP_PHONE_NUMBER_ID: ${{ secrets.WHATSAPP_PHONE_NUMBER_ID }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
+      TELEGRAM_ACTION_SECRET: ${{ secrets.TELEGRAM_ACTION_SECRET }}
+      TELEGRAM_OPERATOR_IDS: ${{ secrets.TELEGRAM_OPERATOR_IDS }}
       FLOW_PAYMENT_WAIT_SECONDS: 900
     steps:
       - name: Checkout
@@ -60,11 +59,11 @@ jobs:
           echo "::warning title=Flow prerequisite::Before this run, set Config.settings flow_enabled=true in Roast_Control_Costos."
           echo "::warning title=Flow cleanup::After this run, restore Config.settings flow_enabled=false and handle any real payment reversal manually if needed."
 
-      - name: Run production WhatsApp E2E
+      - name: Run production Telegram E2E
         shell: bash
         run: |
           set -euo pipefail
-          node scripts/e2e-whatsapp-production.mjs \
+          node scripts/e2e-telegram-production.mjs \
             --base-url "${{ inputs.base_url }}" \
             --run-transfer="${{ inputs.run_transfer }}" \
             --run-expired="${{ inputs.run_expired }}" \

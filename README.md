@@ -24,7 +24,8 @@ Sitio estatico y flujo de pedido web para Cafe Roast. El cliente arma el pedido 
 - `POST /api/admin/orders/:order_id/status`: accion operativa firmada para mover `pending_transfer -> paid|expired`, `paid -> delivering` y `delivering -> delivered`.
 - `POST /api/admin/orders/:order_id/confirm-transfer`: compatibilidad legacy; equivale a `status=paid`.
 - `GET /api/orders/:order_id`: estado publico por ID de pedido.
-- `GET /api/health`: healthcheck productivo con flags de `confirmation_number`, `terms_only_checkout`, `resend_notifications` y booleans de configuracion para Google, Resend, admin actions y WhatsApp.
+- `POST /api/telegram/webhook`: callbacks operativos de Telegram para botones firmados.
+- `GET /api/health`: healthcheck productivo con flags de `confirmation_number`, `terms_only_checkout`, `resend_notifications` y booleans de configuracion para Google, Resend, admin actions y Telegram.
 
 El frontend usa rutas relativas por defecto. Para apuntar a otro Worker se puede configurar `data-api-base` en el `<body>` o `window.ROAST_API_BASE`.
 
@@ -79,28 +80,31 @@ El pago por transferencia se valida manualmente contra el banco. El flujo operat
 5. Al marcar `paid`, actualiza `Ventas.internal_status=paid`, `Pagos_Flow.confirmed_at`, estadisticas del cliente, evento `paid` y email de confirmacion al cliente.
 6. Desde el panel operativo, `Informar pedido en despacho` guarda `Ventas.dispatched_at` y `Informar pedido entregado` guarda `Ventas.delivered_at`.
 
-El link seguro requiere `ADMIN_ACTION_SECRET`; si no existe, el email se envia sin accion de validacion. Los eventos guardan `notification_results_json` para auditar email y WhatsApp.
+El link seguro requiere `ADMIN_ACTION_SECRET`; si no existe, el email se envia sin accion de validacion. Los eventos guardan `notification_results_json` para auditar email y Telegram.
 
-## WhatsApp operativo
+## Telegram operativo
 
-El Worker puede enviar notificaciones best-effort via Meta WhatsApp Cloud API para `pending_transfer`, `paid` y `delivering`. WhatsApp no bloquea la creacion del pedido ni los cambios de estado si falla; el resultado queda en `Eventos.notification_results_json`.
+El Worker puede enviar notificaciones best-effort via Telegram Bot API para `pending_transfer`, `paid` y `delivering`. Telegram no bloquea la creacion del pedido ni los cambios de estado si falla; el resultado queda en `Eventos.notification_results_json`.
 
-El canal simple usa templates aprobados en Meta. Parametros enviados al body del template: numero visible, evento, cliente, total y estado.
+El mensaje operativo incluye numero visible, estado, cliente, total, detalle de productos, entrega y notas cuando estan disponibles.
 
-El canal con botones directos usa quick replies con payloads firmados por `WHATSAPP_ACTION_SECRET`, no usa ni expone `ADMIN_ACTION_SECRET`. Las respuestas llegan a `POST /api/whatsapp/webhook`, se validan con `X-Hub-Signature-256` usando `WHATSAPP_APP_SECRET`, se aceptan solo desde `WHATSAPP_OPERATOR_PHONES` o `WHATSAPP_NOTIFY_TO`, y ejecutan la misma maquina de estados operativa: `pending_transfer -> paid|expired`, `paid -> delivering`, `delivering -> delivered`.
+El canal con botones directos usa inline keyboards con `callback_data` compacto firmado por `TELEGRAM_ACTION_SECRET`, no usa ni expone `ADMIN_ACTION_SECRET`. Las respuestas llegan a `POST /api/telegram/webhook`, se validan con `X-Telegram-Bot-Api-Secret-Token` usando `TELEGRAM_WEBHOOK_SECRET`, se aceptan solo desde `TELEGRAM_CHAT_ID` y `TELEGRAM_OPERATOR_IDS`, y ejecutan la misma maquina de estados operativa: `pending_transfer -> paid|expired`, `paid -> delivering`, `delivering -> delivered`.
 
-Templates Meta requeridos para acciones directas:
+Botones operativos:
 
-- `WHATSAPP_TEMPLATE_TRANSFER_ACTIONS`: pedido `pending_transfer`, con botones quick reply `Confirmar pago` y `Expirar`.
-- `WHATSAPP_TEMPLATE_PAID_ACTIONS`: pedido `paid`, con boton quick reply `En despacho`.
-- `WHATSAPP_TEMPLATE_DELIVERING_ACTIONS`: pedido `delivering`, con boton quick reply `Entregado`.
-- `WHATSAPP_TEMPLATE_LANGUAGE`: idioma aprobado del template; recomendado `es_CL`.
+- `pending_transfer`: `Confirmar pago` y `Expirar`.
+- `paid`: `En despacho`.
+- `delivering`: `Entregado`.
 
-`GET /api/whatsapp/webhook` responde el challenge de Meta cuando `hub.verify_token` coincide con `WHATSAPP_WEBHOOK_VERIFY_TOKEN`.
+`GET /api/health` reporta `configuration.telegram_actions=true` cuando estan configurados `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `TELEGRAM_WEBHOOK_SECRET`, `TELEGRAM_ACTION_SECRET` y `TELEGRAM_OPERATOR_IDS`. Si aparece `false`, el Worker omite o degrada ese canal aunque los emails Resend funcionen.
 
-`GET /api/health` reporta `configuration.whatsapp=true` solo cuando estan configurados `WHATSAPP_CLOUD_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_NOTIFY_TO` y `WHATSAPP_TEMPLATE_ORDER_EVENT`. Reporta `configuration.whatsapp_actions=true` cuando, ademas, estan configurados los tres templates de acciones, `WHATSAPP_WEBHOOK_VERIFY_TOKEN`, `WHATSAPP_APP_SECRET`, `WHATSAPP_ACTION_SECRET` y al menos un telefono operativo. Si aparece `false`, el Worker omite o degrada ese canal aunque los emails Resend funcionen.
+Configuracion inicial:
 
-La prueba real repetible vive en el workflow manual `WhatsApp E2E Production`. Crea pedidos productivos `NO PREPARAR`, verifica `/api/health`, prueba el challenge de Meta, simula callbacks firmados de WhatsApp contra `POST /api/whatsapp/webhook`, recorre estados operativos y emite un reporte JSON sin secretos. Si se activa `run_flow_real`, primero hay que dejar `Config.settings.flow_enabled=true` en Sheets, pagar el link Flow que imprime el workflow durante la ventana de espera y restaurar `flow_enabled=false` al terminar.
+- Crear bot con BotFather y guardar `TELEGRAM_BOT_TOKEN` en GitHub Environment `production`.
+- Agregar el bot al grupo operativo, obtener `TELEGRAM_CHAT_ID` y los IDs numericos de operadores.
+- Configurar el webhook con `https://caferoast.cl/api/telegram/webhook` y el mismo `TELEGRAM_WEBHOOK_SECRET` guardado en GitHub.
+
+La prueba real repetible vive en el workflow manual `Telegram E2E Production`. Crea pedidos productivos `NO PREPARAR`, verifica `/api/health`, simula callbacks firmados de Telegram contra `POST /api/telegram/webhook`, recorre estados operativos y emite un reporte JSON sin secretos. Si se activa `run_flow_real`, primero hay que dejar `Config.settings.flow_enabled=true` en Sheets, pagar el link Flow que imprime el workflow durante la ventana de espera y restaurar `flow_enabled=false` al terminar.
 
 ## Deploy Persistente
 
@@ -109,7 +113,7 @@ El deploy productivo del Worker no depende de variables locales. GitHub Actions 
 - `.github/workflows/worker-secrets-sync.yml`: manual; sincroniza secretos persistentes de GitHub hacia Cloudflare Worker con `wrangler secret put`.
 - `.github/workflows/worker-deploy.yml`: automatico en push a `main` y manual; corre checks, funcionales, sincroniza secretos requeridos, ejecuta `wrangler deploy` y smoke productivo.
 - `.github/workflows/purchase-e2e-production.yml`: manual; crea pedidos reales `NO PREPARAR`, valida numero visible y recorre estados operativos usando secretos del Environment `production`.
-- `.github/workflows/whatsapp-e2e-production.yml`: manual; valida WhatsApp operativo real en produccion con pedidos `NO PREPARAR`, callbacks firmados y, opcionalmente, Flow real con pago humano durante la corrida.
+- `.github/workflows/telegram-e2e-production.yml`: manual; valida Telegram operativo real en produccion con pedidos `NO PREPARAR`, callbacks firmados y, opcionalmente, Flow real con pago humano durante la corrida.
 - `npm run smoke:worker-production`: valida `/api/health`, que Google/Resend esten configurados, `/api/public-catalog` y que `/api/checkout-orders` ya no exija `accept_total`.
 
 ## Variables Y Secretos
@@ -127,19 +131,11 @@ Worker:
 - `RESEND_FROM`, requerido; usar `Cafe Roast <contacto@caferoast.cl>`
 - `RESEND_REPLY_TO`, requerido; usar `contacto@caferoast.cl`
 - `ADMIN_ACTION_SECRET`, requerido para links seguros de validacion manual de transferencias
-- `WHATSAPP_CLOUD_TOKEN`, opcional para notificaciones Meta WhatsApp Cloud API
-- `WHATSAPP_PHONE_NUMBER_ID`, opcional junto a WhatsApp Cloud API
-- `WHATSAPP_NOTIFY_TO`, opcional; numero operativo que recibe alertas
-- `WHATSAPP_TEMPLATE_ORDER_EVENT`, opcional; template para pedidos `pending_transfer`
-- `WHATSAPP_TEMPLATE_PAID_EVENT`, opcional; template para pagos confirmados
-- `WHATSAPP_TEMPLATE_TRANSFER_ACTIONS`, opcional; template con botones para `pending_transfer`
-- `WHATSAPP_TEMPLATE_PAID_ACTIONS`, opcional; template con boton para `paid`
-- `WHATSAPP_TEMPLATE_DELIVERING_ACTIONS`, opcional; template con boton para `delivering`
-- `WHATSAPP_TEMPLATE_LANGUAGE`, opcional; default recomendado `es_CL`
-- `WHATSAPP_WEBHOOK_VERIFY_TOKEN`, opcional; token de verificacion del webhook Meta
-- `WHATSAPP_APP_SECRET`, opcional; secreto de la app Meta para validar `X-Hub-Signature-256`
-- `WHATSAPP_ACTION_SECRET`, opcional; secreto HMAC para payloads de botones operativos
-- `WHATSAPP_OPERATOR_PHONES`, opcional; lista separada por coma de numeros autorizados para tocar botones
+- `TELEGRAM_BOT_TOKEN`, opcional para notificaciones operativas internas
+- `TELEGRAM_CHAT_ID`, opcional; grupo o chat operativo que recibe alertas
+- `TELEGRAM_WEBHOOK_SECRET`, opcional; secret token para validar callbacks Telegram
+- `TELEGRAM_ACTION_SECRET`, opcional; secreto HMAC para payloads compactos de botones operativos
+- `TELEGRAM_OPERATOR_IDS`, opcional; lista separada por coma de IDs Telegram autorizados para tocar botones
 - `APPS_SCRIPT_WEBHOOK_URL`, fallback legado opcional
 - `APPS_SCRIPT_SHARED_SECRET`, fallback legado opcional junto al webhook de Apps Script
 
@@ -201,4 +197,4 @@ ROAST_OLD_SUPPORT_PATTERN='numero-antiguo-o-wa-me-antiguo'
 rg "$ROAST_OLD_SUPPORT_PATTERN" --glob '!EXECUTION_FEEDBACK.md'
 ```
 
-El E2E real de WhatsApp se ejecuta solo desde GitHub Actions con el Environment `production`; localmente queda cubierto por `npm run test:worker` y `npm run test:static`.
+El E2E real de Telegram se ejecuta solo desde GitHub Actions con el Environment `production`; localmente queda cubierto por `npm run test:worker` y `npm run test:static`.

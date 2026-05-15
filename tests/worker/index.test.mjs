@@ -95,8 +95,7 @@ test('GET /api/health returns worker feature flags', async () => {
       apps_script_fallback: false,
       notifications: false,
       admin_actions: false,
-      whatsapp: false,
-      whatsapp_actions: false
+      telegram_actions: false
     }
   });
 });
@@ -112,17 +111,11 @@ test('GET /api/health reports configured notification and backend dependencies w
       APPS_SCRIPT_WEBHOOK_URL: 'https://script.google.test/macros/s/test/exec',
       APPS_SCRIPT_SHARED_SECRET: 'apps_secret',
       ADMIN_ACTION_SECRET: 'admin_secret',
-      WHATSAPP_CLOUD_TOKEN: 'whatsapp_secret',
-      WHATSAPP_PHONE_NUMBER_ID: 'phone_number_id',
-      WHATSAPP_NOTIFY_TO: '+56911112222',
-      WHATSAPP_TEMPLATE_ORDER_EVENT: 'roast_order_event',
-      WHATSAPP_TEMPLATE_TRANSFER_ACTIONS: 'roast_transfer_actions',
-      WHATSAPP_TEMPLATE_PAID_ACTIONS: 'roast_paid_actions',
-      WHATSAPP_TEMPLATE_DELIVERING_ACTIONS: 'roast_delivering_actions',
-      WHATSAPP_WEBHOOK_VERIFY_TOKEN: 'verify_secret',
-      WHATSAPP_APP_SECRET: 'app_secret',
-      WHATSAPP_ACTION_SECRET: 'action_secret',
-      WHATSAPP_OPERATOR_PHONES: '+56911112222'
+      TELEGRAM_BOT_TOKEN: 'telegram_secret',
+      TELEGRAM_CHAT_ID: '-1001234567890',
+      TELEGRAM_WEBHOOK_SECRET: 'webhook_secret',
+      TELEGRAM_ACTION_SECRET: 'action_secret',
+      TELEGRAM_OPERATOR_IDS: '111222333'
     },
     createContext()
   );
@@ -136,10 +129,9 @@ test('GET /api/health reports configured notification and backend dependencies w
     apps_script_fallback: true,
     notifications: true,
     admin_actions: true,
-    whatsapp: true,
-    whatsapp_actions: true
+    telegram_actions: true
   });
-  assert.doesNotMatch(JSON.stringify(payload), /secret|sheet_123|phone_number_id|roast_order_event|roast_transfer_actions/);
+  assert.doesNotMatch(JSON.stringify(payload), /secret|sheet_123|111222333|-1001234567890/);
 });
 
 test('pending transfer notification payload includes customer email data and totals', () => {

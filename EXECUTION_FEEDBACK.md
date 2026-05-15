@@ -617,3 +617,21 @@
 - Parcial: no se ejecuto el workflow productivo desde esta sesion, por diseno debe correr desde GitHub Actions con secretos reales y Meta configurado.
 - Pendiente/deferido: cargar o confirmar secretos Meta en GitHub `production`, ejecutar `Sync Worker Secrets` o `Deploy Worker`, configurar webhook/templates en Meta, correr `WhatsApp E2E Production`, verificar visualmente mensajes en el telefono Roast y restaurar `Config.settings.flow_enabled=false` si se usa Flow real.
 - No se ejecuto refresh de stacks porque este proyecto no es Repotool y el plan no pidio refresco de stacks.
+
+## 2026-05-15 - Migracion operativa de WhatsApp a Telegram y hardening de /api
+
+- Se reemplazo la integracion operativa Meta WhatsApp Cloud API por Telegram Bot API para alertas internas de `pending_transfer`, `paid` y `delivering`.
+- Se agrego `POST /api/telegram/webhook`, validando `X-Telegram-Bot-Api-Secret-Token`, `TELEGRAM_CHAT_ID`, `TELEGRAM_OPERATOR_IDS` y callbacks compactos firmados con `TELEGRAM_ACTION_SECRET`.
+- Los botones Telegram permiten `pending_transfer -> paid|expired`, `paid -> delivering` y `delivering -> delivered`, reutilizando la misma maquina de estados y dejando auditoria en `Eventos.notification_results_json`.
+- Se eliminaron el helper operativo WhatsApp, el webhook `/api/whatsapp/webhook`, los flags `configuration.whatsapp` / `configuration.whatsapp_actions`, el script E2E WhatsApp y su workflow.
+- Se conservo WhatsApp solo como canal publico de soporte (`wa.me`) en sitio, emails y tests funcionales.
+- Se agrego `scripts/e2e-telegram-production.mjs` y `.github/workflows/telegram-e2e-production.yml`, con guardia `GITHUB_ACTIONS=true`, pedidos `NO PREPARAR`, callbacks Telegram firmados, pruebas negativas y Flow real opcional con espera de pago humano.
+- `Deploy Worker` y `Sync Worker Secrets` ahora sincronizan `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `TELEGRAM_WEBHOOK_SECRET`, `TELEGRAM_ACTION_SECRET` y `TELEGRAM_OPERATOR_IDS` en vez de secretos operativos `WHATSAPP_*`.
+- `scripts/smoke-worker-production.mjs` ahora falla explicitamente cuando `/api/health`, `/api/public-catalog` o `/api/checkout-orders` devuelven HTML en vez de JSON del Worker, apuntando a revisar rutas Cloudflare `caferoast.cl/api/*`.
+- Se actualizaron `README.md`, `Backlog.md`, `worker/.dev.vars.example`, `scripts/sync-sheet-readme.mjs`, `package.json`, workflows y tests Worker.
+- Validacion enfocada realizada: ciclo rojo/verde con `node --test tests/worker/telegram-actions.test.mjs`, `node --test tests/worker/telegram-production-script.test.mjs`, `node --test tests/worker/index.test.mjs` y `node --test tests/worker/orders-notifications.test.mjs`; luego `node --test tests/worker/*.test.mjs` con 45 tests pasando y `node --check` sobre los archivos Worker/scripts modificados.
+- Completado totalmente: migracion de codigo operativo a Telegram, limpieza de WhatsApp Cloud API operativo, workflow E2E Telegram, health/config, auditoria de notificaciones y smoke endurecido para detectar HTML en `/api`.
+- Parcial: no se ejecuto `Telegram E2E Production` real ni `Sync Worker Secrets` desde esta sesion; requieren secretos productivos cargados en GitHub Environment `production` y webhook configurado en Telegram.
+- Pendiente/deferido: eliminar los secretos operativos `WHATSAPP_*` desde GitHub/Cloudflare despues del deploy, cargar `TELEGRAM_*`, configurar `setWebhook` hacia `https://caferoast.cl/api/telegram/webhook`, ejecutar `Deploy Worker` o `Sync Worker Secrets`, correr `Telegram E2E Production` y confirmar visualmente los mensajes en el grupo operativo.
+- No se pudo hacer commit/push desde esta sesion porque `git` no esta disponible en PATH ni como ejecutable local detectable; el push debe hacerse via SSH cuando el binario este disponible.
+- No se ejecuto refresh de stacks porque este proyecto no es Repotool y el plan no pidio refresco de stacks.
